@@ -1,2 +1,2 @@
-float32 wheelRadius
-float32 wheelDistance
+float64 wheelRadius
+float64 wheelDistance
