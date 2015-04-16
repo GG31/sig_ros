@@ -20,23 +20,25 @@ find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs message_generation
 #######################################
 
 ## Generate messages in the 'msg' folder
- add_message_files(
-   FILES
-   MsgRecv.msg
-   SetWheel.msg
+add_message_files(
+  FILES
+  MsgRecv.msg
+  SetWheel.msg
+  SetWheelVelocity.msg
+  SetJointVelocity.msg
 )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   AddTwoInts.srv
-# )
+add_service_files(
+  FILES
+  getTime.srv
+)
 
 ## Generate added messages and services with any dependencies listed here
- generate_messages(
-   DEPENDENCIES
-   std_msgs
- )
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 ###################################
 ## catkin specific configuration ##
