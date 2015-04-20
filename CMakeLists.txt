@@ -32,6 +32,10 @@ add_message_files(
 add_service_files(
   FILES
   getTime.srv
+  getObjPosition.srv
+  getPartsPosition.srv
+  getRotation.srv
+  getAngleRotation.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -66,7 +70,7 @@ include_directories(include
   ${catkin_INCLUDE_DIRS}
 )
 include_directories (/home/gg/sigverse-2.2.2/include/sigverse /home/gg/sigverse-2.2.2/include/sigverse/comm/controller )
-
+#option(CONTROLLER "controller" ON)
 #include_directories (${SIGVERSE_PATH}/include/sigverse /home/ericgt/sigverse-2.2.0/include/sigverse/comm/controller )
 ## Declare a cpp library
 # add_library(beginner_tutorials

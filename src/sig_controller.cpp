@@ -1,70 +1,28 @@
-#include "Controller.h"
-#include "Logger.h"
-#include "ControllerEvent.h"
-#include "ros/ros.h"
-#include <sstream>
-#include "std_msgs/String.h"
-#include "std_msgs/Float32.h"
-#include <sig_ros/MsgRecv.h>
-//Robot Msg
-#include <sig_ros/SetWheel.h>
-#include <sig_ros/SetWheelVelocity.h>
-#include <sig_ros/SetJointVelocity.h>
-//Srv
-#include "sig_ros/getTime.h"
-
-#define PI 3.141592
-#define DEG2RAD(DEG) ( (PI) * (DEG) / 180.0 )
-#define ARY_SIZE(ARY) ( (int)(sizeof(ARY)/sizeof(ARY[0])) )
-
-
-class RobotController : public Controller
-{
-   public:
-      void onInit(InitEvent &evt);
-      double onAction(ActionEvent &evt);
-      void onRecvMsg(RecvMsgEvent &evt);
-      //Robot
-      void setWheelCallback(const sig_ros::SetWheel::ConstPtr& wheel);
-      void setWheelVelocityCallback(const sig_ros::SetWheelVelocity::ConstPtr& wheel);
-      void setJointVelocityCallback(const sig_ros::SetJointVelocity::ConstPtr& msg);
-      //Srv
-      bool getTime(sig_ros::getTime::Request &req, sig_ros::getTime::Response &res);
-   public:
-      RobotObj *my;
-      
-      ros::Publisher onRecvMsg_pub;
-      
-      //Robot
-      ros::Subscriber setWheel_sub;
-      ros::Subscriber setWheelVelocity_sub;
-      ros::Subscriber setJointVelocity_sub;
-      
-      //
-      ros::ServiceServer service;
-};  
+#include "sig_controller.hpp"
   
 void RobotController::onInit(InitEvent &evt)
 {
    int argc = 0;
    char** argv = NULL;
-   my = this->getRobotObj(this->myname());
-   my->setWheel(10.0, 10.0);
+   my = getRobotObj(myname());
+   //my->setPosition(4.3, 5.5, 2.3);
+   //my->setWheel(10.0, 10.0);
    ros::init(argc, argv, std::string(this->myname()) + "_sig_controller_node");//+std::string(this->myname())
    ros::NodeHandle n;
+   
+   //Topics
    onRecvMsg_pub = n.advertise<sig_ros::MsgRecv>(std::string(this->myname())+"_onRecvMsg", 1000);
    setWheel_sub = n.subscribe<sig_ros::SetWheel>(std::string(this->myname()) + "_setWheel", 1, &RobotController::setWheelCallback, this);
    setWheelVelocity_sub = n.subscribe<sig_ros::SetWheelVelocity>(std::string(this->myname()) + "_setWheelVelocity", 1, &RobotController::setWheelVelocityCallback, this);
    setJointVelocity_sub = n.subscribe<sig_ros::SetJointVelocity>(std::string(this->myname()) + "_setJointVelocity", 1, &RobotController::setJointVelocityCallback, this);
    
+   //Srv
    service = n.advertiseService(std::string(this->myname()) + "_get_time", &RobotController::getTime, this);
-   //ros::spin();
-   //ros::Rate loop_rate(10);
+   serviceGetObjPosition = n.advertiseService(std::string(this->myname()) + "_get_obj_position", &RobotController::getObjPosition, this);
 }
 
 double RobotController::onAction(ActionEvent &evt)
 {
-   //my->setWheelVelocity(10.0,10.0);
    ros::spinOnce();
    return 0.01;
 }
@@ -77,6 +35,12 @@ void RobotController::onRecvMsg(RecvMsgEvent &evt)
    onRecvMsg_pub.publish(msg);
 }
 
+void RobotController::onCollision(CollisionEvent &evt)
+{
+	
+}
+
+/*****************************Callback topic************************/
 void RobotController::setWheelCallback(const sig_ros::SetWheel::ConstPtr& wheel)
 {
    std::cout << "setWheelCallback" << std::endl;
@@ -92,17 +56,66 @@ void RobotController::setWheelVelocityCallback(const sig_ros::SetWheelVelocity::
 void RobotController::setJointVelocityCallback(const sig_ros::SetJointVelocity::ConstPtr& msg)
 {
    std::cout << msg->jointName << " " << msg->angularVelocity << " " << msg->max << std::endl;
-   my->addForce(0.0,0.0,500.0);
-   //my->setJointVelocity("RARM_JOINT1", 0.0, 0.0);
+   //my->addForce(0.0,0.0,500.0);
+   my->setJointVelocity(msg->jointName.c_str(), msg->angularVelocity, msg->max);
 }
-//Srv
+/*****************************End callback topic************************/
+
+
+/*******************************Srv***********************************/
 bool RobotController::getTime(sig_ros::getTime::Request &req, sig_ros::getTime::Response &res)
 {
    std::cout << "on getTime" << std::endl;
    res.time = getSimulationTime();
    return true;
 }
-//End Srv
+
+bool RobotController::getObjPosition(sig_ros::getObjPosition::Request &req, sig_ros::getObjPosition::Response &res)
+{
+   SimObj *obj = getObj(req.name.c_str());
+   Vector3d pos;
+   obj->getPosition(pos);
+   res.posX = pos.x();
+   res.posY = pos.y();
+   res.posZ = pos.z();
+   return true;
+}
+
+bool RobotController::getPartsPosition(sig_ros::getPartsPosition::Request &req, sig_ros::getPartsPosition::Response &res)
+{
+   Vector3d pos;
+   //my->getParts(req.part.c_str());
+  
+   my->getPartsPosition (pos, req.part.c_str());
+   /*res.posX = pos.x();
+   res.posY = pos.y();
+   res.posZ = pos.z();*/
+   return true;
+}
+
+bool RobotController::getRotation(sig_ros::getRotation::Request &req, sig_ros::getRotation::Response &res)
+{
+   Rotation ownRotation;
+	my->getRotation(ownRotation);
+	if (req.axis.c_str() == "y") { 
+	   res.qW = ownRotation.qw();
+	   res.qY = ownRotation.qy();
+	}
+   return true;
+}
+
+bool RobotController::getAngleRotation(sig_ros::getAngleRotation::Request &req, sig_ros::getAngleRotation::Response &res)
+{
+   Rotation ownRotation;
+	my->getRotation(ownRotation);
+	Vector3d vector3d = Vector3d(req.x, req.y, req.z);
+	if (req.axis.c_str() == "z") { 
+	   res.angle = vector3d.angle(Vector3d(0.0, 0.0, 1.0));
+	}
+   return true;
+}
+/*****************************End Srv*********************************/
+
 extern "C"  Controller * createController ()
 {
    return new RobotController;
