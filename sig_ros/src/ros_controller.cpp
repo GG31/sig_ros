@@ -55,7 +55,7 @@ int main(int argc, char** argv)
    // Put them in the xml file
    // Compile all controller
    // Launch sigserver
-   std::string command = "sigserver.sh -w devel/lib/libsig_ros/RobotInMove.xml";// + std::string(argv[1]);// devel/lib/libsig_ros/RobotInMove.xml
+   std::string command = "sigserver.sh -w /home/gg/catkin_ws/devel/lib/libsig_ros/CleanUpDemo2014Robo.xml";// + std::string(argv[1]);// devel/lib/libsig_ros/RobotInMove.xml
    system (command.c_str());
    
    //ros::Rate loop_rate(100);

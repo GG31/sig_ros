@@ -1,0 +1,15 @@
+if(GTEST_FOUND)
+   include_directories(${GTEST_INCLUDE_DIRS})
+   link_directories(${GTEST_LIBRARY_DIRS})
+   add_executable(sig_ros-test EXCLUDE_FROM_ALL test.cpp)
+   target_link_libraries(sig_ros-test ${PROJECT_NAME} ${GTEST_LIBRARIES})
+   if(TARGET tests)
+      add_dependencies(tests
+      sig_ros-test
+   )
+   endif()
+endif()
+#catkin_add_gtest(sig_ros-test test.cpp)
+#if(TARGET sig_ros-test)
+#   target_link_libraries(sig_ros-test ${PROJECT_NAME})
+#endif()
