@@ -7,6 +7,7 @@
 #include <sstream>
 //Msg
 #include <sig_ros/MsgRecv.h>
+#include <sig_ros/OnCollision.h>
 #include <sig_ros/SetWheel.h>
 #include <sig_ros/SetWheelVelocity.h>
 #include <sig_ros/SetJointVelocity.h>
@@ -18,9 +19,13 @@
 #include <sig_ros/getRotation.h>
 #include <sig_ros/getAngleRotation.h>
 #include <sig_ros/getJointAngle.h>
+#include <sig_ros/graspObj.h>
 
 #define DEG2RAD(DEG) ( (M_PI) * (DEG) / 180.0 )
 
+
+//RARM_JOINT4 : avant-bras droit, + : derrière, - : devant
+//RARM_JOINT1 : bras droit, + derrière, - : devant
 class RobotCommand
 {
    public:
@@ -30,6 +35,7 @@ class RobotCommand
       
    private:
       void onMsgRecvCallback(const sig_ros::MsgRecv::ConstPtr& msg);
+      void onCollisionCallback(const sig_ros::OnCollision::ConstPtr& msg);
       void stopRobotMove(void);
       void array_init(double tab[], double v1, double v2, double v3);
       double rotateTowardObj(double pos[]);
@@ -94,6 +100,7 @@ class RobotCommand
       sig_ros::ReleaseObj msgReleaseObj;
       
       ros::Subscriber robot_000_onRecvMsg_sub;
+      ros::Subscriber robot_000_onCollision_sub;
       
       //Service
       ros::ServiceClient serviceGetTime;
@@ -108,5 +115,7 @@ class RobotCommand
 	   sig_ros::getAngleRotation srvGetAngleRotation;
 	   ros::ServiceClient serviceGetJointAngle;
 	   sig_ros::getJointAngle srvGetJointAngle;
+	   ros::ServiceClient serviceGraspObj;
+	   sig_ros::graspObj srvGraspObj;
 };  
 

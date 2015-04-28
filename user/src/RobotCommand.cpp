@@ -40,6 +40,7 @@ void RobotCommand::init() {
 	robot_000_setJointVelocity_pub = n.advertise<sig_ros::SetJointVelocity>("robot_000_setJointVelocity", 1000);
 	robot_000_releaseObj_pub = n.advertise<sig_ros::ReleaseObj>("robot_000_releaseObj", 1000);
 	robot_000_onRecvMsg_sub = n.subscribe<sig_ros::MsgRecv>("robot_000_onRecvMsg", 1, &RobotCommand::onMsgRecvCallback, this);
+	robot_000_onCollision_sub = n.subscribe<sig_ros::OnCollision>("robot_000_onCollisionMsg", 1, &RobotCommand::onCollisionCallback, this);
 	//Srv
 	serviceGetTime = n.serviceClient<sig_ros::getTime>("robot_000_get_time");
 	serviceGetObjPosition = n.serviceClient<sig_ros::getObjPosition>("robot_000_get_obj_position");
@@ -47,11 +48,11 @@ void RobotCommand::init() {
 	serviceGetRotation = n.serviceClient<sig_ros::getRotation>("robot_000_get_rotation");
 	serviceGetAngleRotation = n.serviceClient<sig_ros::getAngleRotation>("robot_000_get_angle_rotation");
 	serviceGetJointAngle = n.serviceClient<sig_ros::getJointAngle>("robot_000_get_joint_angle");
+   serviceGraspObj = n.serviceClient<sig_ros::graspObj>("robot_000_grasp_obj");
 	
 	ros::Duration(0.5).sleep(); //Because we have to wait that the publisher be ready
 	msgSetWheel.wheelRadius = m_radius;
 	msgSetWheel.wheelDistance = m_distance;
-	std::cout << "pub setWheel" << std::endl;
 	robot_000_setWheel_pub.publish(msgSetWheel);
 	ros::spinOnce();
 	
@@ -99,13 +100,29 @@ void RobotCommand::onMsgRecvCallback(const sig_ros::MsgRecv::ConstPtr& msg)
    std::cout << msg->content.c_str() << std::endl;
 }
 
+void RobotCommand::onCollisionCallback(const sig_ros::OnCollision::ConstPtr& msg)
+{
+   if (!m_grasp && (msg->name == m_trashName1 || msg->name == m_trashName2) && msg->part == "RARM_LINK7") {
+      srvGraspObj.request.obj = msg->name;
+      srvGraspObj.request.part = msg->part;
+      if (serviceGraspObj.call(srvGraspObj)) {
+         if (srvGraspObj.response.ok) {
+            m_grasp = true; 
+         }
+      } else {
+         ROS_ERROR("Failed to call service robot_000_grasp_obj");
+      }
+   
+   }
+}
+
 void RobotCommand::stopRobotMove(void) {
 	this->setWheelVelocity(0.0, 0.0);
 }
 
 double RobotCommand::loop(void) {
    double time = getTime();
-   std::cout << "getTime " << time << " state : " << m_state << std::endl;
+   //std::cout << "getTime " << time << " state : " << m_state << std::endl;
    switch(m_state) {
 		case 0: {
 			break;
@@ -119,7 +136,6 @@ double RobotCommand::loop(void) {
 		   this->setWheelVelocity(m_angularVelocity, m_angularVelocity);
 
          m_time = 10.0/m_movingSpeed + time;
-         std::cout << "time " << m_time << std::endl; // time to be elapsed
 			m_state = 20;
 			break;
 		}
@@ -129,7 +145,6 @@ double RobotCommand::loop(void) {
 
 			   double l_tpos[3];
 			   this->recognizeObjectPosition(l_tpos, m_trashName2);
-			   std::cout << "tab " << l_tpos[0] << " " << l_tpos[1] << " " << l_tpos[2] << std::endl;
 		      double l_moveTime = rotateTowardObj(l_tpos);  // rotate toward the position and calculate the time to be elapsed.
 
 		      m_time = l_moveTime + time; //l_moveTime + time;
@@ -151,15 +166,15 @@ double RobotCommand::loop(void) {
          break;
     }
 		case 40: {  // get back a bit after colliding with the table
-			//if(time >= m_time && m_state == 40) {
-				//this->stopRobotMove();    // at first, stop robot maneuver
-            //this->setWheelVelocity(-m_angularVelocity, m_angularVelocity);
+			if(time >= m_time && m_state == 40) {
+				this->stopRobotMove();    // at first, stop robot maneuver
+            this->setWheelVelocity(-m_angularVelocity, -m_angularVelocity);
 				m_time = 20./m_movingSpeed + time;
 				
-			//}
-         m_state = 40;
+			}
+         m_state = 50;
 			break;
-		}/*
+		}
 		case 50: {  // detour: rotate toward relay point 1
 			if(time >= m_time && m_state == 50) {
 				this->stopRobotMove();
@@ -205,9 +220,7 @@ double RobotCommand::loop(void) {
 			break;
 		}
 		case 90: {  // rotate toward the trash
-		   double time = getTime();
-         std::cout << "getTime " << time << " state : " << m_state << std::endl;
-			if(time >= m_time && m_state==90) {
+			if(time >= m_time && m_state == 90) {
 				this->stopRobotMove();
 
 				double l_tpos[3];
@@ -229,9 +242,9 @@ double RobotCommand::loop(void) {
 			break;
 		}
 		case 105: {  // fix robot direction for grasping
-			if(time >= m_time1 && m_state == 105) this->setJointVelocity("RARM_JOINT1", 0.0, 0.0);
-			if(time >= m_time4 && m_state == 105) this->setJointVelocity("RARM_JOINT4", 0.0, 0.0);
-			if(time >= m_time1 && time >= m_time4 && m_state==105) {
+			if(time >= m_time1 + 5 && m_state == 105) this->setJointVelocity("RARM_JOINT1", 0.0, 0.0);
+			if(time >= m_time4 + 10 && m_state == 105) this->setJointVelocity("RARM_JOINT4", 0.0, 0.0);
+			if(time >= m_time1 + 5 && time >= m_time4 + 10 && m_state==105) {
 				double l_tpos[3];
 				this->recognizeObjectPosition(l_tpos, m_trashName2);
 				double l_moveTime = rotateTowardObj(l_tpos);
@@ -262,7 +275,7 @@ double RobotCommand::loop(void) {
 				this->stopRobotMove();
 				double l_tpos[3];
 				this->recognizeObjectPosition(l_tpos, m_trashName2);
-				double l_moveTime = 1;//goGraspingObject(l_tpos);
+				double l_moveTime = goGraspingObject(l_tpos);
 				m_time = l_moveTime + time;
 
 				m_state = 125;
@@ -281,7 +294,7 @@ double RobotCommand::loop(void) {
 		case 130: {
 			if(time >= m_time1 && m_state == 130) this->setJointVelocity("RARM_JOINT1", 0.0, 0.0);
 			if(time >= m_time4 && m_state == 130) this->setJointVelocity("RARM_JOINT4", 0.0, 0.0);
-			if(time >= m_time1 && time >= m_time4 && m_state==130) {
+			if(time >= m_time1 && time >= m_time4 && m_state == 130) {
 
 				this->setWheelVelocity(-m_angularVelocity, -m_angularVelocity);
 				m_time = 20./m_movingSpeed + time;
@@ -566,7 +579,7 @@ double RobotCommand::loop(void) {
 				m_state = 0;
 			}
 			break;
-		}*/
+		}
 	}
 	
 	return refreshRateOnAction;
@@ -607,7 +620,7 @@ double RobotCommand::rotateTowardObj(double pos[])
    }
    
 	double theta = 2*acos(fabs(qw));
-
+   
 	if(qw*qy < 0) theta = -1.0*theta;
 
 	// rotation angle from z-axis to x-axis
@@ -663,7 +676,6 @@ void RobotCommand::recognizeObjectPosition(double l_tpos[], std::string obj) {
 }
 
 double RobotCommand::getTime() {
-   std::cout << "enter getTime" << std::endl;
    if(serviceGetTime.call(srvGetTime)) {
       return srvGetTime.response.time;
    } else {
@@ -672,7 +684,7 @@ double RobotCommand::getTime() {
    }
 }
 
-double RobotCommand::goToObj(double pos[], double range) // Il y a un bug dans cette méthode qui me fait planter le temps
+double RobotCommand::goToObj(double pos[], double range) 
 {
 	// get own position
 	double robotCurrentPosition[3];
@@ -693,8 +705,7 @@ double RobotCommand::goToObj(double pos[], double range) // Il y a un bug dans c
 
 	// time to be elapsed
 	double l_time = distance / m_movingSpeed;
-   std::cout << "l_time " << l_time << std::endl;
-	return 1; //1 : ok, 1.3 : ok, 6.3 : ko
+	return l_time; //1 : ok, 1.3 : ok, 6.3 : ko
 }
 
 
@@ -702,16 +713,15 @@ void RobotCommand::neutralizeArms(double evt_time)
 {
 	double angleJoint1 = this->getJointAngle("RARM_JOINT1")*180.0/(M_PI);
 	double angleJoint4 = this->getJointAngle("RARM_JOINT4")*180.0/(M_PI);
-	double thetaJoint1 = -15 - angleJoint1;
-	double thetaJoint4 = -110 - angleJoint4;
-
-	if(thetaJoint4<0) {
+	double thetaJoint1 = - 20 - angleJoint1;
+	double thetaJoint4 = - 180 - angleJoint4;
+	if(thetaJoint4 < 0) {
 	   this->setJointVelocity("RARM_JOINT4", -m_jointVelocity, 0.0);
 	} else {
 	   this->setJointVelocity("RARM_JOINT4", m_jointVelocity, 0.0);
 	}
 
-	if(thetaJoint1<0) this->setJointVelocity("RARM_JOINT1", -m_jointVelocity, 0.0);
+	if(thetaJoint1 < 0) this->setJointVelocity("RARM_JOINT1", -m_jointVelocity, 0.0);
 	else this->setJointVelocity("RARM_JOINT1", m_jointVelocity, 0.0);
 
 	m_time1 = DEG2RAD(abs(thetaJoint1))/ m_jointVelocity + evt_time;
@@ -738,8 +748,7 @@ double RobotCommand::goGraspingObject(double pos[])
 {
 	double l_time;
 	double thetaJoint4 = 20.0;
-
-	this->setJointVelocity("RARM_JOINT4", m_jointVelocity, 0.0);
+	this->setJointVelocity("RARM_JOINT4", -m_jointVelocity, 0.0);
 
 	l_time = DEG2RAD(abs(thetaJoint4))/ m_jointVelocity;
 
@@ -759,7 +768,7 @@ void RobotCommand::prepareThrowing(double evt_time)
 	m_time1 = DEG2RAD(abs(thetaJoint1))/ m_jointVelocity + evt_time;
 
 	double thetaJoint4 = 65.0;
-	this->setJointVelocity("RARM_JOINT4", m_jointVelocity, 0.0);
+	this->setJointVelocity("RARM_JOINT4", -m_jointVelocity, 0.0);
 	m_time4 = DEG2RAD(abs(thetaJoint4))/ m_jointVelocity + evt_time;
 
 }

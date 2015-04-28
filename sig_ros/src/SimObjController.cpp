@@ -1,19 +1,15 @@
-#include "sig_controller.hpp"
+#include "RobotController.hpp"
   
-void RobotController::onInit(InitEvent &evt)
+/*void SimObjController::onInit(InitEvent &evt)
 {
    int argc = 0;
    char** argv = NULL;
-   my = getRobotObj(myname());
-   //my->setPosition(4.3, 5.5, 2.3);
-   //my->setWheel(10.0, 10.0);
+   my = getObj(myname());
    ros::init(argc, argv, std::string(this->myname()) + "_sig_controller_node");//+std::string(this->myname())
    ros::NodeHandle n;
    
    //Topics
    onRecvMsg_pub = n.advertise<sig_ros::MsgRecv>(std::string(this->myname())+"_onRecvMsg", 1000);
-   setWheel_sub = n.subscribe<sig_ros::SetWheel>(std::string(this->myname()) + "_setWheel", 1, &RobotController::setWheelCallback, this);
-   setWheelVelocity_sub = n.subscribe<sig_ros::SetWheelVelocity>(std::string(this->myname()) + "_setWheelVelocity", 1, &RobotController::setWheelVelocityCallback, this);
    setJointVelocity_sub = n.subscribe<sig_ros::SetJointVelocity>(std::string(this->myname()) + "_setJointVelocity", 1, &RobotController::setJointVelocityCallback, this);
    releaseObj_sub = n.subscribe<sig_ros::ReleaseObj>(std::string(this->myname()) + "_releaseObj", 1, &RobotController::releaseObjCallback, this);
    
@@ -25,15 +21,20 @@ void RobotController::onInit(InitEvent &evt)
    serviceGetAngleRotation = n.advertiseService(std::string(this->myname()) + "_get_angle_rotation", &RobotController::getAngleRotation, this);
    serviceGetJointAngle = n.advertiseService(std::string(this->myname()) + "_get_joint_angle", &RobotController::getJointAngle, this);
    
+   m_simulatorTime = 0;
+}*/
+void SimObjController::initCommonTopicSvr() {
+  std::cout << "yolé" << std::endl; 
 }
 
-double RobotController::onAction(ActionEvent &evt)
+double SimObjController::onAction(ActionEvent &evt)
 {
    ros::spinOnce();
+   m_simulatorTime = evt.time();
    return 0.01;
 }
 
-void RobotController::onRecvMsg(RecvMsgEvent &evt)
+void SimObjController::onRecvMsg(RecvMsgEvent &evt)
 {
    sig_ros::MsgRecv msg;
    msg.sender = evt.getSender();
@@ -41,34 +42,20 @@ void RobotController::onRecvMsg(RecvMsgEvent &evt)
    onRecvMsg_pub.publish(msg);
 }
 
-void RobotController::onCollision(CollisionEvent &evt)
+void SimObjController::onCollision(CollisionEvent &evt)
 {
 	
 }
 
 /*****************************Callback topic************************/
-void RobotController::setWheelCallback(const sig_ros::SetWheel::ConstPtr& wheel)
-{
-   std::cout << "setWheelCallback" << std::endl;
-   m_radius = wheel->wheelRadius;           // radius of the wheel
-	m_distance = wheel->wheelDistance; 
-   my->setWheel(m_radius, m_distance);
-}
-
-void RobotController::setWheelVelocityCallback(const sig_ros::SetWheelVelocity::ConstPtr& wheel)
-{
-   std::cout << "setWheelVelocityCallback" << std::endl;
-   my->setWheelVelocity(wheel->leftWheel, wheel->rightWheel);
-}
-
-void RobotController::setJointVelocityCallback(const sig_ros::SetJointVelocity::ConstPtr& msg)
+void SimObjController::setJointVelocityCallback(const sig_ros::SetJointVelocity::ConstPtr& msg)
 {
    std::cout << msg->jointName << " " << msg->angularVelocity << " " << msg->max << std::endl;
    //my->addForce(0.0,0.0,500.0);
    my->setJointVelocity(msg->jointName.c_str(), msg->angularVelocity, msg->max);
 }
 
-void RobotController::releaseObjCallback(const sig_ros::ReleaseObj::ConstPtr& msg) {
+void SimObjController::releaseObjCallback(const sig_ros::ReleaseObj::ConstPtr& msg) {
    CParts *parts = my->getParts(msg->arm.c_str());
 	// release grasping
 	parts->releaseObj();
@@ -77,14 +64,14 @@ void RobotController::releaseObjCallback(const sig_ros::ReleaseObj::ConstPtr& ms
 
 
 /*******************************Srv***********************************/
-bool RobotController::getTime(sig_ros::getTime::Request &req, sig_ros::getTime::Response &res)
+bool SimObjController::getTime(sig_ros::getTime::Request &req, sig_ros::getTime::Response &res)
 {
    std::cout << "on getTime" << std::endl;
-   res.time = getSimulationTime();
+   res.time = m_simulatorTime;
    return true;
 }
 
-bool RobotController::getObjPosition(sig_ros::getObjPosition::Request &req, sig_ros::getObjPosition::Response &res)
+bool SimObjController::getObjPosition(sig_ros::getObjPosition::Request &req, sig_ros::getObjPosition::Response &res)
 {
    SimObj *obj = getObj(req.name.c_str());
    Vector3d pos;
@@ -95,7 +82,7 @@ bool RobotController::getObjPosition(sig_ros::getObjPosition::Request &req, sig_
    return true;
 }
 
-bool RobotController::getPartsPosition(sig_ros::getPartsPosition::Request &req, sig_ros::getPartsPosition::Response &res)
+bool SimObjController::getPartsPosition(sig_ros::getPartsPosition::Request &req, sig_ros::getPartsPosition::Response &res)
 {
    Vector3d pos;
    //my->getParts(req.part.c_str());
@@ -107,7 +94,7 @@ bool RobotController::getPartsPosition(sig_ros::getPartsPosition::Request &req, 
    return true;
 }
 
-bool RobotController::getRotation(sig_ros::getRotation::Request &req, sig_ros::getRotation::Response &res)
+bool SimObjController::getRotation(sig_ros::getRotation::Request &req, sig_ros::getRotation::Response &res)
 {
    Rotation ownRotation;
    std::cout << "on getRotation" << std::endl;
@@ -125,7 +112,7 @@ bool RobotController::getRotation(sig_ros::getRotation::Request &req, sig_ros::g
    return true;
 }
 
-bool RobotController::getAngleRotation(sig_ros::getAngleRotation::Request &req, sig_ros::getAngleRotation::Response &res)
+bool SimObjController::getAngleRotation(sig_ros::getAngleRotation::Request &req, sig_ros::getAngleRotation::Response &res)
 {
    Rotation ownRotation;
 	my->getRotation(ownRotation);
@@ -139,14 +126,14 @@ bool RobotController::getAngleRotation(sig_ros::getAngleRotation::Request &req, 
    return true;
 }
 
-bool RobotController::getJointAngle(sig_ros::getJointAngle::Request &req, sig_ros::getJointAngle::Response &res)
+bool SimObjController::getJointAngle(sig_ros::getJointAngle::Request &req, sig_ros::getJointAngle::Response &res)
 {
    res.angle = my->getJointAngle(req.nameArm.c_str());
    return true;
 }
 /*****************************End Srv*********************************/
-
-extern "C"  Controller * createController ()
+SimObjController::~SimObjController() {}
+/*extern "C"  Controller * createController ()
 {
-   return new RobotController;
-}
+   return new SimObjController;
+}*/

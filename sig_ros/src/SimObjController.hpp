@@ -1,3 +1,5 @@
+#ifndef SIM_OBJ_CONTROLLER_H
+#define SIM_OBJ_CONTROLLER_H
 #define CONTROLLER
 #define dDOUBLE
 #define USE_ODE
@@ -15,8 +17,6 @@
 
 //Robot Msg
 #include <sig_ros/MsgRecv.h>
-#include <sig_ros/SetWheel.h>
-#include <sig_ros/SetWheelVelocity.h>
 #include <sig_ros/SetJointVelocity.h>
 #include <sig_ros/ReleaseObj.h>
 //Srv
@@ -32,16 +32,14 @@
 #define ARY_SIZE(ARY) ( (int)(sizeof(ARY)/sizeof(ARY[0])) )
 
 
-class RobotController : public Controller
+class SimObjController : public Controller
 {
    public:
-      void onInit(InitEvent &evt);
-      double onAction(ActionEvent &evt);
-      void onRecvMsg(RecvMsgEvent &evt);
-      void onCollision(CollisionEvent &evt); 
-      //Robot
-      void setWheelCallback(const sig_ros::SetWheel::ConstPtr& wheel);
-      void setWheelVelocityCallback(const sig_ros::SetWheelVelocity::ConstPtr& wheel);
+      virtual void onInit(InitEvent &evt) = 0;
+      virtual double onAction(ActionEvent &evt) = 0;
+      virtual void onRecvMsg(RecvMsgEvent &evt) = 0;
+      virtual void onCollision(CollisionEvent &evt) = 0; 
+      //SimObj
       void setJointVelocityCallback(const sig_ros::SetJointVelocity::ConstPtr& msg);
       void releaseObjCallback(const sig_ros::ReleaseObj::ConstPtr& msg);
       //Srv
@@ -51,18 +49,18 @@ class RobotController : public Controller
       bool getRotation(sig_ros::getRotation::Request &req, sig_ros::getRotation::Response &res);
       bool getAngleRotation(sig_ros::getAngleRotation::Request &req, sig_ros::getAngleRotation::Response &res);
       bool getJointAngle(sig_ros::getJointAngle::Request &req, sig_ros::getJointAngle::Response &res);
+      virtual ~SimObjController() = 0;
+   protected:
+      void initCommonTopicSvr();
       
-   public:
-      RobotObj *my;
+   public:      
+      SimObj *my;
       
       ros::Publisher onRecvMsg_pub;
       
       //Topic
-      ros::Subscriber setWheel_sub;
-      ros::Subscriber setWheelVelocity_sub;
       ros::Subscriber setJointVelocity_sub;
       ros::Subscriber releaseObj_sub;
-      
       
       //Srv
       ros::ServiceServer service;
@@ -75,4 +73,8 @@ class RobotController : public Controller
       //Robot
       double m_radius;           // radius of the wheel
 	   double m_distance; 
+	   
+	   double m_simulatorTime;
 };  
+
+#endif

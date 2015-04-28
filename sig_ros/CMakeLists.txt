@@ -27,6 +27,7 @@ add_message_files(
   SetWheelVelocity.msg
   SetJointVelocity.msg
   ReleaseObj.msg
+  OnCollision.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -38,6 +39,7 @@ add_service_files(
   getRotation.srv
   getAngleRotation.srv
   getJointAngle.srv
+  graspObj.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -147,9 +149,13 @@ add_executable(ros_controller src/ros_controller.cpp)
 target_link_libraries(ros_controller ${catkin_LIBRARIES})
 add_dependencies(ros_controller sig_ros_gencpp)
 
-ADD_LIBRARY(sig_ros/sig_controller src/sig_controller.cpp)
-target_link_libraries(sig_ros/sig_controller ${catkin_LIBRARIES})
-add_dependencies(sig_ros/sig_controller sig_ros_gencpp)
+ADD_LIBRARY(sig_ros/SimObjController src/SimObjController.cpp)
+target_link_libraries(sig_ros/SimObjController ${catkin_LIBRARIES})
+add_dependencies(sig_ros/SimObjController sig_ros_gencpp)
+
+ADD_LIBRARY(sig_ros/RobotController src/RobotController.cpp)
+target_link_libraries(sig_ros/RobotController ${catkin_LIBRARIES})
+add_dependencies(sig_ros/RobotController sig_ros_gencpp)
 
 #if(CATKIN_ENABLE_TESTING)
 #   find_package(rostest)
