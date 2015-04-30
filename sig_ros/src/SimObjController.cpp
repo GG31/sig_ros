@@ -1,30 +1,34 @@
-#include "RobotController.hpp"
+#include "include/SimObjController.hpp"
   
-/*void SimObjController::onInit(InitEvent &evt)
+void SimObjController::onInit(InitEvent &evt)
 {
    int argc = 0;
    char** argv = NULL;
+   m_ref = NULL;
+   
    my = getObj(myname());
    ros::init(argc, argv, std::string(this->myname()) + "_sig_controller_node");//+std::string(this->myname())
    ros::NodeHandle n;
    
    //Topics
    onRecvMsg_pub = n.advertise<sig_ros::MsgRecv>(std::string(this->myname())+"_onRecvMsg", 1000);
-   setJointVelocity_sub = n.subscribe<sig_ros::SetJointVelocity>(std::string(this->myname()) + "_setJointVelocity", 1, &RobotController::setJointVelocityCallback, this);
-   releaseObj_sub = n.subscribe<sig_ros::ReleaseObj>(std::string(this->myname()) + "_releaseObj", 1, &RobotController::releaseObjCallback, this);
+   setJointVelocity_sub = n.subscribe<sig_ros::SetJointVelocity>(std::string(this->myname()) + "_setJointVelocity", 1, &SimObjController::setJointVelocityCallback, this);
+   releaseObj_sub = n.subscribe<sig_ros::ReleaseObj>(std::string(this->myname()) + "_releaseObj", 1, &SimObjController::releaseObjCallback, this);
    
    //Srv
-   service = n.advertiseService(std::string(this->myname()) + "_get_time", &RobotController::getTime, this);
-   serviceGetObjPosition = n.advertiseService(std::string(this->myname()) + "_get_obj_position", &RobotController::getObjPosition, this);
-   serviceGetPartsPosition = n.advertiseService(std::string(this->myname()) + "_get_parts_position", &RobotController::getPartsPosition, this);
-   serviceGetRotation = n.advertiseService(std::string(this->myname()) + "_get_rotation", &RobotController::getRotation, this);
-   serviceGetAngleRotation = n.advertiseService(std::string(this->myname()) + "_get_angle_rotation", &RobotController::getAngleRotation, this);
-   serviceGetJointAngle = n.advertiseService(std::string(this->myname()) + "_get_joint_angle", &RobotController::getJointAngle, this);
+   service = n.advertiseService(std::string(this->myname()) + "_get_time", &SimObjController::getTime, this);
+   serviceGetObjPosition = n.advertiseService(std::string(this->myname()) + "_get_obj_position", &SimObjController::getObjPosition, this);
+   serviceGetPartsPosition = n.advertiseService(std::string(this->myname()) + "_get_parts_position", &SimObjController::getPartsPosition, this);
+   serviceGetRotation = n.advertiseService(std::string(this->myname()) + "_get_rotation", &SimObjController::getRotation, this);
+   serviceGetAngleRotation = n.advertiseService(std::string(this->myname()) + "_get_angle_rotation", &SimObjController::getAngleRotation, this);
+   serviceGetJointAngle = n.advertiseService(std::string(this->myname()) + "_get_joint_angle", &SimObjController::getJointAngle, this);
+   //Obj
+   serviceGetCollisionStateOfMainPart = n.advertiseService(std::string(this->myname()) + "_get_collision_state_of_main_part", &SimObjController::getCollisionStateOfMainPart, this);
+   serviceCheckService = n.advertiseService(std::string(this->myname()) + "_check_service", &SimObjController::srvCheckService, this);
+   serviceConnectToService = n.advertiseService(std::string(this->myname()) + "_connect_to_service", &SimObjController::srvConnectToService, this);
+   serviceGetEntities = n.advertiseService(std::string(this->myname()) + "_get_entities", &SimObjController::getEntities, this);
    
    m_simulatorTime = 0;
-}*/
-void SimObjController::initCommonTopicSvr() {
-  std::cout << "yolé" << std::endl; 
 }
 
 double SimObjController::onAction(ActionEvent &evt)
@@ -50,7 +54,6 @@ void SimObjController::onCollision(CollisionEvent &evt)
 /*****************************Callback topic************************/
 void SimObjController::setJointVelocityCallback(const sig_ros::SetJointVelocity::ConstPtr& msg)
 {
-   std::cout << msg->jointName << " " << msg->angularVelocity << " " << msg->max << std::endl;
    //my->addForce(0.0,0.0,500.0);
    my->setJointVelocity(msg->jointName.c_str(), msg->angularVelocity, msg->max);
 }
@@ -102,7 +105,6 @@ bool SimObjController::getRotation(sig_ros::getRotation::Request &req, sig_ros::
 	res.qW = 0.0;
 	res.qY = 0.0;
 	if (req.axis == "y") { 
-	   std::cout << "it's y " << std::endl;
 	   res.qW = ownRotation.qw();
 	   res.qY = ownRotation.qy();
 	   std::cout << res.qW << " : " << res.qY << std::endl;
@@ -118,7 +120,6 @@ bool SimObjController::getAngleRotation(sig_ros::getAngleRotation::Request &req,
 	my->getRotation(ownRotation);
 	Vector3d vector3d = Vector3d(req.x, req.y, req.z);
 	if (req.axis == "z") { 
-	   std::cout << "It's z" << std::endl;
 	   res.angle = vector3d.angle(Vector3d(0.0, 0.0, 1.0));
 	} else {
 	   std::cout << "Not z : " << req.axis.c_str() << std::endl;
@@ -131,9 +132,49 @@ bool SimObjController::getJointAngle(sig_ros::getJointAngle::Request &req, sig_r
    res.angle = my->getJointAngle(req.nameArm.c_str());
    return true;
 }
+
+bool SimObjController::getCollisionStateOfMainPart(sig_ros::getCollisionStateOfMainPart::Request &req, sig_ros::getCollisionStateOfMainPart::Response &res)
+{
+   //res.angle = my->getJointAngle(req.nameArm.c_str());
+   CParts *parts = my->getMainParts();
+   res.collisionState = parts->getCollisionState();
+   return true;
+}
+
+bool SimObjController::srvCheckService(sig_ros::checkService::Request &req, sig_ros::checkService::Response &res)
+{
+   res.connected = checkService(req.serviceName.c_str()); 
+   return true;
+}
+
+bool SimObjController::srvConnectToService(sig_ros::connectToService::Request &req, sig_ros::connectToService::Response &res) {
+   m_ref = connectToService("RobocupReferee");
+   if (m_ref != NULL)
+      res.connected = true;
+   else
+      res.connected = false;
+   return true;
+}
+
+bool SimObjController::getEntities(sig_ros::getEntities::Request &req, sig_ros::getEntities::Response &res) {
+   std::vector<std::string> m_entities;
+   getAllEntities(m_entities);
+   res.length = m_entities.size();
+   for (int i = 0; i < res.length; i++)
+   {
+      res.entitiesNames.push_back(m_entities[i]);
+   }
+   return true;
+}
+
+bool SimObjController::isGrasped(sig_ros::isGrasped::Request &req, sig_ros::isGrasped::Response &res) {
+   SimObj *ent = getObj(req.entityName.c_str());
+   res.answer = ent->getIsGrasped();
+   return true;
+}
+
 /*****************************End Srv*********************************/
-SimObjController::~SimObjController() {}
-/*extern "C"  Controller * createController ()
+extern "C"  Controller * createController ()
 {
    return new SimObjController;
-}*/
+}

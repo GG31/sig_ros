@@ -169,6 +169,10 @@ add_executable(RobotCommand src/RobotCommand.cpp)
 target_link_libraries(RobotCommand ${catkin_LIBRARIES})
 add_dependencies(RobotCommand user_generate_messages_cpp)
 
+add_executable(TrashBoxCommand src/TrashBoxCommand.cpp)
+target_link_libraries(TrashBoxCommand ${catkin_LIBRARIES})
+add_dependencies(TrashBoxCommand user_generate_messages_cpp)
+
 ADD_LIBRARY(sig_ros/TrashBox src/TrashBox.cpp)
 target_link_libraries(sig_ros/TrashBox ${catkin_LIBRARIES})
 add_dependencies(sig_ros/TrashBox sig_ros_gencpp)

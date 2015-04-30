@@ -26,6 +26,12 @@
 #include "sig_ros/getRotation.h"
 #include "sig_ros/getAngleRotation.h"
 #include <sig_ros/getJointAngle.h>
+//Obj Srv
+#include <sig_ros/checkService.h>
+#include <sig_ros/connectToService.h>
+#include <sig_ros/getCollisionStateOfMainPart.h>
+#include <sig_ros/getEntities.h>
+#include <sig_ros/isGrasped.h>
 
 #define PI 3.141592
 #define DEG2RAD(DEG) ( (PI) * (DEG) / 180.0 )
@@ -35,10 +41,10 @@
 class SimObjController : public Controller
 {
    public:
-      virtual void onInit(InitEvent &evt) = 0;
-      virtual double onAction(ActionEvent &evt) = 0;
-      virtual void onRecvMsg(RecvMsgEvent &evt) = 0;
-      virtual void onCollision(CollisionEvent &evt) = 0; 
+      void onInit(InitEvent &evt);
+      double onAction(ActionEvent &evt);
+      void onRecvMsg(RecvMsgEvent &evt);
+      void onCollision(CollisionEvent &evt); 
       //SimObj
       void setJointVelocityCallback(const sig_ros::SetJointVelocity::ConstPtr& msg);
       void releaseObjCallback(const sig_ros::ReleaseObj::ConstPtr& msg);
@@ -49,13 +55,17 @@ class SimObjController : public Controller
       bool getRotation(sig_ros::getRotation::Request &req, sig_ros::getRotation::Response &res);
       bool getAngleRotation(sig_ros::getAngleRotation::Request &req, sig_ros::getAngleRotation::Response &res);
       bool getJointAngle(sig_ros::getJointAngle::Request &req, sig_ros::getJointAngle::Response &res);
-      virtual ~SimObjController() = 0;
-   protected:
-      void initCommonTopicSvr();
+      //Obj Srv
+      bool getCollisionStateOfMainPart(sig_ros::getCollisionStateOfMainPart::Request &req, sig_ros::getCollisionStateOfMainPart::Response &res);
+      bool srvCheckService(sig_ros::checkService::Request &req, sig_ros::checkService::Response &res);
+      bool srvConnectToService(sig_ros::connectToService::Request &req, sig_ros::connectToService::Response &res);
+      bool getEntities(sig_ros::getEntities::Request &req, sig_ros::getEntities::Response &res);
+      bool isGrasped(sig_ros::isGrasped::Request &req, sig_ros::isGrasped::Response &res);
       
    public:      
       SimObj *my;
       
+      BaseService *m_ref;
       ros::Publisher onRecvMsg_pub;
       
       //Topic
@@ -69,6 +79,11 @@ class SimObjController : public Controller
       ros::ServiceServer serviceGetRotation;
       ros::ServiceServer serviceGetAngleRotation;
       ros::ServiceServer serviceGetJointAngle;
+      ros::ServiceServer serviceCheckService;
+      ros::ServiceServer serviceConnectToService;
+      ros::ServiceServer serviceGetCollisionStateOfMainPart;
+      ros::ServiceServer serviceGetEntities;
+      ros::ServiceServer serviceIsGrasped;
       
       //Robot
       double m_radius;           // radius of the wheel

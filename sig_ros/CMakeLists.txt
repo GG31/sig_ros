@@ -40,6 +40,11 @@ add_service_files(
   getAngleRotation.srv
   getJointAngle.srv
   graspObj.srv
+  checkService.srv
+  connectToService.srv
+  getCollisionStateOfMainPart.srv
+  getEntities.srv
+  isGrasped.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -73,7 +78,7 @@ catkin_package(
 include_directories(include
   ${catkin_INCLUDE_DIRS}
 )
-include_directories (/home/gg/sigverse-2.2.2/include/sigverse /home/gg/sigverse-2.2.2/include/sigverse/comm/controller )
+include_directories (/home/gg/sigverse-2.2.2/include/sigverse /home/gg/catkin_ws/src/sig_ros/src/ /home/gg/sigverse-2.2.2/include/sigverse/comm/controller)
 #option(CONTROLLER "controller" ON)
 #include_directories (${SIGVERSE_PATH}/include/sigverse /home/ericgt/sigverse-2.2.0/include/sigverse/comm/controller )
 ## Declare a cpp library
@@ -149,13 +154,18 @@ add_executable(ros_controller src/ros_controller.cpp)
 target_link_libraries(ros_controller ${catkin_LIBRARIES})
 add_dependencies(ros_controller sig_ros_gencpp)
 
+ADD_LIBRARY(sig_ros/RobotController src/RobotController.cpp)
+target_link_libraries(sig_ros/RobotController ${catkin_LIBRARIES})
+add_dependencies(sig_ros/RobotController sig_ros_gencpp)
+
+ADD_LIBRARY(sig_ros/GeneralController src/GeneralController.cpp)
+target_link_libraries(sig_ros/GeneralController ${catkin_LIBRARIES})
+add_dependencies(sig_ros/GeneralController sig_ros_gencpp)
+
 ADD_LIBRARY(sig_ros/SimObjController src/SimObjController.cpp)
 target_link_libraries(sig_ros/SimObjController ${catkin_LIBRARIES})
 add_dependencies(sig_ros/SimObjController sig_ros_gencpp)
 
-ADD_LIBRARY(sig_ros/RobotController src/RobotController.cpp)
-target_link_libraries(sig_ros/RobotController ${catkin_LIBRARIES})
-add_dependencies(sig_ros/RobotController sig_ros_gencpp)
 
 #if(CATKIN_ENABLE_TESTING)
 #   find_package(rostest)

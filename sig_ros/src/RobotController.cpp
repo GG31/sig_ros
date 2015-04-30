@@ -1,18 +1,20 @@
-#include "RobotController.hpp"
-  
+#include "include/RobotController.hpp"
+
+ 
 void RobotController::onInit(InitEvent &evt)
 {
-   int argc = 0;
+   /*int argc = 0;
    char** argv = NULL;
    myRobot = getRobotObj(myname());
    ros::init(argc, argv, std::string(this->myname()) + "_sig_controller_node");//+std::string(this->myname())
    ros::NodeHandle n;
+   //*n = nh;
    
    //Topics
    onRecvMsg_pub = n.advertise<sig_ros::MsgRecv>(std::string(this->myname())+"_onRecvMsg", 1000);
    onCollision_pub = n.advertise<sig_ros::OnCollision>(std::string(this->myname())+"_onCollisionMsg", 1000);
    setWheel_sub = n.subscribe<sig_ros::SetWheel>(std::string(this->myname()) + "_setWheel", 1, &RobotController::setWheelCallback, this);
-   setWheelVelocity_sub = n.subscribe<sig_ros::SetWheelVelocity>(std::string(this->myname()) + "_setWheelVelocity", 1, &RobotController::setWheelVelocityCallback, this);
+   //setWheelVelocity_sub = n.subscribe<sig_ros::SetWheelVelocity>(std::string(this->myname()) + "_setWheelVelocity", 1, &RobotController::setWheelVelocityCallback, this);
    setJointVelocity_sub = n.subscribe<sig_ros::SetJointVelocity>(std::string(this->myname()) + "_setJointVelocity", 1, &RobotController::setJointVelocityCallback, this);
    releaseObj_sub = n.subscribe<sig_ros::ReleaseObj>(std::string(this->myname()) + "_releaseObj", 1, &RobotController::releaseObjCallback, this);
 
@@ -25,9 +27,9 @@ void RobotController::onInit(InitEvent &evt)
    serviceGetJointAngle = n.advertiseService(std::string(this->myname()) + "_get_joint_angle", &RobotController::getJointAngle, this);
    serviceGraspObj = n.advertiseService(std::string(this->myname()) + "_grasp_obj", &RobotController::graspObj, this);
  
-   m_simulatorTime = 0;
+   m_simulatorTime = 0;*/
 }
-
+/*
 double RobotController::onAction(ActionEvent &evt)
 {
    ros::spinOnce();
@@ -57,7 +59,10 @@ void RobotController::onCollision(CollisionEvent &evt)
    }
 }
 
+*/
+
 /*****************************Callback topic************************/
+/*
 void RobotController::setWheelCallback(const sig_ros::SetWheel::ConstPtr& wheel)
 {
    std::cout << "setWheelCallback" << std::endl;
@@ -82,10 +87,12 @@ void RobotController::releaseObjCallback(const sig_ros::ReleaseObj::ConstPtr& ms
 	// release grasping
 	parts->releaseObj();
 }
+*/
 /*****************************End callback topic************************/
 
 
 /*******************************Srv***********************************/
+/*
 bool RobotController::getTime(sig_ros::getTime::Request &req, sig_ros::getTime::Response &res)
 {
    res.time = m_simulatorTime;
@@ -156,9 +163,10 @@ bool RobotController::graspObj(sig_ros::graspObj::Request &req, sig_ros::graspOb
    res.ok = parts->graspObj(req.obj.c_str());
    return true;
 }
+*/
 /*****************************End Srv*********************************/
 
-extern "C"  Controller * createController ()
+extern "C"  RobotController * createController ()
 {
    return new RobotController;
 }
