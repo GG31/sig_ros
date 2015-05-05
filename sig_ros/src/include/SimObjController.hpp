@@ -19,6 +19,9 @@
 #include <sig_ros/MsgRecv.h>
 #include <sig_ros/SetJointVelocity.h>
 #include <sig_ros/ReleaseObj.h>
+#include <sig_ros/OnCollision.h>
+#include <sig_ros/SetAxisAndAngle.h>
+#include <sig_ros/SetPosition.h>
 //Srv
 #include "sig_ros/getTime.h"
 #include "sig_ros/getObjPosition.h"
@@ -32,6 +35,7 @@
 #include <sig_ros/getCollisionStateOfMainPart.h>
 #include <sig_ros/getEntities.h>
 #include <sig_ros/isGrasped.h>
+#include <sig_ros/sendMsgToSrv.h>
 
 #define PI 3.141592
 #define DEG2RAD(DEG) ( (PI) * (DEG) / 180.0 )
@@ -47,6 +51,8 @@ class SimObjController : public Controller
       void onCollision(CollisionEvent &evt); 
       //SimObj
       void setJointVelocityCallback(const sig_ros::SetJointVelocity::ConstPtr& msg);
+      void setAxisAndAngleCallback(const sig_ros::SetAxisAndAngle::ConstPtr& msg);
+      void setPositionCallback(const sig_ros::SetPosition::ConstPtr& msg);
       void releaseObjCallback(const sig_ros::ReleaseObj::ConstPtr& msg);
       //Srv
       bool getTime(sig_ros::getTime::Request &req, sig_ros::getTime::Response &res);
@@ -61,16 +67,22 @@ class SimObjController : public Controller
       bool srvConnectToService(sig_ros::connectToService::Request &req, sig_ros::connectToService::Response &res);
       bool getEntities(sig_ros::getEntities::Request &req, sig_ros::getEntities::Response &res);
       bool isGrasped(sig_ros::isGrasped::Request &req, sig_ros::isGrasped::Response &res);
+      bool sendMsgToSrv(sig_ros::sendMsgToSrv::Request &req, sig_ros::sendMsgToSrv::Response &res);
       
    public:      
       SimObj *my;
       
-      BaseService *m_ref;
+      //BaseService *m_ref;
+      std::map<std::string, BaseService*> m_ref;
+
       ros::Publisher onRecvMsg_pub;
+      ros::Publisher onCollision_pub;
       
       //Topic
       ros::Subscriber setJointVelocity_sub;
       ros::Subscriber releaseObj_sub;
+      ros::Subscriber setAxisAndAngle_sub;
+      ros::Subscriber setPosition_sub;
       
       //Srv
       ros::ServiceServer service;
@@ -84,6 +96,7 @@ class SimObjController : public Controller
       ros::ServiceServer serviceGetCollisionStateOfMainPart;
       ros::ServiceServer serviceGetEntities;
       ros::ServiceServer serviceIsGrasped;
+      ros::ServiceServer serviceSendMsgToSrv;
       
       //Robot
       double m_radius;           // radius of the wheel

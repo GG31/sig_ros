@@ -41,22 +41,22 @@ class RobotController : public Controller
 {
    public:
       void onInit(InitEvent &evt);
-      double onAction(ActionEvent &evt) {}
-      void onRecvMsg(RecvMsgEvent &evt) {}
-      void onCollision(CollisionEvent &evt) {} 
+      double onAction(ActionEvent &evt);
+      void onRecvMsg(RecvMsgEvent &evt);
+      void onCollision(CollisionEvent &evt); 
       //Robot
-      void setWheelCallback(const sig_ros::SetWheel::ConstPtr& wheel) {}
-      void setWheelVelocityCallback(const sig_ros::SetWheelVelocity::ConstPtr& wheel) {}
-      void setJointVelocityCallback(const sig_ros::SetJointVelocity::ConstPtr& msg) {}
-      void releaseObjCallback(const sig_ros::ReleaseObj::ConstPtr& msg) {}
+      void setWheelCallback(const sig_ros::SetWheel::ConstPtr& wheel);
+      void setWheelVelocityCallback(const sig_ros::SetWheelVelocity::ConstPtr& wheel);
+      void setJointVelocityCallback(const sig_ros::SetJointVelocity::ConstPtr& msg);
+      void releaseObjCallback(const sig_ros::ReleaseObj::ConstPtr& msg);
       //Srv
-      bool getTime(sig_ros::getTime::Request &req, sig_ros::getTime::Response &res) {}
-      bool getObjPosition(sig_ros::getObjPosition::Request &req, sig_ros::getObjPosition::Response &res) {}
-      bool getPartsPosition(sig_ros::getPartsPosition::Request &req, sig_ros::getPartsPosition::Response &res) {}
-      bool getRotation(sig_ros::getRotation::Request &req, sig_ros::getRotation::Response &res) {}
-      bool getAngleRotation(sig_ros::getAngleRotation::Request &req, sig_ros::getAngleRotation::Response &res) {}
-      bool getJointAngle(sig_ros::getJointAngle::Request &req, sig_ros::getJointAngle::Response &res) {}
-      bool graspObj(sig_ros::graspObj::Request &req, sig_ros::graspObj::Response &res) {}
+      bool getTime(sig_ros::getTime::Request &req, sig_ros::getTime::Response &res);
+      bool getObjPosition(sig_ros::getObjPosition::Request &req, sig_ros::getObjPosition::Response &res);
+      bool getPartsPosition(sig_ros::getPartsPosition::Request &req, sig_ros::getPartsPosition::Response &res);
+      bool getRotation(sig_ros::getRotation::Request &req, sig_ros::getRotation::Response &res);
+      bool getAngleRotation(sig_ros::getAngleRotation::Request &req, sig_ros::getAngleRotation::Response &res);
+      bool getJointAngle(sig_ros::getJointAngle::Request &req, sig_ros::getJointAngle::Response &res);
+      bool graspObj(sig_ros::graspObj::Request &req, sig_ros::graspObj::Response &res);
       
    public:
       RobotObj *myRobot;
@@ -66,7 +66,7 @@ class RobotController : public Controller
       
       //Topic
       ros::Subscriber setWheel_sub;
-      //ros::Subscriber setWheelVelocity_sub;
+      ros::Subscriber setWheelVelocity_sub;
       ros::Subscriber setJointVelocity_sub;
       ros::Subscriber releaseObj_sub;
       

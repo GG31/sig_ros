@@ -28,6 +28,8 @@ add_message_files(
   SetJointVelocity.msg
   ReleaseObj.msg
   OnCollision.msg
+  SetAxisAndAngle.msg
+  SetPosition.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -45,6 +47,7 @@ add_service_files(
   getCollisionStateOfMainPart.srv
   getEntities.srv
   isGrasped.srv
+  sendMsgToSrv.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -158,9 +161,9 @@ ADD_LIBRARY(sig_ros/RobotController src/RobotController.cpp)
 target_link_libraries(sig_ros/RobotController ${catkin_LIBRARIES})
 add_dependencies(sig_ros/RobotController sig_ros_gencpp)
 
-ADD_LIBRARY(sig_ros/GeneralController src/GeneralController.cpp)
-target_link_libraries(sig_ros/GeneralController ${catkin_LIBRARIES})
-add_dependencies(sig_ros/GeneralController sig_ros_gencpp)
+#ADD_LIBRARY(sig_ros/GeneralController src/GeneralController.cpp)
+#target_link_libraries(sig_ros/GeneralController ${catkin_LIBRARIES})
+#add_dependencies(sig_ros/GeneralController sig_ros_gencpp)
 
 ADD_LIBRARY(sig_ros/SimObjController src/SimObjController.cpp)
 target_link_libraries(sig_ros/SimObjController ${catkin_LIBRARIES})
