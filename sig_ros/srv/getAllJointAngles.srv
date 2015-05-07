@@ -1,0 +1,5 @@
+string name
+---
+string[] jointName
+float64[] angle
+float64 length

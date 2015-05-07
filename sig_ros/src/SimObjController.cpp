@@ -17,6 +17,16 @@ void SimObjController::onInit(InitEvent &evt)
    releaseObj_sub = n.subscribe<sig_ros::ReleaseObj>(std::string(this->myname()) + "_releaseObj", 1, &SimObjController::releaseObjCallback, this);
    setAxisAndAngle_sub = n.subscribe<sig_ros::SetAxisAndAngle>(std::string(this->myname()) + "_setAxisAndAngle", 1, &SimObjController::setAxisAndAngleCallback, this);
    setPosition_sub = n.subscribe<sig_ros::SetPosition>(std::string(this->myname()) + "_setPosition", 1, &SimObjController::setPositionCallback, this);
+   //More Topics
+   setAccel_sub = n.subscribe<sig_ros::Double3D>(std::string(this->myname()) + "_setAccel", 1, &SimObjController::setAccelCallback, this);
+   setAngularVelocity_sub = n.subscribe<sig_ros::Double3D>(std::string(this->myname()) + "_setAngularVelocity", 1, &SimObjController::setAngularVelocityCallback, this);
+   setTorque_sub = n.subscribe<sig_ros::Double3D>(std::string(this->myname()) + "_setTorque", 1, &SimObjController::setTorqueCallback, this);
+   setVelocity_sub = n.subscribe<sig_ros::Double3D>(std::string(this->myname()) + "_setVelocity", 1, &SimObjController::setVelocityCallback, this);
+   setCollisionEnable_sub = n.subscribe<sig_ros::SetCollisionEnable>(std::string(this->myname()) + "_setCollisionEnable", 1, &SimObjController::setCollisionEnableCallback, this);
+   setGravityMode_sub = n.subscribe<sig_ros::SetGravityMode>(std::string(this->myname()) + "_setGravityMode", 1, &SimObjController::setGravityModeCallback, this);
+   setJointAngle_sub = n.subscribe<sig_ros::SetJointAngle>(std::string(this->myname()) + "_setJointAngle", 1, &SimObjController::setJointAngleCallback, this);
+   setJointQuaternion_sub = n.subscribe<sig_ros::SetJointQuaternion>(std::string(this->myname()) + "_setJointQuaternion", 1, &SimObjController::setJointQuaternionCallback, this);
+   setMass_sub = n.subscribe<sig_ros::SetMass>(std::string(this->myname()) + "_setMass", 1, &SimObjController::setMassCallback, this);
    //Srv
    service = n.advertiseService(std::string(this->myname()) + "_get_time", &SimObjController::getTime, this);
    serviceGetObjPosition = n.advertiseService(std::string(this->myname()) + "_get_obj_position", &SimObjController::getObjPosition, this);
@@ -29,7 +39,12 @@ void SimObjController::onInit(InitEvent &evt)
    serviceCheckService = n.advertiseService(std::string(this->myname()) + "_check_service", &SimObjController::srvCheckService, this);
    serviceConnectToService = n.advertiseService(std::string(this->myname()) + "_connect_to_service", &SimObjController::srvConnectToService, this);
    serviceGetEntities = n.advertiseService(std::string(this->myname()) + "_get_entities", &SimObjController::getEntities, this);
+   serviceIsGrasped = n.advertiseService(std::string(this->myname()) + "_is_graped", &SimObjController::isGrasped, this);
    serviceSendMsgToSrv = n.advertiseService(std::string(this->myname()) + "_send_msg_to_srv", &SimObjController::sendMsgToSrv, this);
+   //More Srv
+   serviceGetAllJointAngles = n.advertiseService(std::string(this->myname()) + "_get_all_joint_angles", &SimObjController::getAllJointAngles, this);
+   serviceGetJointPosition = n.advertiseService(std::string(this->myname()) + "_get_joint_position", &SimObjController::getJointPosition, this);
+   serviceGetMass = n.advertiseService(std::string(this->myname()) + "_get_mass", &SimObjController::getMass, this);
    
    m_simulatorTime = 0;
 }
@@ -77,7 +92,7 @@ void SimObjController::releaseObjCallback(const sig_ros::ReleaseObj::ConstPtr& m
 }
 
 void SimObjController::setAxisAndAngleCallback(const sig_ros::SetAxisAndAngle::ConstPtr& msg) {
-   if (msg->name.c_str() == "") {
+   if (msg->name == "") {
       my->setAxisAndAngle(msg->axisX, msg->axisY, msg->axisZ, msg->angle);
    } else {
       SimObj *obj = getObj(msg->name.c_str());
@@ -86,11 +101,88 @@ void SimObjController::setAxisAndAngleCallback(const sig_ros::SetAxisAndAngle::C
 }
 
 void SimObjController::setPositionCallback(const sig_ros::SetPosition::ConstPtr& msg) {
-   if (msg->name.c_str() == "") {
+   if (msg->name == "") {
       my->setPosition(msg->posX, msg->posY, msg->posZ);
    } else {
       SimObj *obj = getObj(msg->name.c_str());
       obj->setPosition(msg->posX, msg->posY, msg->posZ);
+   }
+}
+
+void SimObjController::setAccelCallback(const sig_ros::Double3D::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->setAccel(msg->x, msg->y, msg->z);
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->setAccel(msg->x, msg->y, msg->z);
+   }
+}
+
+void SimObjController::setAngularVelocityCallback(const sig_ros::Double3D::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->setAngularVelocity(msg->x, msg->y, msg->z);
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->setAngularVelocity(msg->x, msg->y, msg->z);
+   }
+}
+
+void SimObjController::setTorqueCallback(const sig_ros::Double3D::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->setTorque(msg->x, msg->y, msg->z);
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->setTorque(msg->x, msg->y, msg->z);
+   }
+}
+
+void SimObjController::setVelocityCallback(const sig_ros::Double3D::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->setLinearVelocity(msg->x, msg->y, msg->z);
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->setLinearVelocity(msg->x, msg->y, msg->z);
+   }
+}
+
+void SimObjController::setCollisionEnableCallback(const sig_ros::SetCollisionEnable::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->setCollisionEnable(msg->flag);
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->setCollisionEnable(msg->flag);
+   }
+}
+void SimObjController::setGravityModeCallback(const sig_ros::SetGravityMode::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->setGravityMode(msg->gravity);
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->setGravityMode(msg->gravity);
+   }
+}
+void SimObjController::setJointAngleCallback(const sig_ros::SetJointAngle::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->setJointAngle(msg->jointName.c_str(), msg->angle);
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->setJointAngle(msg->jointName.c_str(), msg->angle);
+   }
+}
+void SimObjController::setJointQuaternionCallback(const sig_ros::SetJointQuaternion::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->setJointQuaternion(msg->jointName.c_str(), msg->qW, msg->qX, msg->qY, msg->qZ, msg->offset); //TODO ajouter offset default
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->setJointQuaternion(msg->jointName.c_str(), msg->qW, msg->qX, msg->qY, msg->qZ, msg->offset);
+   }
+}
+void SimObjController::setMassCallback(const sig_ros::SetMass::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->setMass(msg->mass);
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->setMass(msg->mass);
    }
 }
 /*****************************End callback topic************************/
@@ -104,12 +196,14 @@ bool SimObjController::getTime(sig_ros::getTime::Request &req, sig_ros::getTime:
    return true;
 }
 
-bool SimObjController::getObjPosition(sig_ros::getObjPosition::Request &req, sig_ros::getObjPosition::Response &res)
+bool SimObjController::getObjPosition(sig_ros::getObjPosition::Request &req, sig_ros::getObjPosition::Response &res) //OK
 {
    Vector3d pos;
-   if (req.name.c_str() == "") { //TODO test
+   if (req.name == "") {
+      std::cout << "dans if" << std::endl;
       my->getPosition(pos);
    } else {
+      std::cout << "dans else" << std::endl;
       SimObj *obj = getObj(req.name.c_str());
       obj->getPosition(pos);
    }
@@ -223,6 +317,46 @@ bool SimObjController::sendMsgToSrv(sig_ros::sendMsgToSrv::Request &req, sig_ros
    return true;
 }
 
+bool SimObjController::getAllJointAngles(sig_ros::getAllJointAngles::Request &req, sig_ros::getAllJointAngles::Response &res) {
+   std::map<std::string, double> list;
+   if (req.name == "") {
+      list = my->getAllJointAngles();
+   } else {
+      SimObj *ent = getObj(req.name.c_str());
+      list = ent->getAllJointAngles();
+   }
+   res.length = list.size();
+   for (std::map<std::string, double>::iterator it=list.begin(); it!=list.end(); ++it) {
+      res.jointName.push_back(it->first);
+      res.angle.push_back(it->second);
+   }
+   return true;
+}
+
+bool SimObjController::getJointPosition(sig_ros::getJointPosition::Request &req, sig_ros::getJointPosition::Response &res) {
+   Vector3d vec;
+   if (req.name == "") {
+      my->getJointPosition(vec, req.jointName.c_str());
+   } else {
+      SimObj *ent = getObj(req.name.c_str());
+      ent->getJointPosition(vec, req.jointName.c_str());
+   }
+   res.posX = vec.x();
+   res.posY = vec.y();
+   res.posZ = vec.z();
+   return true;
+}
+
+bool SimObjController::getMass(sig_ros::getMass::Request &req, sig_ros::getMass::Response &res) {
+   if (req.name == "") {
+      res.mass = my->getMass();
+   } else {
+      SimObj *ent = getObj(req.name.c_str());
+      res.mass = ent->getMass();
+   }
+   return true;
+}
+      
 /*****************************End Srv*********************************/
 extern "C"  Controller * createController ()
 {

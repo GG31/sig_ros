@@ -17,10 +17,25 @@
 //Run all tests : catkin_make run_tests
 
 // Declare a test
+/*TEST(TestSuiteRobotController, testCaseGetObjPositionWithoutName)
+{
+   ros::NodeHandle n;
+   ros::ServiceClient serviceGetObjPosition = n.serviceClient<sig_ros::getObjPosition>("trashbox_0_get_obj_position");
+   sig_ros::getObjPosition srvGetObjPosition;
+   srvGetObjPosition.request.name = "";
+	if (serviceGetObjPosition.call(srvGetObjPosition)) {
+	   EXPECT_EQ(100,  srvGetObjPosition.response.posX);
+	   EXPECT_EQ(30,  srvGetObjPosition.response.posY);
+	   EXPECT_EQ(10,  srvGetObjPosition.response.posZ);
+	}  else {
+	   ROS_ERROR("Failed to call service trashbox_0_get_obj_position without name");
+	}
+}
+
 TEST(TestSuiteRobotController, testCaseGetObjPosition)
 {
    ros::NodeHandle n;
-   ros::ServiceClient serviceGetObjPosition = n.serviceClient<sig_ros::getObjPosition>("robot_000_get_obj_position");
+   ros::ServiceClient serviceGetObjPosition = n.serviceClient<sig_ros::getObjPosition>("trashbox_0_get_obj_position");
    sig_ros::getObjPosition srvGetObjPosition;
    srvGetObjPosition.request.name = "robot_000";
 	if (serviceGetObjPosition.call(srvGetObjPosition)) {
@@ -28,9 +43,9 @@ TEST(TestSuiteRobotController, testCaseGetObjPosition)
 	   EXPECT_EQ(30,  srvGetObjPosition.response.posY);
 	   EXPECT_EQ(10,  srvGetObjPosition.response.posZ);
 	}  else {
-	   ROS_ERROR("Failed to call service robot_000_get_obj_position");
+	   ROS_ERROR("Failed to call service trashbox_0_get_obj_position");
 	}
-}
+}*/
 
 TEST(TestSuiteRobotController, testCaseGetPartsPosition)
 {

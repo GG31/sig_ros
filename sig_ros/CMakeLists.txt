@@ -30,6 +30,12 @@ add_message_files(
   OnCollision.msg
   SetAxisAndAngle.msg
   SetPosition.msg
+  Double3D.msg
+  SetCollisionEnable.msg
+  SetGravityMode.msg
+  SetJointAngle.msg
+  SetJointQuaternion.msg
+  SetMass.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -48,6 +54,9 @@ add_service_files(
   getEntities.srv
   isGrasped.srv
   sendMsgToSrv.srv
+  getAllJointAngles.srv
+  getJointPosition.srv
+  getMass.srv
 )
 
 ## Generate added messages and services with any dependencies listed here

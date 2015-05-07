@@ -1,0 +1,5 @@
+string name
+---
+float64 vX
+float64 vY
+float64 vZ
