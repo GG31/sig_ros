@@ -1,4 +1,4 @@
-string axis
+string name
 ---
 float64 qW
 float64 qX

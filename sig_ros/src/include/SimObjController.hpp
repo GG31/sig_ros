@@ -40,7 +40,7 @@
 //Obj Srv
 #include <sig_ros/checkService.h>
 #include <sig_ros/connectToService.h>
-#include <sig_ros/getCollisionStateOfMainPart.h>
+#include <sig_ros/getCollisionState.h>
 #include <sig_ros/getEntities.h>
 #include <sig_ros/isGrasped.h>
 #include <sig_ros/sendMsgToSrv.h>
@@ -84,7 +84,7 @@ class SimObjController : public Controller
       bool getAngleRotation(sig_ros::getAngleRotation::Request &req, sig_ros::getAngleRotation::Response &res);
       bool getJointAngle(sig_ros::getJointAngle::Request &req, sig_ros::getJointAngle::Response &res);
       //Obj Srv
-      bool getCollisionStateOfMainPart(sig_ros::getCollisionStateOfMainPart::Request &req, sig_ros::getCollisionStateOfMainPart::Response &res);
+      bool getCollisionState(sig_ros::getCollisionState::Request &req, sig_ros::getCollisionState::Response &res);
       bool srvCheckService(sig_ros::checkService::Request &req, sig_ros::checkService::Response &res);
       bool srvConnectToService(sig_ros::connectToService::Request &req, sig_ros::connectToService::Response &res);
       bool getEntities(sig_ros::getEntities::Request &req, sig_ros::getEntities::Response &res);
@@ -129,7 +129,7 @@ class SimObjController : public Controller
       ros::ServiceServer serviceGetJointAngle;
       ros::ServiceServer serviceCheckService;
       ros::ServiceServer serviceConnectToService;
-      ros::ServiceServer serviceGetCollisionStateOfMainPart;
+      ros::ServiceServer serviceGetCollisionState;
       ros::ServiceServer serviceGetEntities;
       ros::ServiceServer serviceIsGrasped;
       ros::ServiceServer serviceSendMsgToSrv;

@@ -50,7 +50,7 @@ add_service_files(
   graspObj.srv
   checkService.srv
   connectToService.srv
-  getCollisionStateOfMainPart.srv
+  getCollisionState.srv
   getEntities.srv
   isGrasped.srv
   sendMsgToSrv.srv

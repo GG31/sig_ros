@@ -112,9 +112,15 @@ bool RobotController::getObjPosition(sig_ros::getObjPosition::Request &req, sig_
 bool RobotController::getPartsPosition(sig_ros::getPartsPosition::Request &req, sig_ros::getPartsPosition::Response &res)
 {
    Vector3d pos;
-   //my->getParts(req.part.c_str());
-  
-   myRobot->getPartsPosition (pos, req.part.c_str());
+   if (req.name == "") {
+      myRobot->getPartsPosition (pos, req.part.c_str());
+   } else {
+      SimObj *obj = getObj(req.name.c_str());
+      if (obj == NULL) {
+         return false;
+      }
+      obj->getPartsPosition(pos, req.part.c_str());
+   }
    res.posX = pos.x();
    res.posY = pos.y();
    res.posZ = pos.z();
@@ -124,16 +130,19 @@ bool RobotController::getPartsPosition(sig_ros::getPartsPosition::Request &req, 
 bool RobotController::getRotation(sig_ros::getRotation::Request &req, sig_ros::getRotation::Response &res)
 {
    Rotation ownRotation;
-   std::cout << "on getRotation" << std::endl;
-	myRobot->getRotation(ownRotation);
-	res.qW = 0.0;
-	res.qY = 0.0;
-	if (req.axis == "y") { 
-	   res.qW = ownRotation.qw();
-	   res.qY = ownRotation.qy();
+   if (req.name == "") {
+	   myRobot->getRotation(ownRotation);
 	} else {
-	   std::cout << "Not y : " << req.axis.c_str() << std::endl;
+	   SimObj *obj = getObj(req.name.c_str());
+	   if (obj == NULL) {
+         return false;
+      }
+      obj->getRotation(ownRotation);
 	}
+   res.qW = ownRotation.qw();
+   res.qY = ownRotation.qy();
+   res.qX = ownRotation.qx();
+   res.qZ = ownRotation.qz();
    return true;
 }
 
