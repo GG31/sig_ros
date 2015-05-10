@@ -174,7 +174,7 @@ add_dependencies(sig_ros/RobotController sig_ros_gencpp)
 #target_link_libraries(sig_ros/GeneralController ${catkin_LIBRARIES})
 #add_dependencies(sig_ros/GeneralController sig_ros_gencpp)
 
-ADD_LIBRARY(sig_ros/SimObjController src/SimObjController.cpp)
+ADD_LIBRARY(sig_ros/SimObjController src/SimObjController.cpp src/SimObjControllerSrv.cpp src/SimObjControllerTopic.cpp)
 target_link_libraries(sig_ros/SimObjController ${catkin_LIBRARIES})
 add_dependencies(sig_ros/SimObjController sig_ros_gencpp)
 

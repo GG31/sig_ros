@@ -65,7 +65,6 @@ void RobotController::onCollision(CollisionEvent &evt)
 
 void RobotController::setWheelCallback(const sig_ros::SetWheel::ConstPtr& wheel)
 {
-   std::cout << "setWheelCallback" << std::endl;
    m_radius = wheel->wheelRadius;           // radius of the wheel
 	m_distance = wheel->wheelDistance; 
    myRobot->setWheel(m_radius, m_distance);
@@ -73,7 +72,6 @@ void RobotController::setWheelCallback(const sig_ros::SetWheel::ConstPtr& wheel)
 
 void RobotController::setWheelVelocityCallback(const sig_ros::SetWheelVelocity::ConstPtr& wheel)
 {
-   std::cout << "setWheelVelocityCallback" << std::endl;
    myRobot->setWheelVelocity(wheel->leftWheel, wheel->rightWheel);
 }
 
@@ -148,13 +146,15 @@ bool RobotController::getRotation(sig_ros::getRotation::Request &req, sig_ros::g
 
 bool RobotController::getAngleRotation(sig_ros::getAngleRotation::Request &req, sig_ros::getAngleRotation::Response &res)
 {
-   Rotation ownRotation;
-	myRobot->getRotation(ownRotation);
-	Vector3d vector3d = Vector3d(req.x, req.y, req.z);
+   Vector3d vector3d = Vector3d(req.x, req.y, req.z);
 	if (req.axis == "z") { 
 	   res.angle = vector3d.angle(Vector3d(0.0, 0.0, 1.0));
+	} else if (req.axis == "y") {
+	   res.angle = vector3d.angle(Vector3d(0.0, 1.0, 0.0));
+	} else if (req.axis == "x") {
+	   res.angle = vector3d.angle(Vector3d(1.0, 0.0, 0.0));
 	} else {
-	   std::cout << "Not z : " << req.axis.c_str() << std::endl;
+	   std::cout << "Not x, y or z : " << req.axis.c_str() << std::endl;
 	}
    return true;
 }
