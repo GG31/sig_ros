@@ -17,9 +17,9 @@ source devel/setup.bash
 ```
 git clone https://github.com/GG31/sig_ros.git
 ```
-* Go to the tag vUndefinedSymbol
+* Go to the tag vDemoCleanUp
 ```
-git checkout tags/vUndefinedSymbol
+git checkout tags/vDemoCleanUp
 ```
 * Change the name of sig_ros folder you've just cloned by src, so you have the tree : 
 ```
