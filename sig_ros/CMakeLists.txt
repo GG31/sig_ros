@@ -154,11 +154,11 @@ add_executable(ros_controller src/ros_controller.cpp)
 target_link_libraries(ros_controller ${catkin_LIBRARIES})
 add_dependencies(ros_controller sig_ros_gencpp)
 
-ADD_LIBRARY(sig_ros/RobotController src/RobotController.cpp)
+ADD_LIBRARY(sig_ros/RobotController src/RobotController.cpp src/RobotControllerSrv.cpp)
 target_link_libraries(sig_ros/RobotController ${catkin_LIBRARIES})
 add_dependencies(sig_ros/RobotController sig_ros_gencpp)
 
-ADD_LIBRARY(sig_ros/GeneralController src/GeneralController.cpp)
+ADD_LIBRARY(sig_ros/GeneralController src/GeneralController.cpp src/RobotControllerSrv.cpp)
 target_link_libraries(sig_ros/GeneralController ${catkin_LIBRARIES})
 add_dependencies(sig_ros/GeneralController sig_ros_gencpp)
 

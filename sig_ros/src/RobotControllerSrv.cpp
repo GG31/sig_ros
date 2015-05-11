@@ -1,14 +1,18 @@
 #include "include/RobotController.hpp"
 
  
-/*void RobotController::onInit(InitEvent &evt)
+void RobotController::onInit(InitEvent &evt)
 {
+   init();
+}
+
+void RobotController::init() {
    int argc = 0;
    char** argv = NULL;
    myRobot = getRobotObj(myname());
    ros::init(argc, argv, std::string(this->myname()) + "_sig_controller_node");//+std::string(this->myname())
    ros::NodeHandle n;
-   //*n = nh;
+   //*n = &nh;
    
    //Topics
    onRecvMsg_pub = n.advertise<sig_ros::MsgRecv>(std::string(this->myname())+"_onRecvMsg", 1000);
@@ -28,8 +32,9 @@
    serviceGraspObj = n.advertiseService(std::string(this->myname()) + "_grasp_obj", &RobotController::graspObj, this);
  
    m_simulatorTime = 0;
-}*/
-/*
+   std::cout << "fin robotController on init" << std::endl;
+}
+
 double RobotController::onAction(ActionEvent &evt)
 {
    ros::spinOnce();
@@ -59,10 +64,7 @@ void RobotController::onCollision(CollisionEvent &evt)
    }
 }
 
-*/
-
 /*****************************Callback topic************************/
-/*
 void RobotController::setWheelCallback(const sig_ros::SetWheel::ConstPtr& wheel)
 {
    std::cout << "setWheelCallback" << std::endl;
@@ -71,11 +73,11 @@ void RobotController::setWheelCallback(const sig_ros::SetWheel::ConstPtr& wheel)
    myRobot->setWheel(m_radius, m_distance);
 }
 
-void RobotController::setWheelVelocityCallback(const sig_ros::SetWheelVelocity::ConstPtr& wheel)
+/*void RobotController::setWheelVelocityCallback(const sig_ros::SetWheelVelocity::ConstPtr& wheel)
 {
    std::cout << "setWheelVelocityCallback" << std::endl;
    myRobot->setWheelVelocity(wheel->leftWheel, wheel->rightWheel);
-}
+}*/
 
 void RobotController::setJointVelocityCallback(const sig_ros::SetJointVelocity::ConstPtr& msg)
 {
@@ -87,12 +89,11 @@ void RobotController::releaseObjCallback(const sig_ros::ReleaseObj::ConstPtr& ms
 	// release grasping
 	parts->releaseObj();
 }
-*/
 /*****************************End callback topic************************/
 
 
 /*******************************Srv***********************************/
-/*
+
 bool RobotController::getTime(sig_ros::getTime::Request &req, sig_ros::getTime::Response &res)
 {
    res.time = m_simulatorTime;
@@ -163,10 +164,5 @@ bool RobotController::graspObj(sig_ros::graspObj::Request &req, sig_ros::graspOb
    res.ok = parts->graspObj(req.obj.c_str());
    return true;
 }
-*/
-/*****************************End Srv*********************************/
 
-extern "C"  RobotController * createController ()
-{
-   return new RobotController;
-}
+/*****************************End Srv*********************************/

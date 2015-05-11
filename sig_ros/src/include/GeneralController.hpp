@@ -13,7 +13,9 @@
 class GeneralController : public RobotController
 {
    public:
-      GeneralController() {}
+      ros::Subscriber setWheelVelocity_sub;
+      void setWheelVelocityCallback(const sig_ros::SetWheelVelocity::ConstPtr& wheel);
+      void onInit(InitEvent &evt);
 };  
 
 #endif
