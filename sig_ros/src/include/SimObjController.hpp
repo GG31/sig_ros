@@ -37,6 +37,7 @@
 #include "sig_ros/getRotation.h"
 #include "sig_ros/getAngleRotation.h"
 #include <sig_ros/getJointAngle.h>
+#include <sig_ros/graspObj.h>
 //Obj Srv
 #include <sig_ros/checkService.h>
 #include <sig_ros/connectToService.h>
@@ -83,6 +84,7 @@ class SimObjController : public Controller
       bool getRotation(sig_ros::getRotation::Request &req, sig_ros::getRotation::Response &res);
       bool getAngleRotation(sig_ros::getAngleRotation::Request &req, sig_ros::getAngleRotation::Response &res);
       bool getJointAngle(sig_ros::getJointAngle::Request &req, sig_ros::getJointAngle::Response &res);
+      bool graspObj(sig_ros::graspObj::Request &req, sig_ros::graspObj::Response &res);
       //Obj Srv
       bool getCollisionState(sig_ros::getCollisionState::Request &req, sig_ros::getCollisionState::Response &res);
       bool srvCheckService(sig_ros::checkService::Request &req, sig_ros::checkService::Response &res);
@@ -94,6 +96,9 @@ class SimObjController : public Controller
       bool getAllJointAngles(sig_ros::getAllJointAngles::Request &req, sig_ros::getAllJointAngles::Response &res);
       bool getJointPosition(sig_ros::getJointPosition::Request &req, sig_ros::getJointPosition::Response &res);
       bool getMass(sig_ros::getMass::Request &req, sig_ros::getMass::Response &res);
+   
+   protected:
+      void init();
       
    public:      
       SimObj *my;
@@ -127,6 +132,7 @@ class SimObjController : public Controller
       ros::ServiceServer serviceGetRotation;
       ros::ServiceServer serviceGetAngleRotation;
       ros::ServiceServer serviceGetJointAngle;
+      ros::ServiceServer serviceGraspObj;
       ros::ServiceServer serviceCheckService;
       ros::ServiceServer serviceConnectToService;
       ros::ServiceServer serviceGetCollisionState;
@@ -137,9 +143,6 @@ class SimObjController : public Controller
       ros::ServiceServer serviceGetAllJointAngles;
       ros::ServiceServer serviceGetJointPosition;
       ros::ServiceServer serviceGetMass;
-      //Robot
-      double m_radius;           // radius of the wheel
-	   double m_distance; 
 	   
 	   double m_simulatorTime;
 };  

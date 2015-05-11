@@ -112,7 +112,6 @@ void RobotCommand::onCollisionCallback(const sig_ros::OnCollision::ConstPtr& msg
       } else {
          ROS_ERROR("Failed to call service robot_000_grasp_obj");
       }
-   
    }
 }
 
@@ -796,6 +795,7 @@ int main(int argc, char **argv)
 	
 	RobotCommand* robotCommand = new RobotCommand();
 	double result = 0;
+	
    while (ros::ok())//
    {
       result = robotCommand->loop();

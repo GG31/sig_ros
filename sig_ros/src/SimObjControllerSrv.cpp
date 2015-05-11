@@ -92,6 +92,13 @@ bool SimObjController::getJointAngle(sig_ros::getJointAngle::Request &req, sig_r
    return true;
 }
 
+bool SimObjController::graspObj(sig_ros::graspObj::Request &req, sig_ros::graspObj::Response &res)
+{
+   CParts *parts = my->getParts(req.part.c_str());
+   res.ok = parts->graspObj(req.obj.c_str());
+   return true;
+}
+
 bool SimObjController::getCollisionState(sig_ros::getCollisionState::Request &req, sig_ros::getCollisionState::Response &res) //OK
 {
    CParts *parts;

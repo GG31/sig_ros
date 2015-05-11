@@ -2,13 +2,17 @@
   
 void SimObjController::onInit(InitEvent &evt)
 {
+   init();
+}
+
+void SimObjController::init() {
    int argc = 0;
    char** argv = NULL;
    //m_ref = NULL;
    
-   my = getObj(myname());
    ros::init(argc, argv, std::string(this->myname()) + "_sig_controller_node");//+std::string(this->myname())
    ros::NodeHandle n;
+   my = getObj(myname());
    
    //Topics
    onRecvMsg_pub = n.advertise<sig_ros::MsgRecv>(std::string(this->myname())+"_onRecvMsg", 1000);
@@ -34,6 +38,7 @@ void SimObjController::onInit(InitEvent &evt)
    serviceGetRotation = n.advertiseService(std::string(this->myname()) + "_get_rotation", &SimObjController::getRotation, this);
    serviceGetAngleRotation = n.advertiseService(std::string(this->myname()) + "_get_angle_rotation", &SimObjController::getAngleRotation, this);
    serviceGetJointAngle = n.advertiseService(std::string(this->myname()) + "_get_joint_angle", &SimObjController::getJointAngle, this);
+   serviceGraspObj = n.advertiseService(std::string(this->myname()) + "_grasp_obj", &SimObjController::graspObj, this);
    //Obj
    serviceGetCollisionState = n.advertiseService(std::string(this->myname()) + "_get_collision_state", &SimObjController::getCollisionState, this);
    serviceCheckService = n.advertiseService(std::string(this->myname()) + "_check_service", &SimObjController::srvCheckService, this);
@@ -76,9 +81,4 @@ void SimObjController::onCollision(CollisionEvent &evt)
       msg.part = mparts[i];
       onCollision_pub.publish(msg);
    }
-}
-
-extern "C"  Controller * createController ()
-{
-   return new SimObjController;
 }

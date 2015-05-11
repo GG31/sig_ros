@@ -8,8 +8,7 @@ void TrashBoxCommand::init() {
 
    
   /*m_my = getObj(myname());*/
-  getAllEntities(m_entities);
-  
+   getAllEntities(m_entities);
   
    //Topics
 	setJointVelocity_pub = n.advertise<sig_ros::SetJointVelocity>("trashbox_0_setJointVelocity", 1000);
@@ -250,7 +249,7 @@ void TrashBoxCommand::getAllEntities(std::vector<std::string> entities) {
 }
 
 bool TrashBoxCommand::isGrasped(std::string entityName) {
-   srvIsGrasped.request.entityName = entityName;
+   srvIsGrasped.request.name = entityName;
    if (serviceIsGrasped.call(srvIsGrasped)) {
       return srvIsGrasped.response.answer;
    } else {
