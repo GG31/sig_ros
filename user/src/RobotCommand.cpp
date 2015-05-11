@@ -112,7 +112,6 @@ void RobotCommand::onCollisionCallback(const sig_ros::OnCollision::ConstPtr& msg
       } else {
          ROS_ERROR("Failed to call service robot_000_grasp_obj");
       }
-   
    }
 }
 
@@ -587,6 +586,7 @@ double RobotCommand::loop(void) {
 
 void RobotCommand::getPartsPosition(double l_pos[], std::string partName) {
    srvGetPartsPosition.request.part = partName;
+   srvGetPartsPosition.request.name = "";
 	if (serviceGetPartsPosition.call(srvGetPartsPosition)) {
 	   l_pos[0] = srvGetPartsPosition.response.posX;
 	   l_pos[1] = srvGetPartsPosition.response.posY;
@@ -609,7 +609,7 @@ double RobotCommand::rotateTowardObj(double pos[])
 	l_pos[1] = 0;
 
 	// get own rotation matrix
-   srvGetRotation.request.axis = "y";
+   srvGetRotation.request.name = "";
    double qw = 0;
    double qy = 0;
    if (serviceGetRotation.call(srvGetRotation)) {
@@ -795,6 +795,7 @@ int main(int argc, char **argv)
 	
 	RobotCommand* robotCommand = new RobotCommand();
 	double result = 0;
+	
    while (ros::ok())//
    {
       result = robotCommand->loop();

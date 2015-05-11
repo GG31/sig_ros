@@ -10,6 +10,8 @@
 #include <sig_ros/SetWheelVelocity.h>
 #include <sig_ros/SetJointVelocity.h>
 #include <sig_ros/ReleaseObj.h>
+#include <sig_ros/SetAxisAndAngle.h>
+#include <sig_ros/SetPosition.h>
 //Srv
 #include <sig_ros/getTime.h>
 #include <sig_ros/getObjPosition.h>
@@ -24,6 +26,7 @@
 #include <sig_ros/getCollisionStateOfMainPart.h> 
 #include <sig_ros/getEntities.h> 
 #include <sig_ros/isGrasped.h> 
+#include <sig_ros/sendMsgToSrv.h>
   
 class TrashBoxCommand { 
    public:
@@ -31,7 +34,8 @@ class TrashBoxCommand {
       void init();
       double loop();
       
-   private: 
+   private:
+      //Srv 
       void onMsgRecvCallback(const sig_ros::MsgRecv::ConstPtr& msg);
       void onCollisionCallback(const sig_ros::OnCollision::ConstPtr& msg);
       void getObjPosition(double l_tpos[], std::string obj);
@@ -40,6 +44,10 @@ class TrashBoxCommand {
       bool getCollisionStateOfMainPart();
       void getAllEntities(std::vector<std::string> entities);
       bool isGrasped(std::string entityName);
+      bool sendMsgToSrv(std::string msg);
+      //Msg
+      void setAxisAndAngle(std::string name, double ax, double ay, double az, double angle);
+      void setPosition(std::string name, double ax, double ay, double az);
       ros::NodeHandle n;
       std::vector<std::string> m_entities;
 
@@ -56,14 +64,19 @@ class TrashBoxCommand {
       bool m_ref;
       
       //Publisher      
-      ros::Publisher robot_000_setJointVelocity_pub;
+      ros::Publisher setJointVelocity_pub;
       sig_ros::SetJointVelocity msgSetJointVelocity;
       
-      ros::Publisher robot_000_releaseObj_pub;
+      ros::Publisher releaseObj_pub;
       sig_ros::ReleaseObj msgReleaseObj;
       
-      ros::Subscriber robot_000_onRecvMsg_sub;
-      ros::Subscriber robot_000_onCollision_sub;
+      ros::Publisher setAxisAndAngle_pub;
+      sig_ros::SetAxisAndAngle msgSetAxisAndAngle;
+      ros::Publisher setPosition_pub;
+      sig_ros::SetPosition msgSetPosition;
+      
+      ros::Subscriber onRecvMsg_sub;
+      ros::Subscriber onCollision_sub;
       
       //Service
       ros::ServiceClient serviceGetTime;
@@ -91,4 +104,6 @@ class TrashBoxCommand {
 	   sig_ros::getEntities srvGetEntities;
 	   ros::ServiceClient serviceIsGrasped;
 	   sig_ros::isGrasped srvIsGrasped;
+	   ros::ServiceClient serviceSendMsgToSrv;
+	   sig_ros::sendMsgToSrv srvSendMsgToSrv;
 }; 
