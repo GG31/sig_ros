@@ -1,4 +1,7 @@
 *~
 *.so
 tutorial
-
+*.aux
+*.log
+*.gz
+*.toc
