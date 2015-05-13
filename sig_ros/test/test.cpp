@@ -11,24 +11,28 @@
 #include <sig_ros/getAngleRotation.h>
 #include <sig_ros/getCollisionStateOfMainPart.h>
 #include <sig_ros/getEntities.h>
+#include <sig_ros/getMass.h>
+#include <sig_ros/Double3D.h>
+//Topic
+#include <sig_ros/SetJointQuaternion.h>
 #include <sstream>
 // Bring in gtest
 #include <gtest/gtest.h>
 //Run all tests : catkin_make run_tests
 
 // Declare a test
-/*TEST(TestSuiteRobotController, testCaseGetObjPositionWithoutName)
+TEST(TestSuiteRobotController, testCaseGetObjPositionWithoutName)
 {
    ros::NodeHandle n;
-   ros::ServiceClient serviceGetObjPosition = n.serviceClient<sig_ros::getObjPosition>("trashbox_0_get_obj_position");
+   ros::ServiceClient serviceGetObjPosition = n.serviceClient<sig_ros::getObjPosition>("robot_000_get_obj_position");
    sig_ros::getObjPosition srvGetObjPosition;
-   srvGetObjPosition.request.name = "";
+   //srvGetObjPosition.request.name = "";
 	if (serviceGetObjPosition.call(srvGetObjPosition)) {
 	   EXPECT_EQ(100,  srvGetObjPosition.response.posX);
 	   EXPECT_EQ(30,  srvGetObjPosition.response.posY);
 	   EXPECT_EQ(10,  srvGetObjPosition.response.posZ);
 	}  else {
-	   ROS_ERROR("Failed to call service trashbox_0_get_obj_position without name");
+	   ROS_ERROR("Failed to call service robot_000_get_obj_position without name");
 	}
 }
 
@@ -45,7 +49,7 @@ TEST(TestSuiteRobotController, testCaseGetObjPosition)
 	}  else {
 	   ROS_ERROR("Failed to call service trashbox_0_get_obj_position");
 	}
-}*/
+}
 
 TEST(TestSuiteRobotController, testCaseGetPartsPosition)
 {
@@ -67,7 +71,6 @@ TEST(TestSuiteRobotController, testCaseGetRotation)
    ros::NodeHandle n;
    ros::ServiceClient serviceGetRotation = n.serviceClient<sig_ros::getRotation>("robot_000_get_rotation");
    sig_ros::getRotation srvGetRotation;
-   srvGetRotation.request.axis = "y";
 	if (serviceGetRotation.call(srvGetRotation)) {
 	   EXPECT_EQ(0,  srvGetRotation.response.qY);
 	   EXPECT_EQ(1,  srvGetRotation.response.qW);
@@ -79,11 +82,14 @@ TEST(TestSuiteRobotController, testCaseGetRotation)
 TEST(TestSuiteRobotController, testCaseGetAngleRotation)
 {
    ros::NodeHandle n;
-   ros::ServiceClient serviceGetAngleRotation = n.serviceClient<sig_ros::getAngleRotation>("robot_000_get_rotation");
+   ros::ServiceClient serviceGetAngleRotation = n.serviceClient<sig_ros::getAngleRotation>("robot_000_get_angle_rotation");
    sig_ros::getAngleRotation srvGetAngleRotation;
    srvGetAngleRotation.request.axis = "z";
+   srvGetAngleRotation.request.x = 0.0;
+   srvGetAngleRotation.request.y = 0.0;
+   srvGetAngleRotation.request.z = 4.0;
 	if (serviceGetAngleRotation.call(srvGetAngleRotation)) {
-	   EXPECT_EQ(0,  srvGetAngleRotation.response.angle);
+	   EXPECT_EQ(1,  srvGetAngleRotation.response.angle);
 	}  else {
 	   ROS_ERROR("Failed to call service robot_000_get_angle_rotation");
 	}
@@ -228,13 +234,62 @@ TEST(TestSuiteSimObjController, testCaseGetRotation)
    ros::NodeHandle n;
    ros::ServiceClient serviceGetRotation = n.serviceClient<sig_ros::getRotation>("trashbox_0_get_rotation");
    sig_ros::getRotation srvGetRotation;
-   srvGetRotation.request.axis = "y";
 	if (serviceGetRotation.call(srvGetRotation)) {
 	   EXPECT_EQ(0,  srvGetRotation.response.qY);
 	   EXPECT_EQ(1,  srvGetRotation.response.qW);
 	}  else {
 	   ROS_ERROR("Failed to call service trashbox_0_get_rotation");
 	}
+}
+
+TEST(TestSuiteSimObjController, testCaseGetMassTrashbox)
+{
+   ros::NodeHandle n;
+   ros::ServiceClient serviceGetMass = n.serviceClient<sig_ros::getMass>("trashbox_0_get_mass");
+   sig_ros::getMass srvGetMass;
+	if (serviceGetMass.call(srvGetMass)) {
+	   EXPECT_EQ(1,  srvGetMass.response.mass);
+	}  else {
+	   ROS_ERROR("Failed to call service trashbox_0_get_mass");
+	}
+}
+
+TEST(TestSuiteSimObjController, testCaseGetMassRobot)
+{
+   ros::NodeHandle n;
+   ros::ServiceClient serviceGetMass = n.serviceClient<sig_ros::getMass>("robot_000_get_mass");
+   sig_ros::getMass srvGetMass;
+	if (serviceGetMass.call(srvGetMass)) {
+	   EXPECT_EQ(22,  srvGetMass.response.mass);
+	}  else {
+	   ROS_ERROR("Failed to call service robot_000_get_mass");
+	}
+}
+
+TEST(TestSuiteSimObjController, testCaseSetJointQuaternion)
+{
+   ros::NodeHandle n;
+   ros::Publisher robot_000_setJointQuaternion_pub = n.advertise<sig_ros::SetJointQuaternion>("robot_000_setJointQuaternion", 1000);
+   sig_ros::SetJointQuaternion msgSetJointQuaternion;
+   msgSetJointQuaternion.jointName = "RARM_JOINT1";
+   msgSetJointQuaternion.qW = 1.0;
+   msgSetJointQuaternion.qX = 1.0;
+   msgSetJointQuaternion.qY = 1.0;
+   msgSetJointQuaternion.qZ = 1.0;
+   msgSetJointQuaternion.offset = true;
+   robot_000_setJointQuaternion_pub.publish(msgSetJointQuaternion);
+}
+
+TEST(TestSuiteSimObjController, testCaseAddForce)
+{
+   ros::NodeHandle n;
+   ros::Publisher robot_000_addForce_pub = n.advertise<sig_ros::SetJointQuaternion>("robot_000_addForce", 1000);
+   sig_ros::Double3D msgAddForce;
+   msgAddForce.name = "";
+   msgAddForce.x = 1.0;
+   msgAddForce.y = 1.0;
+   msgAddForce.z = 1.0;
+   robot_000_addForce_pub.publish(msgAddForce);
 }
 /*****************************************************************/
 // Run all the tests that were declared with TEST()

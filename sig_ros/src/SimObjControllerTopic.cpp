@@ -21,12 +21,12 @@ void SimObjController::setAxisAndAngleCallback(const sig_ros::SetAxisAndAngle::C
    }
 }
 
-void SimObjController::setPositionCallback(const sig_ros::SetPosition::ConstPtr& msg) {
+void SimObjController::setPositionCallback(const sig_ros::Double3D::ConstPtr& msg) {
    if (msg->name == "") {
-      my->setPosition(msg->posX, msg->posY, msg->posZ);
+      my->setPosition(msg->x, msg->y, msg->z);
    } else {
       SimObj *obj = getObj(msg->name.c_str());
-      obj->setPosition(msg->posX, msg->posY, msg->posZ);
+      obj->setPosition(msg->x, msg->y, msg->z);
    }
 }
 
@@ -74,12 +74,12 @@ void SimObjController::setCollisionEnableCallback(const sig_ros::SetCollisionEna
       obj->setCollisionEnable(msg->flag);
    }
 }
-void SimObjController::setGravityModeCallback(const sig_ros::SetGravityMode::ConstPtr& msg) {
+void SimObjController::setGravityModeCallback(const sig_ros::SetMode::ConstPtr& msg) {
    if (msg->name == "") {
-      my->setGravityMode(msg->gravity);
+      my->setGravityMode(msg->boolean);
    } else {
       SimObj *obj = getObj(msg->name.c_str());
-      obj->setGravityMode(msg->gravity);
+      obj->setGravityMode(msg->boolean);
    }
 }
 void SimObjController::setJointAngleCallback(const sig_ros::SetJointAngle::ConstPtr& msg) {
@@ -104,6 +104,81 @@ void SimObjController::setMassCallback(const sig_ros::SetMass::ConstPtr& msg) {
    } else {
       SimObj *obj = getObj(msg->name.c_str());
       obj->setMass(msg->mass);
+   }
+   
+   /*
+   my->setDynamicsMode(true);
+   my->setForce(1.0,1.0,1.0);*/
+}
+
+void SimObjController::addForceCallback(const sig_ros::Double3D::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->addForce(msg->x, msg->y, msg->z); 
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->addForce(msg->x, msg->y, msg->z);
+   }
+}
+
+void SimObjController::setForceCallback(const sig_ros::Double3D::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->setForce(msg->x, msg->y, msg->z); 
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->setForce(msg->x, msg->y, msg->z);
+   }
+}
+
+void SimObjController::addForceAtPosCallback(const sig_ros::Double3D3D::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->addForceAtPos(msg->x, msg->y, msg->z, msg->posX, msg->posY, msg->posZ); 
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->addForceAtPos(msg->x, msg->y, msg->z, msg->posX, msg->posY, msg->posZ);
+   }
+}
+
+void SimObjController::addForceAtRelPosCallback(const sig_ros::Double3D3D::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->addForceAtRelPos(msg->x, msg->y, msg->z, msg->posX, msg->posY, msg->posZ); 
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->addForceAtRelPos(msg->x, msg->y, msg->z, msg->posX, msg->posY, msg->posZ);
+   }
+}
+void SimObjController::addRelForceCallback(const sig_ros::Double3D::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->addRelForce(msg->x, msg->y, msg->z); 
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->addRelForce(msg->x, msg->y, msg->z);
+   }
+}
+
+void SimObjController::addRelForceAtPosCallback(const sig_ros::Double3D3D::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->addRelForceAtPos(msg->x, msg->y, msg->z, msg->posX, msg->posY, msg->posZ);
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->addRelForceAtPos(msg->x, msg->y, msg->z, msg->posX, msg->posY, msg->posZ);
+   }
+}
+
+void SimObjController::addRelForceAtRelPosCallback(const sig_ros::Double3D3D::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->addRelForceAtRelPos(msg->x, msg->y, msg->z, msg->posX, msg->posY, msg->posZ);
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->addRelForceAtRelPos(msg->x, msg->y, msg->z, msg->posX, msg->posY, msg->posZ);
+   }
+}
+
+void SimObjController::setDynamicsModeCallback(const sig_ros::SetMode::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->setDynamicsMode(msg->boolean);
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->setDynamicsMode(msg->boolean);
    }
 }
 /*****************************End callback topic************************/

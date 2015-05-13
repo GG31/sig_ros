@@ -8,7 +8,6 @@ void SimObjController::onInit(InitEvent &evt)
 void SimObjController::init() {
    int argc = 0;
    char** argv = NULL;
-   //m_ref = NULL;
    
    ros::init(argc, argv, std::string(this->myname()) + "_sig_controller_node");//+std::string(this->myname())
    ros::NodeHandle n;
@@ -20,17 +19,26 @@ void SimObjController::init() {
    setJointVelocity_sub = n.subscribe<sig_ros::SetJointVelocity>(std::string(this->myname()) + "_setJointVelocity", 1, &SimObjController::setJointVelocityCallback, this);
    releaseObj_sub = n.subscribe<sig_ros::ReleaseObj>(std::string(this->myname()) + "_releaseObj", 1, &SimObjController::releaseObjCallback, this);
    setAxisAndAngle_sub = n.subscribe<sig_ros::SetAxisAndAngle>(std::string(this->myname()) + "_setAxisAndAngle", 1, &SimObjController::setAxisAndAngleCallback, this);
-   setPosition_sub = n.subscribe<sig_ros::SetPosition>(std::string(this->myname()) + "_setPosition", 1, &SimObjController::setPositionCallback, this);
+   setPosition_sub = n.subscribe<sig_ros::Double3D>(std::string(this->myname()) + "_setPosition", 1, &SimObjController::setPositionCallback, this);
    //More Topics
    setAccel_sub = n.subscribe<sig_ros::Double3D>(std::string(this->myname()) + "_setAccel", 1, &SimObjController::setAccelCallback, this);
    setAngularVelocity_sub = n.subscribe<sig_ros::Double3D>(std::string(this->myname()) + "_setAngularVelocity", 1, &SimObjController::setAngularVelocityCallback, this);
    setTorque_sub = n.subscribe<sig_ros::Double3D>(std::string(this->myname()) + "_setTorque", 1, &SimObjController::setTorqueCallback, this);
    setVelocity_sub = n.subscribe<sig_ros::Double3D>(std::string(this->myname()) + "_setVelocity", 1, &SimObjController::setVelocityCallback, this);
    setCollisionEnable_sub = n.subscribe<sig_ros::SetCollisionEnable>(std::string(this->myname()) + "_setCollisionEnable", 1, &SimObjController::setCollisionEnableCallback, this);
-   setGravityMode_sub = n.subscribe<sig_ros::SetGravityMode>(std::string(this->myname()) + "_setGravityMode", 1, &SimObjController::setGravityModeCallback, this);
+   setGravityMode_sub = n.subscribe<sig_ros::SetMode>(std::string(this->myname()) + "_setGravityMode", 1, &SimObjController::setGravityModeCallback, this);
    setJointAngle_sub = n.subscribe<sig_ros::SetJointAngle>(std::string(this->myname()) + "_setJointAngle", 1, &SimObjController::setJointAngleCallback, this);
    setJointQuaternion_sub = n.subscribe<sig_ros::SetJointQuaternion>(std::string(this->myname()) + "_setJointQuaternion", 1, &SimObjController::setJointQuaternionCallback, this);
    setMass_sub = n.subscribe<sig_ros::SetMass>(std::string(this->myname()) + "_setMass", 1, &SimObjController::setMassCallback, this);
+   setDynamicsMode_sub = n.subscribe<sig_ros::SetMode>(std::string(this->myname()) + "_setDynamicsMode", 1, &SimObjController::setDynamicsModeCallback, this);
+   //Topic Force
+   addForce_sub = n.subscribe<sig_ros::Double3D>(std::string(this->myname()) + "_addForce", 1, &SimObjController::addForceCallback, this);
+   setForce_sub = n.subscribe<sig_ros::Double3D>(std::string(this->myname()) + "_setForce", 1, &SimObjController::setForceCallback, this);
+   addForceAtPos_sub = n.subscribe<sig_ros::Double3D3D>(std::string(this->myname()) + "_addForceAtPos", 1, &SimObjController::addForceAtPosCallback, this);
+   addForceAtRelPos_sub = n.subscribe<sig_ros::Double3D3D>(std::string(this->myname()) + "_addForceAtRelPos", 1, &SimObjController::addForceAtRelPosCallback, this);
+   addRelForce_sub = n.subscribe<sig_ros::Double3D>(std::string(this->myname()) + "_addRelForce", 1, &SimObjController::addRelForceCallback, this);
+   addRelForceAtPos_sub = n.subscribe<sig_ros::Double3D3D>(std::string(this->myname()) + "_addRelForceAtPos", 1, &SimObjController::addRelForceAtPosCallback, this);
+   addRelForceAtRelPos_sub = n.subscribe<sig_ros::Double3D3D>(std::string(this->myname()) + "_addRelForceAtRelPos", 1, &SimObjController::addRelForceAtRelPosCallback, this);
    //Srv
    service = n.advertiseService(std::string(this->myname()) + "_get_time", &SimObjController::getTime, this);
    serviceGetObjPosition = n.advertiseService(std::string(this->myname()) + "_get_obj_position", &SimObjController::getObjPosition, this);
@@ -48,7 +56,7 @@ void SimObjController::init() {
    serviceSendMsgToSrv = n.advertiseService(std::string(this->myname()) + "_send_msg_to_srv", &SimObjController::sendMsgToSrv, this);
    //More Srv
    serviceGetAllJointAngles = n.advertiseService(std::string(this->myname()) + "_get_all_joint_angles", &SimObjController::getAllJointAngles, this);
-   serviceGetJointPosition = n.advertiseService(std::string(this->myname()) + "_get_joint_position", &SimObjController::getJointPosition, this);
+   serviceGetJointPosition = n.advertiseService(std::string(this->myname()) + "_get_joint_position", &SimObjController::getPartsPosition, this);
    serviceGetMass = n.advertiseService(std::string(this->myname()) + "_get_mass", &SimObjController::getMass, this);
    
    m_simulatorTime = 0;

@@ -21,15 +21,16 @@
 #include <sig_ros/ReleaseObj.h>
 #include <sig_ros/OnCollision.h>
 #include <sig_ros/SetAxisAndAngle.h>
-#include <sig_ros/SetPosition.h>
 //More Msg
 #include <sig_ros/Double3D.h>
 #include <sig_ros/SetCollisionEnable.h>
-#include <sig_ros/SetGravityMode.h>
+#include <sig_ros/SetMode.h>
 #include <sig_ros/SetJointAngle.h>
 #include <sig_ros/SetJointQuaternion.h>
 #include <sig_ros/SetMass.h>
-
+//Msg force
+#include <sig_ros/Double3D.h>
+#include <sig_ros/Double3D3D.h>
 //Srv
 #include "sig_ros/getTime.h"
 #include "sig_ros/getObjPosition.h"
@@ -47,7 +48,6 @@
 #include <sig_ros/sendMsgToSrv.h>
 //More Srv
 #include <sig_ros/getAllJointAngles.h>
-#include <sig_ros/getJointPosition.h>
 #include <sig_ros/getMass.h>
 
 #define PI 3.141592
@@ -62,10 +62,15 @@ class SimObjController : public Controller
       double onAction(ActionEvent &evt);
       void onRecvMsg(RecvMsgEvent &evt);
       void onCollision(CollisionEvent &evt); 
+      
+   protected:
+      void init();
+      
+   private:
       //SimObj Msg
       void setJointVelocityCallback(const sig_ros::SetJointVelocity::ConstPtr& msg);
       void setAxisAndAngleCallback(const sig_ros::SetAxisAndAngle::ConstPtr& msg);
-      void setPositionCallback(const sig_ros::SetPosition::ConstPtr& msg);
+      void setPositionCallback(const sig_ros::Double3D::ConstPtr& msg);
       void releaseObjCallback(const sig_ros::ReleaseObj::ConstPtr& msg);
       //More Msg
       void setAccelCallback(const sig_ros::Double3D::ConstPtr& msg);
@@ -73,10 +78,19 @@ class SimObjController : public Controller
       void setTorqueCallback(const sig_ros::Double3D::ConstPtr& msg);
       void setVelocityCallback(const sig_ros::Double3D::ConstPtr& msg);
       void setCollisionEnableCallback(const sig_ros::SetCollisionEnable::ConstPtr& msg);
-      void setGravityModeCallback(const sig_ros::SetGravityMode::ConstPtr& msg);
+      void setGravityModeCallback(const sig_ros::SetMode::ConstPtr& msg);
       void setJointAngleCallback(const sig_ros::SetJointAngle::ConstPtr& msg);
       void setJointQuaternionCallback(const sig_ros::SetJointQuaternion::ConstPtr& msg);
       void setMassCallback(const sig_ros::SetMass::ConstPtr& msg);
+      void setDynamicsModeCallback(const sig_ros::SetMode::ConstPtr& msg);
+      //Msg Force
+      void addForceCallback(const sig_ros::Double3D::ConstPtr& msg);
+      void setForceCallback(const sig_ros::Double3D::ConstPtr& msg);
+      void addForceAtPosCallback(const sig_ros::Double3D3D::ConstPtr& msg);
+      void addForceAtRelPosCallback(const sig_ros::Double3D3D::ConstPtr& msg);
+      void addRelForceCallback(const sig_ros::Double3D::ConstPtr& msg);
+      void addRelForceAtPosCallback(const sig_ros::Double3D3D::ConstPtr& msg);
+      void addRelForceAtRelPosCallback(const sig_ros::Double3D3D::ConstPtr& msg);
       //Srv
       bool getTime(sig_ros::getTime::Request &req, sig_ros::getTime::Response &res);
       bool getObjPosition(sig_ros::getObjPosition::Request &req, sig_ros::getObjPosition::Response &res);
@@ -94,13 +108,10 @@ class SimObjController : public Controller
       bool sendMsgToSrv(sig_ros::sendMsgToSrv::Request &req, sig_ros::sendMsgToSrv::Response &res);
       //More Srv
       bool getAllJointAngles(sig_ros::getAllJointAngles::Request &req, sig_ros::getAllJointAngles::Response &res);
-      bool getJointPosition(sig_ros::getJointPosition::Request &req, sig_ros::getJointPosition::Response &res);
+      bool getJointPosition(sig_ros::getPartsPosition::Request &req, sig_ros::getPartsPosition::Response &res);
       bool getMass(sig_ros::getMass::Request &req, sig_ros::getMass::Response &res);
+
    
-   protected:
-      void init();
-      
-   public:      
       SimObj *my;
       
       //BaseService *m_ref;
@@ -124,7 +135,15 @@ class SimObjController : public Controller
       ros::Subscriber setJointAngle_sub;
       ros::Subscriber setJointQuaternion_sub;
       ros::Subscriber setMass_sub;
-      
+      ros::Subscriber setDynamicsMode_sub;
+      //Topic force
+      ros::Subscriber addForce_sub;
+      ros::Subscriber setForce_sub;
+      ros::Subscriber addForceAtPos_sub;
+      ros::Subscriber addForceAtRelPos_sub;
+      ros::Subscriber addRelForce_sub;
+      ros::Subscriber addRelForceAtPos_sub;
+      ros::Subscriber addRelForceAtRelPos_sub;
       //Srv
       ros::ServiceServer service;
       ros::ServiceServer serviceGetObjPosition;

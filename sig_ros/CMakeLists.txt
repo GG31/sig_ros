@@ -29,10 +29,10 @@ add_message_files(
   ReleaseObj.msg
   OnCollision.msg
   SetAxisAndAngle.msg
-  SetPosition.msg
   Double3D.msg
+  Double3D3D.msg
   SetCollisionEnable.msg
-  SetGravityMode.msg
+  SetMode.msg
   SetJointAngle.msg
   SetJointQuaternion.msg
   SetMass.msg
@@ -55,7 +55,6 @@ add_service_files(
   isGrasped.srv
   sendMsgToSrv.srv
   getAllJointAngles.srv
-  getJointPosition.srv
   getMass.srv
 )
 

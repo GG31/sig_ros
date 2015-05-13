@@ -172,23 +172,16 @@ bool SimObjController::sendMsgToSrv(sig_ros::sendMsgToSrv::Request &req, sig_ros
 
 bool SimObjController::getAllJointAngles(sig_ros::getAllJointAngles::Request &req, sig_ros::getAllJointAngles::Response &res) { //TODO ask for getAllJointAngles when my is not robot_000
    std::map<std::string, double> list;
-   std::cout << "getAllJointAngles" << std::endl;
    if (req.name == "") {
-      std::cout << "if getall" << std::endl;
       list = my->getAllJointAngles();
-      std::cout << "after get all" << std::endl;
    } else {
-      std::cout << "else" << std::endl;
       SimObj *ent = getObj(req.name.c_str());
       if (ent == NULL) {
          return false;
       }
-      std::cout << "obj" << std::endl;
       list = ent->getAllJointAngles();
-      std::cout << " list" << std::endl;
    }
    res.length = list.size();
-   std::cout << "map" << std::endl;
    for (std::map<std::string, double>::iterator it=list.begin(); it!=list.end(); ++it) {
       res.jointName.push_back(it->first);
       res.angle.push_back(it->second);
@@ -196,20 +189,23 @@ bool SimObjController::getAllJointAngles(sig_ros::getAllJointAngles::Request &re
    return true;
 }
 
-bool SimObjController::getJointPosition(sig_ros::getJointPosition::Request &req, sig_ros::getJointPosition::Response &res) {//OK
+bool SimObjController::getJointPosition(sig_ros::getPartsPosition::Request &req, sig_ros::getPartsPosition::Response &res) {//OK
    Vector3d vec;
    if (req.name == "") {
-      my->getJointPosition(vec, req.jointName.c_str());
+      my->getJointPosition(vec, req.part.c_str());
    } else {
       SimObj *ent = getObj(req.name.c_str());
       if (ent == NULL) {
          return false;
       }
-      ent->getJointPosition(vec, req.jointName.c_str());
+      ent->getJointPosition(vec, req.part.c_str());
    }
    res.posX = vec.x();
    res.posY = vec.y();
    res.posZ = vec.z();
+   /*res.posX = 0.0;
+   res.posY = 0.0;
+   res.posZ = 0.0;*/
    return true;
 }
 
