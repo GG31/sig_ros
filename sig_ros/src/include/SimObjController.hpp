@@ -28,6 +28,7 @@
 #include <sig_ros/SetJointAngle.h>
 #include <sig_ros/SetJointQuaternion.h>
 #include <sig_ros/SetMass.h>
+#include <sig_ros/SetRotation.h>
 //Msg force
 #include <sig_ros/Double3D.h>
 #include <sig_ros/Double3D3D.h>
@@ -83,6 +84,7 @@ class SimObjController : public Controller
       void setJointQuaternionCallback(const sig_ros::SetJointQuaternion::ConstPtr& msg);
       void setMassCallback(const sig_ros::SetMass::ConstPtr& msg);
       void setDynamicsModeCallback(const sig_ros::SetMode::ConstPtr& msg);
+      void setRotationCallback(const sig_ros::SetRotation::ConstPtr& msg);
       //Msg Force
       void addForceCallback(const sig_ros::Double3D::ConstPtr& msg);
       void setForceCallback(const sig_ros::Double3D::ConstPtr& msg);
@@ -136,6 +138,7 @@ class SimObjController : public Controller
       ros::Subscriber setJointQuaternion_sub;
       ros::Subscriber setMass_sub;
       ros::Subscriber setDynamicsMode_sub;
+      ros::Subscriber setRotation_sub;
       //Topic force
       ros::Subscriber addForce_sub;
       ros::Subscriber setForce_sub;

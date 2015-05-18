@@ -28,6 +28,7 @@ void SimObjController::setPositionCallback(const sig_ros::Double3D::ConstPtr& ms
       SimObj *obj = getObj(msg->name.c_str());
       obj->setPosition(msg->x, msg->y, msg->z);
    }
+   std::cout << "setPosition ok" << std::endl;
 }
 
 void SimObjController::setAccelCallback(const sig_ros::Double3D::ConstPtr& msg) {
@@ -179,6 +180,16 @@ void SimObjController::setDynamicsModeCallback(const sig_ros::SetMode::ConstPtr&
    } else {
       SimObj *obj = getObj(msg->name.c_str());
       obj->setDynamicsMode(msg->boolean);
+   }
+}
+
+void SimObjController::setRotationCallback(const sig_ros::SetRotation::ConstPtr& msg) {
+   Rotation r = Rotation(msg->qW, msg->qX, msg->qY, msg->qZ);
+   if (msg->name == "") {
+      my->setRotation(r);
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->setRotation(r);
    }
 }
 /*****************************End callback topic************************/

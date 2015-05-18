@@ -31,6 +31,7 @@ void SimObjController::init() {
    setJointQuaternion_sub = n.subscribe<sig_ros::SetJointQuaternion>(std::string(this->myname()) + "_setJointQuaternion", 1, &SimObjController::setJointQuaternionCallback, this);
    setMass_sub = n.subscribe<sig_ros::SetMass>(std::string(this->myname()) + "_setMass", 1, &SimObjController::setMassCallback, this);
    setDynamicsMode_sub = n.subscribe<sig_ros::SetMode>(std::string(this->myname()) + "_setDynamicsMode", 1, &SimObjController::setDynamicsModeCallback, this);
+   setRotation_sub = n.subscribe<sig_ros::SetRotation>(std::string(this->myname()) + "_setRotation", 1, &SimObjController::setRotationCallback, this);
    //Topic Force
    addForce_sub = n.subscribe<sig_ros::Double3D>(std::string(this->myname()) + "_addForce", 1, &SimObjController::addForceCallback, this);
    setForce_sub = n.subscribe<sig_ros::Double3D>(std::string(this->myname()) + "_setForce", 1, &SimObjController::setForceCallback, this);

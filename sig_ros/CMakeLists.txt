@@ -36,6 +36,7 @@ add_message_files(
   SetJointAngle.msg
   SetJointQuaternion.msg
   SetMass.msg
+  SetRotation.msg
 )
 
 ## Generate services in the 'srv' folder

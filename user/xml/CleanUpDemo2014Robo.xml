@@ -45,7 +45,7 @@
     <set-attr-value name="z" value="190.0"/>
     <set-attr-value name="language" value="c++"/>
     <set-attr-value name="implementation"
-                    value="/home/gg/catkin_ws/devel/lib/libsig_ros/Moderator.so"/><!--Change link-->
+                    value="/home/gg/catkin_ws/devel/lib/libsig_ros/SimObjController.so"/><!--Change link-->
     <set-attr-value name="collision" value="false"/>
     <set-attr-value name="graspable" value="false"/>
   </instanciate>

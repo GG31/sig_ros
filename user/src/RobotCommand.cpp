@@ -715,7 +715,7 @@ void RobotCommand::neutralizeArms(double evt_time)
 	double angleJoint4 = this->getJointAngle("RARM_JOINT4")*180.0/(M_PI);
 	double thetaJoint1 = - 20 - angleJoint1;
 	double thetaJoint4 = - 180 - angleJoint4;
-	if(thetaJoint4 < 0) {
+	if (thetaJoint4 < 0) {
 	   this->setJointVelocity("RARM_JOINT4", -m_jointVelocity, 0.0);
 	} else {
 	   this->setJointVelocity("RARM_JOINT4", m_jointVelocity, 0.0);
