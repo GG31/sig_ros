@@ -1,20 +1,17 @@
-#include "TrashBoxCommand.hpp"
+#include "include/TrashBoxCommand.hpp"
 
 TrashBoxCommand::TrashBoxCommand() {
    init();
 } 
   
 void TrashBoxCommand::init() {
-
+   /*m_my = getObj(myname());*/
    
-  /*m_my = getObj(myname());*/
-   getAllEntities(m_entities);
-  
    //Topics
 	setJointVelocity_pub = n.advertise<sig_ros::SetJointVelocity>("trashbox_0_setJointVelocity", 1000);
 	releaseObj_pub = n.advertise<sig_ros::ReleaseObj>("trashbox_0_releaseObj", 1000);
 	setAxisAndAngle_pub = n.advertise<sig_ros::SetAxisAndAngle>("trashbox_0_setAxisAndAngle", 1000);
-	setPosition_pub = n.advertise<sig_ros::SetPosition>("trashbox_0_setPosition", 1000);
+	setPosition_pub = n.advertise<sig_ros::Double3D>("trashbox_0_setPosition", 1000);
 	onRecvMsg_sub = n.subscribe<sig_ros::MsgRecv>("trashbox_0_onRecvMsg", 1, &TrashBoxCommand::onMsgRecvCallback, this);
 	onCollision_sub = n.subscribe<sig_ros::OnCollision>("trashbox_0_onCollisionMsg", 1, &TrashBoxCommand::onCollisionCallback, this);
 	//Srv
@@ -26,35 +23,38 @@ void TrashBoxCommand::init() {
 	serviceGetJointAngle = n.serviceClient<sig_ros::getJointAngle>("trashbox_0_get_joint_angle");
    serviceGraspObj = n.serviceClient<sig_ros::graspObj>("trashbox_0_grasp_obj");
    serviceCheckService = n.serviceClient<sig_ros::checkService>("trashbox_0_check_service");
+   serviceConnectToService = n.serviceClient<sig_ros::connectToService>("trashbox_0_connect_to_service");
    serviceGetCollisionStateOfMainPart = n.serviceClient<sig_ros::getCollisionStateOfMainPart>("trashbox_0_get_collision_state_of_main_part");
    serviceGetEntities = n.serviceClient<sig_ros::getEntities>("trashbox_0_get_entities");
    serviceIsGrasped = n.serviceClient<sig_ros::isGrasped>("trashbox_0_is_grasped");
+   serviceSendMsgToSrv = n.serviceClient<sig_ros::sendMsgToSrv>("robot_000_send_msg_to_srv");
   
+   ros::Duration(0.5).sleep();
+   getAllEntities();
   
-  
-  m_ref = false;
-  retValue = 0.5;
-  roboName = "robot_000";
+   m_ref = false;
+   retValue = 0.5;
+   roboName = "robot_000";
 
-  colState = false;
+   colState = false;
 
-  // ゴミ箱
-  tboxSize_x  = 20.0;
-  tboxSize_z  = 40.5; 
-  tboxMin_y    = 40.0;
-  tboxMax_y    = 1000.0;
+   // ゴミ箱
+   tboxSize_x  = 20.0;
+   tboxSize_z  = 40.5; 
+   tboxMin_y    = 40.0;
+   tboxMax_y    = 1000.0;
 }
 
 double TrashBoxCommand::loop() {
 // サービスが使用可能か定期的にチェックする  
-   bool available = checkService("RobocupReferee");  
+   bool available = checkService("CleanUpReferee");  
 
-   if(!available && m_ref) m_ref = false;
+   if (!available && m_ref) m_ref = false;
 
    // 使用可能  
-   else if(available && !m_ref){  
+   else if (available && !m_ref) {  
    // サービスに接続  
-      m_ref = connectToService("RobocupReferee");  
+      m_ref = connectToService("CleanUpReferee");  
    }  
 
    double myPos[3];
@@ -94,24 +94,25 @@ double TrashBoxCommand::loop() {
       //Vector3d vec(tpos.x()-myPos.x(), tpos.y()-myPos.y(), tpos.z()-myPos.z());
        
        // ゴミがゴミ箱の中に入ったかどうか判定
-      if (abs(vec[0]) < tboxSize_x/2.0 &&
+      /*if (abs(vec[0]) < tboxSize_x/2.0 &&
          abs(vec[2]) < tboxSize_z/2.0 &&
          tpos[1] < tboxMax_y     &&
-         tpos[1] > tboxMin_y     ) {
-
+         tpos[1] > tboxMin_y     ) {*/
+         //std::cout << "on if " << std::endl;
          // ゴミがリリースされているか確認
          std::string name = m_entities[i].c_str();
+         //std::cout << "name " << name << std::endl;
          if (isGrasped(name)) {/*!ent->getIsGrasped()*///) {
-
+            std::cout << "on grasp " << name << std::endl;
             // ゴミを捨てる
             tpos[1] = tpos[1] / 2;
             tpos[0] = myPos[0];
             tpos[2] = myPos[2];
-            setAxisAndAngle(name, 1.0, 0.0, 0.0, 0.0);
-            setPosition(name, tpos[0], tpos[1], tpos[2]);
+            setAxisAndAngle(name.c_str(), 1.0, 0.0, 0.0, 0.0);
+            setPosition(name.c_str(), tpos[0], tpos[1], tpos[2]);
             usleep(500000);
             tpos[1] = 0.0;
-            setPosition(name, tpos[0], tpos[1], tpos[2]);
+            setPosition(name.c_str(), tpos[0], tpos[1], tpos[2]);
             /*ent->setAxisAndAngle(1.0, 0.0, 0.0, 0.0);
             ent->setAxisAndAngle(1.0, 0.0, 0.0, 0.0);
             ent->setPosition(tpos);
@@ -131,7 +132,8 @@ double TrashBoxCommand::loop() {
                if (name == "petbottle_1" ||
                   name == "petbottle_2" ||
                   name == "petbottle" ||
-                  name == "mayonaise_1") {
+                  name == "mayonaise_1" ||
+                  name == "can_0") {
                   msg = "RobocupReferee/Clean up succeeded" "/1000";
                } else{
                   msg = "RobocupReferee/Clean up failed" "/-600";
@@ -139,24 +141,26 @@ double TrashBoxCommand::loop() {
             /*}*/ /*else if(strcmp(myname(), "trashbox_1") == 0) { //Burning garbage
                // 燃えるゴミに入れるべきものは無い
                msg = "RobocupReferee/Clean up failed" "/-600";
-            } else if(strcmp(myname(), "trashbox_2") == 0) {// 缶瓶
-               if(strcmp(ent->name(), "can_0") == 0 ||
-                  strcmp(ent->name(), "can_1") == 0 ||
-                  strcmp(ent->name(), "can") == 0 ||
-                  strcmp(ent->name(), "can_3") == 0) {
+            } else if(strcmp(myname(), "trashbox_2") == 0) {// 缶瓶*/
+            std::cout << "plop" << std::endl;
+               if(name == "can_0" ||
+                  name == "can_1" ||
+                  name == "can" ||
+                  name == "can_3") {
                   msg = "RobocupReferee/Clean up succeeded" "/1000";
                }
                else {
                   msg = "RobocupReferee/Clean up succeeded" "/-600";
                }
-            }*/
+          /*  }*/
 
-            if (!m_ref) {
-               sendMsgToSrv(msg.c_str());
+            if (m_ref) {
+               std::cout << "ref" << std::endl;
+               sendMsgToSrv(msg.c_str(), "CleanUpReferee");
             }
             ROS_INFO("%s", msg.c_str());
          }
-      }
+      //}
    }
    return retValue;
 } 
@@ -210,7 +214,7 @@ void TrashBoxCommand::getObjPosition(double l_tpos[], std::string obj) {
       l_tpos[1] = srvGetObjPosition.response.posY;
       l_tpos[2] = srvGetObjPosition.response.posZ; 
    } else {
-      ROS_ERROR("Failed to call service trashbox_0_get_obj_position");
+      ROS_ERROR("Failed to call service trashbox_2_get_obj_position");
    }
 }
 
@@ -218,7 +222,7 @@ bool TrashBoxCommand::getCollisionStateOfMainPart() {
    if (serviceGetCollisionStateOfMainPart.call(srvGetCollisionStateOfMainPart)) {
       return srvGetCollisionStateOfMainPart.response.collisionState;
    } else {
-      ROS_ERROR("Failed to call service trashbox_0_get_collision_state_of_main_part");
+      ROS_ERROR("Failed to call service trashbox_2_get_collision_state_of_main_part");
    }
 }
 
@@ -227,7 +231,7 @@ double TrashBoxCommand::checkService(std::string nameJoint) {
    if (serviceCheckService.call(srvCheckService)) {
       return srvCheckService.response.connected;
    } else {
-      ROS_ERROR("Failed to call service trashbox_0_check_service");
+      ROS_ERROR("Failed to call service trashbox_2_check_service");
    }
 }
 
@@ -236,15 +240,15 @@ double TrashBoxCommand::connectToService(std::string nameJoint) {
    if (serviceConnectToService.call(srvConnectToService)) {
       return srvConnectToService.response.connected;
    } else {
-      ROS_ERROR("Failed to call service trashbox_0_connect_to_service");
+      ROS_ERROR("Failed to call service trashbox_2_connect_to_service");
    }
 }
 
-void TrashBoxCommand::getAllEntities(std::vector<std::string> entities) {
+void TrashBoxCommand::getAllEntities() {
    if (serviceGetEntities.call(srvGetEntities)) {
-      entities = srvGetEntities.response.entitiesNames;
+      m_entities = srvGetEntities.response.entitiesNames;
    } else {
-      ROS_ERROR("Failed to call service trashbox_0_get_entities");
+      ROS_ERROR("Failed to call service trashbox_2_get_entities");
    }
 }
 
@@ -253,8 +257,9 @@ bool TrashBoxCommand::isGrasped(std::string entityName) {
    if (serviceIsGrasped.call(srvIsGrasped)) {
       return srvIsGrasped.response.answer;
    } else {
-      ROS_ERROR("Failed to call service trashbox_0_is_grasped");
+      ROS_ERROR("Failed to call service trashbox_2_is_grasped");
    }
+   return false;
 }
 
 void TrashBoxCommand::setAxisAndAngle(std::string name, double ax, double ay, double az, double angle) {
@@ -268,19 +273,21 @@ void TrashBoxCommand::setAxisAndAngle(std::string name, double ax, double ay, do
 
 void TrashBoxCommand::setPosition(std::string name, double ax, double ay, double az) {
    msgSetPosition.name = name;
-   msgSetPosition.posX = ax;
-   msgSetPosition.posY = ay;
-   msgSetPosition.posZ = az;
+   msgSetPosition.x = ax;
+   msgSetPosition.y = ay;
+   msgSetPosition.z = az;
    setPosition_pub.publish(msgSetPosition);
 }
 
-bool TrashBoxCommand::sendMsgToSrv(std::string msg) {
+bool TrashBoxCommand::sendMsgToSrv(std::string msg, std::string name) {
+   srvSendMsgToSrv.request.name = name;
    srvSendMsgToSrv.request.msg = msg;
-   if (serviceSendMsgToSrv.call(srvSendMsgToSrv)) {
-      return srvSendMsgToSrv.response.ok;
-   } else {
-      ROS_ERROR("Failed to call service trashbox_0_send_msg_to_srv");
-   }
+	if (serviceSendMsgToSrv.call(srvSendMsgToSrv)) {
+	   return srvSendMsgToSrv.response.ok;
+	}  else {
+	   ROS_ERROR("Failed to call service trashbox_0_send_msg_to_srv");
+	}
+	return false;
 }
 
 int main(int argc, char **argv)

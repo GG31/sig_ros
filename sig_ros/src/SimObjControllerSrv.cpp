@@ -145,8 +145,10 @@ bool SimObjController::getEntities(sig_ros::getEntities::Request &req, sig_ros::
    std::vector<std::string> m_entities;
    getAllEntities(m_entities);
    res.length = m_entities.size();
+   std::cout << "getEntities size " << m_entities.size();
    for (int i = 0; i < res.length; i++)
    {
+      std::cout << "plop " << m_entities[i] << std::endl;
       res.entitiesNames.push_back(m_entities[i]);
    }
    return true;
@@ -219,5 +221,22 @@ bool SimObjController::getMass(sig_ros::getMass::Request &req, sig_ros::getMass:
       }
       res.mass = ent->getMass();
    }
+   return true;
+}
+
+bool SimObjController::getAngularVelocity(sig_ros::getVelocity::Request &req, sig_ros::getVelocity::Response &res) {
+   Vector3d pos;
+   if (req.name == "") {
+      my->getAngularVelocity(pos);
+   } else {
+      SimObj *ent = getObj(req.name.c_str());
+      if (ent == NULL) {
+         return false;
+      }
+      ent->getAngularVelocity(pos);
+   }
+   res.vX = pos.x();
+   res.vY = pos.y();
+   res.vZ = pos.z();
    return true;
 }

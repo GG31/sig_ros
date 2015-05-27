@@ -37,6 +37,9 @@ add_message_files(
   SetJointQuaternion.msg
   SetMass.msg
   SetRotation.msg
+  AddForceToParts.msg
+  AddJointTorque.msg
+  SetOwner.msg
 )
 
 ## Generate services in the 'srv' folder

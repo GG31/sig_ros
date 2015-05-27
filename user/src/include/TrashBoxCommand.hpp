@@ -11,7 +11,7 @@
 #include <sig_ros/SetJointVelocity.h>
 #include <sig_ros/ReleaseObj.h>
 #include <sig_ros/SetAxisAndAngle.h>
-#include <sig_ros/SetPosition.h>
+#include <sig_ros/Double3D.h>
 //Srv
 #include <sig_ros/getTime.h>
 #include <sig_ros/getObjPosition.h>
@@ -42,9 +42,9 @@ class TrashBoxCommand {
       double checkService(std::string nameJoint);
       double connectToService(std::string nameJoint);
       bool getCollisionStateOfMainPart();
-      void getAllEntities(std::vector<std::string> entities);
+      void getAllEntities();
       bool isGrasped(std::string entityName);
-      bool sendMsgToSrv(std::string msg);
+      bool sendMsgToSrv(std::string msg, std::string name);
       //Msg
       void setAxisAndAngle(std::string name, double ax, double ay, double az, double angle);
       void setPosition(std::string name, double ax, double ay, double az);
@@ -73,7 +73,7 @@ class TrashBoxCommand {
       ros::Publisher setAxisAndAngle_pub;
       sig_ros::SetAxisAndAngle msgSetAxisAndAngle;
       ros::Publisher setPosition_pub;
-      sig_ros::SetPosition msgSetPosition;
+      sig_ros::Double3D msgSetPosition;
       
       ros::Subscriber onRecvMsg_sub;
       ros::Subscriber onCollision_sub;

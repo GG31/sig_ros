@@ -1,4 +1,4 @@
-#include "ModeratorCommand.hpp"
+#include "include/ModeratorCommand.hpp"
 
 ModeratorCommand::ModeratorCommand() {
    init();
@@ -129,7 +129,7 @@ double ModeratorCommand::loop() {
          }
 
          std::string msg = "CleanUpReferee/Collision with [" + m_entNames[k] + "]" "/-100";
-         if (m_ref != false) {
+         if (m_ref) {
             //m_ref->sendMsgToSrv(msg.c_str());
             sendMsgToSrv(msg.c_str(), "CleanUpReferee");
          }
