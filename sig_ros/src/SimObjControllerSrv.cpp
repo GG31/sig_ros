@@ -167,7 +167,7 @@ bool SimObjController::isGrasped(sig_ros::isGrasped::Request &req, sig_ros::isGr
    return true;
 }
 
-bool SimObjController::sendMsgToSrv(sig_ros::sendMsgToSrv::Request &req, sig_ros::sendMsgToSrv::Response &res) { //TODO srv
+bool SimObjController::sendMsgToSrv(sig_ros::sendMsgToSrv::Request &req, sig_ros::sendMsgToSrv::Response &res) { 
    res.ok = m_ref[req.name.c_str()]->sendMsgToSrv(req.msg.c_str());
    return true;
 }

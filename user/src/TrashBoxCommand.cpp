@@ -8,26 +8,26 @@ void TrashBoxCommand::init() {
    /*m_my = getObj(myname());*/
    
    //Topics
-	setJointVelocity_pub = n.advertise<sig_ros::SetJointVelocity>("trashbox_0_setJointVelocity", 1000);
-	releaseObj_pub = n.advertise<sig_ros::ReleaseObj>("trashbox_0_releaseObj", 1000);
-	setAxisAndAngle_pub = n.advertise<sig_ros::SetAxisAndAngle>("trashbox_0_setAxisAndAngle", 1000);
-	setPosition_pub = n.advertise<sig_ros::Double3D>("trashbox_0_setPosition", 1000);
-	onRecvMsg_sub = n.subscribe<sig_ros::MsgRecv>("trashbox_0_onRecvMsg", 1, &TrashBoxCommand::onMsgRecvCallback, this);
-	onCollision_sub = n.subscribe<sig_ros::OnCollision>("trashbox_0_onCollisionMsg", 1, &TrashBoxCommand::onCollisionCallback, this);
+	setJointVelocity_pub = n.advertise<sig_ros::SetJointVelocity>("trashbox_2_setJointVelocity", 1000);
+	releaseObj_pub = n.advertise<sig_ros::ReleaseObj>("trashbox_2_releaseObj", 1000);
+	setAxisAndAngle_pub = n.advertise<sig_ros::SetAxisAndAngle>("trashbox_2_setAxisAndAngle", 1000);
+	setPosition_pub = n.advertise<sig_ros::Double3D>("trashbox_2_setPosition", 1000);
+	onRecvMsg_sub = n.subscribe<sig_ros::MsgRecv>("trashbox_2_onRecvMsg", 1, &TrashBoxCommand::onMsgRecvCallback, this);
+	onCollision_sub = n.subscribe<sig_ros::OnCollision>("trashbox_2_onCollisionMsg", 1, &TrashBoxCommand::onCollisionCallback, this);
 	//Srv
-	serviceGetTime = n.serviceClient<sig_ros::getTime>("trashbox_0_get_time");
-	serviceGetObjPosition = n.serviceClient<sig_ros::getObjPosition>("trashbox_0_get_obj_position");
-	serviceGetPartsPosition = n.serviceClient<sig_ros::getPartsPosition>("trashbox_0_get_parts_position");
-	serviceGetRotation = n.serviceClient<sig_ros::getRotation>("trashbox_0_get_rotation");
-	serviceGetAngleRotation = n.serviceClient<sig_ros::getAngleRotation>("trashbox_0_get_angle_rotation");
-	serviceGetJointAngle = n.serviceClient<sig_ros::getJointAngle>("trashbox_0_get_joint_angle");
-   serviceGraspObj = n.serviceClient<sig_ros::graspObj>("trashbox_0_grasp_obj");
-   serviceCheckService = n.serviceClient<sig_ros::checkService>("trashbox_0_check_service");
-   serviceConnectToService = n.serviceClient<sig_ros::connectToService>("trashbox_0_connect_to_service");
-   serviceGetCollisionState = n.serviceClient<sig_ros::getCollisionState>("trashbox_0_get_collision_state");
-   serviceGetEntities = n.serviceClient<sig_ros::getEntities>("trashbox_0_get_entities");
-   serviceIsGrasped = n.serviceClient<sig_ros::isGrasped>("trashbox_0_is_grasped");
-   serviceSendMsgToSrv = n.serviceClient<sig_ros::sendMsgToSrv>("robot_000_send_msg_to_srv");
+	serviceGetTime = n.serviceClient<sig_ros::getTime>("trashbox_2_get_time");
+	serviceGetObjPosition = n.serviceClient<sig_ros::getObjPosition>("trashbox_2_get_obj_position");
+	serviceGetPartsPosition = n.serviceClient<sig_ros::getPartsPosition>("trashbox_2_get_parts_position");
+	serviceGetRotation = n.serviceClient<sig_ros::getRotation>("trashbox_2_get_rotation");
+	serviceGetAngleRotation = n.serviceClient<sig_ros::getAngleRotation>("trashbox_2_get_angle_rotation");
+	serviceGetJointAngle = n.serviceClient<sig_ros::getJointAngle>("trashbox_2_get_joint_angle");
+   serviceGraspObj = n.serviceClient<sig_ros::graspObj>("trashbox_2_grasp_obj");
+   serviceCheckService = n.serviceClient<sig_ros::checkService>("trashbox_2_check_service");
+   serviceConnectToService = n.serviceClient<sig_ros::connectToService>("trashbox_2_connect_to_service");
+   serviceGetCollisionState = n.serviceClient<sig_ros::getCollisionState>("trashbox_2_get_collision_state");
+   serviceGetEntities = n.serviceClient<sig_ros::getEntities>("trashbox_2_get_entities");
+   serviceIsGrasped = n.serviceClient<sig_ros::isGrasped>("trashbox_2_is_grasped");
+   serviceSendMsgToSrv = n.serviceClient<sig_ros::sendMsgToSrv>("trashbox_2_send_msg_to_srv");
   
    ros::Duration(0.5).sleep();
    getAllEntities();
@@ -59,7 +59,7 @@ double TrashBoxCommand::loop() {
 
    double myPos[3];
    getObjPosition(myPos, "");
-  
+
  /*
   // 自分の位置取得
   Vector3d myPos;
@@ -103,7 +103,6 @@ double TrashBoxCommand::loop() {
          std::string name = m_entities[i].c_str();
          //std::cout << "name " << name << std::endl;
          if (isGrasped(name)) {/*!ent->getIsGrasped()*///) {
-            std::cout << "on grasp " << name << std::endl;
             // ゴミを捨てる
             tpos[1] = tpos[1] / 2;
             tpos[0] = myPos[0];
@@ -142,20 +141,18 @@ double TrashBoxCommand::loop() {
                // 燃えるゴミに入れるべきものは無い
                msg = "RobocupReferee/Clean up failed" "/-600";
             } else if(strcmp(myname(), "trashbox_2") == 0) {// 缶瓶*/
-            std::cout << "plop" << std::endl;
                if(name == "can_0" ||
                   name == "can_1" ||
                   name == "can" ||
                   name == "can_3") {
-                  msg = "RobocupReferee/Clean up succeeded" "/1000";
+                  msg = "CleanUpReferee/Clean up succeeded" "/1000";
                }
                else {
-                  msg = "RobocupReferee/Clean up succeeded" "/-600";
+                  msg = "CleanUpReferee/Clean up succeeded" "/-600";
                }
           /*  }*/
 
             if (m_ref) {
-               std::cout << "ref" << std::endl;
                sendMsgToSrv(msg.c_str(), "CleanUpReferee");
             }
             ROS_INFO("%s", msg.c_str());
@@ -287,7 +284,7 @@ bool TrashBoxCommand::sendMsgToSrv(std::string msg, std::string name) {
 	if (serviceSendMsgToSrv.call(srvSendMsgToSrv)) {
 	   return srvSendMsgToSrv.response.ok;
 	}  else {
-	   ROS_ERROR("Failed to call service trashbox_0_send_msg_to_srv");
+	   ROS_ERROR("Failed to call service trashbox_2_send_msg_to_srv");
 	}
 	return false;
 }

@@ -17,7 +17,7 @@ void ModeratorCommand::init() {
    
    int i, cnt;
 
-   retValue = 0.1;
+   retValue = 0.5;
    //retValue = 0.2;
    colState = false;
    pcolState = false;
