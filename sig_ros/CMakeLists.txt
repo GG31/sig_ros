@@ -60,6 +60,7 @@ add_service_files(
   sendMsgToSrv.srv
   getAllJointAngles.srv
   getMass.srv
+  getVelocity.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -93,7 +94,7 @@ catkin_package(
 include_directories(include
   ${catkin_INCLUDE_DIRS}
 )
-include_directories (/home/gg/sigverse-2.2.2/include/sigverse /home/gg/catkin_ws/src/sig_ros/src/ /home/gg/sigverse-2.2.2/include/sigverse/comm/controller)
+include_directories (/home/gg/sigverse-2.3.0/include/sigverse /home/gg/catkin_ws/src/sig_ros/src/ /home/gg/sigverse-2.3.0/include/sigverse/comm/controller)
 #option(CONTROLLER "controller" ON)
 #include_directories (${SIGVERSE_PATH}/include/sigverse /home/ericgt/sigverse-2.2.0/include/sigverse/comm/controller )
 ## Declare a cpp library

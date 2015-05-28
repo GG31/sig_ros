@@ -5,7 +5,6 @@
 #include <string>
 #include <iostream>
 #include "std_msgs/String.h"
-#include <sig_ros/Velocity.h>
 #define KEYCODE_R 0x43
 #define KEYCODE_L 0x44
 #define KEYCODE_U 0x41

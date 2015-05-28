@@ -23,7 +23,7 @@
 //Srv Obj
 #include <sig_ros/checkService.h> 
 #include <sig_ros/connectToService.h> 
-#include <sig_ros/getCollisionStateOfMainPart.h> 
+#include <sig_ros/getCollisionState.h> 
 #include <sig_ros/getEntities.h> 
 #include <sig_ros/isGrasped.h> 
 #include <sig_ros/sendMsgToSrv.h>
@@ -41,7 +41,7 @@ class TrashBoxCommand {
       void getObjPosition(double l_tpos[], std::string obj);
       double checkService(std::string nameJoint);
       double connectToService(std::string nameJoint);
-      bool getCollisionStateOfMainPart();
+      bool getCollisionState();
       void getAllEntities();
       bool isGrasped(std::string entityName);
       bool sendMsgToSrv(std::string msg, std::string name);
@@ -98,8 +98,8 @@ class TrashBoxCommand {
 	   sig_ros::checkService srvCheckService;
 	   ros::ServiceClient serviceConnectToService;
 	   sig_ros::connectToService srvConnectToService;
-	   ros::ServiceClient serviceGetCollisionStateOfMainPart;
-	   sig_ros::getCollisionStateOfMainPart srvGetCollisionStateOfMainPart;
+	   ros::ServiceClient serviceGetCollisionState;
+	   sig_ros::getCollisionState srvGetCollisionState;
 	   ros::ServiceClient serviceGetEntities;
 	   sig_ros::getEntities srvGetEntities;
 	   ros::ServiceClient serviceIsGrasped;

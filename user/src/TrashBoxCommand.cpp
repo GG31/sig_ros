@@ -24,7 +24,7 @@ void TrashBoxCommand::init() {
    serviceGraspObj = n.serviceClient<sig_ros::graspObj>("trashbox_0_grasp_obj");
    serviceCheckService = n.serviceClient<sig_ros::checkService>("trashbox_0_check_service");
    serviceConnectToService = n.serviceClient<sig_ros::connectToService>("trashbox_0_connect_to_service");
-   serviceGetCollisionStateOfMainPart = n.serviceClient<sig_ros::getCollisionStateOfMainPart>("trashbox_0_get_collision_state_of_main_part");
+   serviceGetCollisionState = n.serviceClient<sig_ros::getCollisionState>("trashbox_0_get_collision_state");
    serviceGetEntities = n.serviceClient<sig_ros::getEntities>("trashbox_0_get_entities");
    serviceIsGrasped = n.serviceClient<sig_ros::isGrasped>("trashbox_0_is_grasped");
    serviceSendMsgToSrv = n.serviceClient<sig_ros::sendMsgToSrv>("robot_000_send_msg_to_srv");
@@ -67,7 +67,7 @@ double TrashBoxCommand::loop() {
 
   // If you are in a collision , check whether the collision is continuing
    if (colState) {
-      bool state = getCollisionStateOfMainPart();
+      bool state = getCollisionState();
 
       // To return to the state it does not have collision
       if (!state) colState = false;
@@ -218,9 +218,11 @@ void TrashBoxCommand::getObjPosition(double l_tpos[], std::string obj) {
    }
 }
 
-bool TrashBoxCommand::getCollisionStateOfMainPart() {
-   if (serviceGetCollisionStateOfMainPart.call(srvGetCollisionStateOfMainPart)) {
-      return srvGetCollisionStateOfMainPart.response.collisionState;
+bool TrashBoxCommand::getCollisionState() {
+   srvGetCollisionState.request.name = "";
+   srvGetCollisionState.request.part = "main";
+   if (serviceGetCollisionState.call(srvGetCollisionState)) {
+      return srvGetCollisionState.response.collisionState;
    } else {
       ROS_ERROR("Failed to call service trashbox_2_get_collision_state_of_main_part");
    }
