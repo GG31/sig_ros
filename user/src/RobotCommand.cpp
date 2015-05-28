@@ -25,7 +25,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
-#include "RobotCommand.hpp"
+#include "include/RobotCommand.hpp"
 
 RobotCommand::RobotCommand() {
    init();

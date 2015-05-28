@@ -28,7 +28,6 @@ void SimObjController::setPositionCallback(const sig_ros::Double3D::ConstPtr& ms
       SimObj *obj = getObj(msg->name.c_str());
       obj->setPosition(msg->x, msg->y, msg->z);
    }
-   std::cout << "setPosition ok" << std::endl;
 }
 
 void SimObjController::setAccelCallback(const sig_ros::Double3D::ConstPtr& msg) {
@@ -190,6 +189,35 @@ void SimObjController::setRotationCallback(const sig_ros::SetRotation::ConstPtr&
    } else {
       SimObj *obj = getObj(msg->name.c_str());
       obj->setRotation(r);
+   }
+}
+
+void SimObjController::addForceToPartsCallback(const sig_ros::AddForceToParts::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->addForceToParts(msg->part.c_str(), msg->x, msg->y, msg->z);
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->addForceToParts(msg->part.c_str(), msg->x, msg->y, msg->z);
+   }
+}
+
+void SimObjController::addJointTorqueCallback(const sig_ros::AddJointTorque::ConstPtr& msg) {
+   if (msg->name == "") {
+      my->addJointTorque(msg->parts.c_str(), msg->torque);
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      obj->addJointTorque(msg->parts.c_str(), msg->torque);
+   }
+}
+
+void SimObjController::setOwnerCallback(const sig_ros::SetOwner::ConstPtr& msg) {
+   if (msg->name == "") {
+      CParts *parts = my->getParts(msg->part.c_str());
+      parts->setOwner(msg->owner.c_str());
+   } else {
+      SimObj *obj = getObj(msg->name.c_str());
+      CParts *parts = obj->getParts(msg->part.c_str());
+      parts->setOwner(msg->owner.c_str());
    }
 }
 /*****************************End callback topic************************/

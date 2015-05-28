@@ -97,7 +97,7 @@ catkin_package(
 include_directories(include
   ${catkin_INCLUDE_DIRS}
 )
-include_directories (/home/gg/sigverse-2.2.2/include/sigverse /home/gg/sigverse-2.2.2/include/sigverse/comm/controller )
+include_directories (/home/gg/sigverse-2.3.0/include/sigverse /home/gg/sigverse-2.3.0/include/sigverse/comm/controller )
 ## Declare a cpp library
 # add_library(user
 #   src/${PROJECT_NAME}/user.cpp
@@ -177,9 +177,9 @@ add_executable(TrashBoxCommand src/TrashBoxCommand.cpp)
 target_link_libraries(TrashBoxCommand ${catkin_LIBRARIES})
 add_dependencies(TrashBoxCommand user_generate_messages_cpp)
 
-ADD_LIBRARY(sig_ros/TrashBox src/TrashBox.cpp)
-target_link_libraries(sig_ros/TrashBox ${catkin_LIBRARIES})
-add_dependencies(sig_ros/TrashBox sig_ros_gencpp)
+#ADD_LIBRARY(sig_ros/TrashBox src/TrashBox.cpp)
+#target_link_libraries(sig_ros/TrashBox ${catkin_LIBRARIES})
+#add_dependencies(sig_ros/TrashBox sig_ros_gencpp)
 
 #ADD_LIBRARY(sig_ros/Moderator src/Moderator.cpp)
 #target_link_libraries(sig_ros/Moderator ${catkin_LIBRARIES})

@@ -40,6 +40,9 @@
 #include "sig_ros/getAngleRotation.h"
 #include <sig_ros/getJointAngle.h>
 #include <sig_ros/graspObj.h>
+#include <sig_ros/AddForceToParts.h>
+#include <sig_ros/AddJointTorque.h>
+#include <sig_ros/SetOwner.h>
 //Obj Srv
 #include <sig_ros/checkService.h>
 #include <sig_ros/connectToService.h>
@@ -50,6 +53,7 @@
 //More Srv
 #include <sig_ros/getAllJointAngles.h>
 #include <sig_ros/getMass.h>
+#include <sig_ros/getVelocity.h>
 
 #define PI 3.141592
 #define DEG2RAD(DEG) ( (PI) * (DEG) / 180.0 )
@@ -93,6 +97,10 @@ class SimObjController : public Controller
       void addRelForceCallback(const sig_ros::Double3D::ConstPtr& msg);
       void addRelForceAtPosCallback(const sig_ros::Double3D3D::ConstPtr& msg);
       void addRelForceAtRelPosCallback(const sig_ros::Double3D3D::ConstPtr& msg);
+      
+      void addForceToPartsCallback(const sig_ros::AddForceToParts::ConstPtr& msg);
+      void addJointTorqueCallback(const sig_ros::AddJointTorque::ConstPtr& msg);
+      void setOwnerCallback(const sig_ros::SetOwner::ConstPtr& msg);
       //Srv
       bool getTime(sig_ros::getTime::Request &req, sig_ros::getTime::Response &res);
       bool getObjPosition(sig_ros::getObjPosition::Request &req, sig_ros::getObjPosition::Response &res);
@@ -112,6 +120,7 @@ class SimObjController : public Controller
       bool getAllJointAngles(sig_ros::getAllJointAngles::Request &req, sig_ros::getAllJointAngles::Response &res);
       bool getJointPosition(sig_ros::getPartsPosition::Request &req, sig_ros::getPartsPosition::Response &res);
       bool getMass(sig_ros::getMass::Request &req, sig_ros::getMass::Response &res);
+      bool getAngularVelocity(sig_ros::getVelocity::Request &req, sig_ros::getVelocity::Response &res);
 
    
       SimObj *my;
@@ -147,6 +156,10 @@ class SimObjController : public Controller
       ros::Subscriber addRelForce_sub;
       ros::Subscriber addRelForceAtPos_sub;
       ros::Subscriber addRelForceAtRelPos_sub;
+      
+      ros::Subscriber addForceToParts_sub;
+      ros::Subscriber addJointTorque_sub;
+      ros::Subscriber setOwner_sub;
       //Srv
       ros::ServiceServer service;
       ros::ServiceServer serviceGetObjPosition;
@@ -165,6 +178,7 @@ class SimObjController : public Controller
       ros::ServiceServer serviceGetAllJointAngles;
       ros::ServiceServer serviceGetJointPosition;
       ros::ServiceServer serviceGetMass;
+      ros::ServiceServer serviceGetAngularVelocity;
 	   
 	   double m_simulatorTime;
 };  

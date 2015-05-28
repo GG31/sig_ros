@@ -40,6 +40,10 @@ void SimObjController::init() {
    addRelForce_sub = n.subscribe<sig_ros::Double3D>(std::string(this->myname()) + "_addRelForce", 1, &SimObjController::addRelForceCallback, this);
    addRelForceAtPos_sub = n.subscribe<sig_ros::Double3D3D>(std::string(this->myname()) + "_addRelForceAtPos", 1, &SimObjController::addRelForceAtPosCallback, this);
    addRelForceAtRelPos_sub = n.subscribe<sig_ros::Double3D3D>(std::string(this->myname()) + "_addRelForceAtRelPos", 1, &SimObjController::addRelForceAtRelPosCallback, this);
+   
+   addForceToParts_sub = n.subscribe<sig_ros::AddForceToParts>(std::string(this->myname()) + "_addForceToParts", 1, &SimObjController::addForceToPartsCallback, this);
+   addJointTorque_sub = n.subscribe<sig_ros::AddJointTorque>(std::string(this->myname()) + "_addJointTorque", 1, &SimObjController::addJointTorqueCallback, this);
+   setOwner_sub = n.subscribe<sig_ros::SetOwner>(std::string(this->myname()) + "_setOwner", 1, &SimObjController::setOwnerCallback, this);
    //Srv
    service = n.advertiseService(std::string(this->myname()) + "_get_time", &SimObjController::getTime, this);
    serviceGetObjPosition = n.advertiseService(std::string(this->myname()) + "_get_obj_position", &SimObjController::getObjPosition, this);
@@ -53,12 +57,13 @@ void SimObjController::init() {
    serviceCheckService = n.advertiseService(std::string(this->myname()) + "_check_service", &SimObjController::srvCheckService, this);
    serviceConnectToService = n.advertiseService(std::string(this->myname()) + "_connect_to_service", &SimObjController::srvConnectToService, this);
    serviceGetEntities = n.advertiseService(std::string(this->myname()) + "_get_entities", &SimObjController::getEntities, this);
-   serviceIsGrasped = n.advertiseService(std::string(this->myname()) + "_is_graped", &SimObjController::isGrasped, this);
+   serviceIsGrasped = n.advertiseService(std::string(this->myname()) + "_is_grasped", &SimObjController::isGrasped, this);
    serviceSendMsgToSrv = n.advertiseService(std::string(this->myname()) + "_send_msg_to_srv", &SimObjController::sendMsgToSrv, this);
    //More Srv
    serviceGetAllJointAngles = n.advertiseService(std::string(this->myname()) + "_get_all_joint_angles", &SimObjController::getAllJointAngles, this);
    serviceGetJointPosition = n.advertiseService(std::string(this->myname()) + "_get_joint_position", &SimObjController::getPartsPosition, this);
    serviceGetMass = n.advertiseService(std::string(this->myname()) + "_get_mass", &SimObjController::getMass, this);
+   serviceGetAngularVelocity = n.advertiseService(std::string(this->myname()) + "_get_angular_velocity", &SimObjController::getAngularVelocity, this);
    
    m_simulatorTime = 0;
 }
