@@ -177,15 +177,7 @@ add_executable(TrashBoxCommand src/TrashBoxCommand.cpp)
 target_link_libraries(TrashBoxCommand ${catkin_LIBRARIES})
 add_dependencies(TrashBoxCommand user_generate_messages_cpp)
 
-#ADD_LIBRARY(sig_ros/TrashBox src/TrashBox.cpp)
-#target_link_libraries(sig_ros/TrashBox ${catkin_LIBRARIES})
-#add_dependencies(sig_ros/TrashBox sig_ros_gencpp)
-
-#ADD_LIBRARY(sig_ros/Moderator src/Moderator.cpp)
-#target_link_libraries(sig_ros/Moderator ${catkin_LIBRARIES})
-#add_dependencies(sig_ros/Moderator sig_ros_gencpp)
-
-ADD_LIBRARY(sig_ros/Wagon src/Wagon.cpp)
-target_link_libraries(sig_ros/Wagon ${catkin_LIBRARIES})
-add_dependencies(sig_ros/Wagon sig_ros_gencpp)
+#ADD_LIBRARY(sig_ros/Wagon src/Wagon.cpp)
+#target_link_libraries(sig_ros/Wagon ${catkin_LIBRARIES})
+#add_dependencies(sig_ros/Wagon sig_ros_gencpp)
 

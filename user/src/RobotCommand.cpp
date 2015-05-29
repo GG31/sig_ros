@@ -241,9 +241,9 @@ double RobotCommand::loop(void) {
 			break;
 		}
 		case 105: {  // fix robot direction for grasping
-			if(time >= m_time1 + 5 && m_state == 105) this->setJointVelocity("RARM_JOINT1", 0.0, 0.0);
-			if(time >= m_time4 + 10 && m_state == 105) this->setJointVelocity("RARM_JOINT4", 0.0, 0.0);
-			if(time >= m_time1 + 5 && time >= m_time4 + 10 && m_state==105) {
+			if(time >= m_time1 + 2 && m_state == 105) this->setJointVelocity("RARM_JOINT1", 0.0, 0.0);
+			if(time >= m_time4 + 2 && m_state == 105) this->setJointVelocity("RARM_JOINT4", 0.0, 0.0);
+			if(time >= m_time1 + 2 && time >= m_time4 + 2 && m_state == 105) {
 				double l_tpos[3];
 				this->recognizeObjectPosition(l_tpos, m_trashName2);
 				double l_moveTime = rotateTowardObj(l_tpos);

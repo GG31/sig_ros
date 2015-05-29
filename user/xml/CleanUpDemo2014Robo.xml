@@ -230,8 +230,6 @@
     <set-attr-value name="z" value="-200.0"/>  
     <set-attr-value name="collision" value="true"/>
     <set-attr-value name="language" value="c++"/>
-    <set-attr-value name="implementation"
-                    value="/home/gg/catkin_ws/devel/lib/libsig_ros/Wagon.so"/>
     <set-attr-value name="graspable" value="false"/>
   </instanciate>
 

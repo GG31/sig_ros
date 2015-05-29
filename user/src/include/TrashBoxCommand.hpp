@@ -37,7 +37,6 @@ class TrashBoxCommand {
    private:
       //Srv 
       void onMsgRecvCallback(const sig_ros::MsgRecv::ConstPtr& msg);
-      void onCollisionCallback(const sig_ros::OnCollision::ConstPtr& msg);
       void getObjPosition(double l_tpos[], std::string obj);
       double checkService(std::string nameJoint);
       double connectToService(std::string nameJoint);
@@ -56,6 +55,7 @@ class TrashBoxCommand {
 
       // The height direction of the extent that is entered dust (y-direction )
       double tboxMin_y, tboxMax_y;
+      bool check;
 
       bool   colState;      // In collision
       double retValue;
@@ -76,7 +76,6 @@ class TrashBoxCommand {
       sig_ros::Double3D msgSetPosition;
       
       ros::Subscriber onRecvMsg_sub;
-      ros::Subscriber onCollision_sub;
       
       //Service
       ros::ServiceClient serviceGetTime;
