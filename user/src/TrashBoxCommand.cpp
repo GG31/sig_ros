@@ -220,14 +220,13 @@ int main(int argc, char **argv)
 	
 	TrashBoxCommand* trashBox = new TrashBoxCommand();
 	double result = 0;
-   while (ros::ok())//
+   while (ros::ok())
    {
       result = trashBox->loop();
       if (result == -1) {
          return 1;
       } else {
          ros::spinOnce();
-         //loop_rate.sleep();
          ros::Duration(result).sleep();
       }
    }

@@ -9,7 +9,7 @@ void SimObjController::init() {
    int argc = 0;
    char** argv = NULL;
    
-   ros::init(argc, argv, std::string(this->myname()) + "_sig_controller_node");//+std::string(this->myname())
+   ros::init(argc, argv, std::string(this->myname()) + "_sig_controller_node");
    ros::NodeHandle n;
    my = getObj(myname());
    

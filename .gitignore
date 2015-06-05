@@ -1,6 +1,8 @@
 *~
 *.so
 tutorial
+learning_tf
+gmapping
 *.aux
 *.log
 *.gz

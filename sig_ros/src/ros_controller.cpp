@@ -20,20 +20,8 @@ int main(int argc, char** argv)
 {
    ros::init(argc, argv, "ros_command_node");
    ros::NodeHandle n;
-   //ros::Subscriber sub = n.subscribe("initSigverse", 1000, chatterCallback); //Generate a controller for each agent with ID
-   //ros::Publisher speak = n.advertise<std_msgs::String>("speak", 1000);
-   //std_msgs::String mesg;
-   //mesg.data = "plop";
-   //speak.publish(mesg);
-   //ROS_INFO("Fuck you 2");
-   // Put them in the xml file
-   // Compile all controller
-   // Launch sigserver
-   std::string command = "sigserver.sh -w /home/gg/catkin_ws/src/user/xml/CleanUpDemo2014Robo.xml";// Place of CleaUpDemo2014Robo.xml 
-   //+ std::string(argv[1]);// devel/lib/libsig_ros/RobotInMove.xml
+   std::string command = "sigserver.sh -w "+ std::string(argv[1]);// Place of xml file
    system (command.c_str());
    
-   //ros::Rate loop_rate(100);
-   //ros::spin();
    return(0);
 }

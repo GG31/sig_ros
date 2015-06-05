@@ -49,7 +49,7 @@ source devel/setup.bash
 * Go to ~/catkin_ws/src/user/xml directory
 * Run sig_ros : 
 ```
-rosrun sig_ros ros_controller
+rosrun sig_ros ros_controller ~/catkin_ws/src/user/xml/CleanUpDemo2014Robo.xml
 ```
 * Connect the SIGViewer and start the simulation, start also the Referee service if your run the vDemoCleanUpWithReferee
 * Run the node for moving the robot on the user package : 

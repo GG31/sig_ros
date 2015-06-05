@@ -121,7 +121,6 @@ void RobotCommand::stopRobotMove(void) {
 
 double RobotCommand::loop(void) {
    double time = getTime();
-   //std::cout << "getTime " << time << " state : " << m_state << std::endl;
    switch(m_state) {
 		case 0: {
 			break;
