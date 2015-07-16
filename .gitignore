@@ -3,8 +3,11 @@
 tutorial
 learning_tf
 gmapping
+try_ik
 *.aux
 *.log
 *.gz
 *.toc
 *.bak
+*.swp
+*.bag

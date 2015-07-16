@@ -1,0 +1,10 @@
+<launch>
+   <arg name="model" default="$(find sig_ros)/robot_desc/out.urdf"/>
+   <param name="robot_description" textfile="$(arg model)" />
+   <param name="robot_description_semantic" textfile="$(find sig_ros)/robot_desc/bobby.srdf" />
+   <rosparam command="load" file="$(find sig_ros)/robot_desc/kinematics.yaml"/>
+   <!-- Turtlesim Node-->
+   <node pkg="sig_ros" type="ros_controller" name="ros_controller_1" args="/home/gg/catkin_ws/src/user/xml/CleanUpDemo2014Robo.xml"/>
+
+   <!--<node pkg="user" type="RobotCommand" name="RobotCommand1" />-->
+</launch>

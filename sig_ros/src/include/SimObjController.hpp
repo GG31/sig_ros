@@ -70,6 +70,7 @@ class SimObjController : public Controller
       
    protected:
       void init();
+      double m_simulatorTime;
       
    private:
       //SimObj Msg
@@ -180,7 +181,7 @@ class SimObjController : public Controller
       ros::ServiceServer serviceGetMass;
       ros::ServiceServer serviceGetAngularVelocity;
 	   
-	   double m_simulatorTime;
+	   
 };  
 
 #endif
