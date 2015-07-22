@@ -181,7 +181,7 @@ bool SimObjController::getAllJointAngles(sig_ros::getAllJointAngles::Request &re
    return true;
 }
 
-bool SimObjController::getJointPosition(sig_ros::getPartsPosition::Request &req, sig_ros::getPartsPosition::Response &res) {
+/*bool SimObjController::getJointPosition(sig_ros::getPartsPosition::Request &req, sig_ros::getPartsPosition::Response &res) {
    Vector3d vec;
    if (req.name == "") {
       my->getJointPosition(vec, req.part.c_str());
@@ -195,11 +195,8 @@ bool SimObjController::getJointPosition(sig_ros::getPartsPosition::Request &req,
    res.posX = vec.x();
    res.posY = vec.y();
    res.posZ = vec.z();
-   /*res.posX = 0.0;
-   res.posY = 0.0;
-   res.posZ = 0.0;*/
    return true;
-}
+}*/
 
 bool SimObjController::getMass(sig_ros::getMass::Request &req, sig_ros::getMass::Response &res) {
    if (req.name == "") {

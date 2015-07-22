@@ -31,8 +31,11 @@
 #include <boost/math/constants/constants.hpp>
 
 #include <moveit_msgs/GetPositionIK.h>
-
-
+#include <math.h>
+#include <string>
+#include <ctype.h>
+#include <stdio.h>
+#include "matrix.hpp"
 #include <boost/foreach.hpp>
 #define foreach BOOST_FOREACH
 
@@ -41,35 +44,43 @@ class RobotController : public SimObjController
    public:
       void onInit(InitEvent &evt);
       double onAction(ActionEvent &evt);
-      
+
    private:
       void calculateTransform(ros::Time time);
       void scan(ros::Time time);
-      void fillPositionArms();
+      void fillPositionArms(std::string arm);
       bool ik(sig_ros::ik::Request &req, sig_ros::ik::Response &res); 
+      bool getJointPosition(sig_ros::getPartsPosition::Request &req, sig_ros::getPartsPosition::Response &res);
+      float norm(Vector3d v1, Vector3d v2);
+      Vector3d pointAfterRotation(Vector3d point, Vector3d center, float angle);
+      std::string getLetter(std::string arm);
       //Robot
       void setWheelCallback(const sig_ros::SetWheel::ConstPtr& wheel);
       void setWheelVelocityCallback(const sig_ros::SetWheelVelocity::ConstPtr& wheel);
-      
+
       RobotObj *myRobot;
-      
+
       Vector3d position;
       std::map<std::string, Vector3d> positionArms;
       Rotation rotation;
       ViewService *m_view;
-      
+
       //Topic
       ros::Subscriber setWheel_sub;
       ros::Subscriber setWheelVelocity_sub;
       ros::Publisher scan_pub;
       ros::Publisher clock_pub;
-      
-      ros::ServiceServer serviceIK;       
+
+      ros::ServiceServer serviceGetJointPosition;
+      ros::ServiceServer serviceIK;      
+      //const Eigen::Affine3d end_effector_default_pose;
+      robot_model::RobotModelPtr kinematic_model;
+      const robot_model::JointModelGroup* joint_model_group;
       //Robot
       double m_radius;           // radius of the wheel
-	   double m_distance;
-	   
-	   double x;
+      double m_distance;
+
+      double x;
       double y;
       double th;
 
@@ -78,9 +89,9 @@ class RobotController : public SimObjController
       double vth;
 
       ros::Time current_time, last_time;
-      
+
       //rosbag::View view;
-      
+
       std::vector<std::string> topics;
       rosbag::Bag bag;
       int switchVal;

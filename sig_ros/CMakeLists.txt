@@ -180,7 +180,7 @@ add_executable(ros_controller src/ros_controller.cpp)
 target_link_libraries(ros_controller ${catkin_LIBRARIES})
 add_dependencies(ros_controller sig_ros_gencpp)
 
-ADD_LIBRARY(sig_ros/RobotController src/RobotController.cpp src/SimObjController.cpp src/SimObjControllerSrv.cpp src/SimObjControllerTopic.cpp)
+ADD_LIBRARY(sig_ros/RobotController src/RobotController.cpp src/SimObjController.cpp src/SimObjControllerSrv.cpp src/SimObjControllerTopic.cpp src/matrix.cpp)
 target_link_libraries(sig_ros/RobotController ${catkin_LIBRARIES})
 add_dependencies(sig_ros/RobotController sig_ros_gencpp)
 

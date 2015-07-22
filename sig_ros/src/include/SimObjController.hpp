@@ -119,7 +119,7 @@ class SimObjController : public Controller
       bool sendMsgToSrv(sig_ros::sendMsgToSrv::Request &req, sig_ros::sendMsgToSrv::Response &res);
       //More Srv
       bool getAllJointAngles(sig_ros::getAllJointAngles::Request &req, sig_ros::getAllJointAngles::Response &res);
-      bool getJointPosition(sig_ros::getPartsPosition::Request &req, sig_ros::getPartsPosition::Response &res);
+      //bool getJointPosition(sig_ros::getPartsPosition::Request &req, sig_ros::getPartsPosition::Response &res);
       bool getMass(sig_ros::getMass::Request &req, sig_ros::getMass::Response &res);
       bool getAngularVelocity(sig_ros::getVelocity::Request &req, sig_ros::getVelocity::Response &res);
 
@@ -177,7 +177,7 @@ class SimObjController : public Controller
       ros::ServiceServer serviceSendMsgToSrv;
       //More Srv
       ros::ServiceServer serviceGetAllJointAngles;
-      ros::ServiceServer serviceGetJointPosition;
+//      ros::ServiceServer serviceGetJointPosition;
       ros::ServiceServer serviceGetMass;
       ros::ServiceServer serviceGetAngularVelocity;
 	   
