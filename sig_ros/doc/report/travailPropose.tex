@@ -29,8 +29,8 @@ On the Windows part, two things, SIGViewer which is a GUI and aim to show to the
 
 \section{Objective}
 As seen section~\ref{sec:ROS}, using ROS to create and manipulate agents on SIGVerse will be very useful. So, I have to design and develop an interface between SIGVerse and ROS.\\
-This interface has to make available the all fonctionnalities of SIGVerse from ROS, that means initializing one or more agents, make them act and make the services working though ROS.\\
-The agents can be : robot, human or object.\\
+This interface has to make available the features of SIGVerse from ROS, that means initializing one or more agents, make them act and make the services working though ROS.\\
+The agents can be: robot, human or object.\\
 The expected architecture is shown figure~\ref{fig:SIGVerseROS}. We can see the SIGServer and the ``Controller'' inside the ROS interface, that means the user will not need to interact with SIGVerse, he only defined the agent in the xml file and then, interacting with ROS, send messages to the server though the interface. The user will not need to write the ``Controller'', it will be automatically generated.\\
 This is an example with one xml file and one controller, but it will be necessary to generalise it to more than one.
 
@@ -40,13 +40,13 @@ This is an example with one xml file and one controller, but it will be necessar
 \captionof{figure}{SIGVerse with ROS interface}\label{fig:SIGVerseROS}%      only if needed  
 \end{minipage}
 
-\section{Fonctionalities requiered}
-\subsection{General requierement} %Besoins généraux
+\section{Functionalities requiered}
+\subsection{General requirement} %Besoins généraux
 Currently, SIGVerse has two parts: SIGServer and SIGViewer and they communicate directly together as seen figure~\ref{fig:SIGVerseSimple}.\\
 The aim is to find a way for the ROS users for using SIGVerse. That means the ROS user will only write ROS code and this will be enough for manipulate the simulator.\\
 Right now, if the ROS user wants to do it, he has to make the interface himself, mapping the SIGVerse function which is needed. That is why, a common interface with the main functions are useful. After that, the user will have the possibility to enhance it.\\
 
-Three agents are available on SIGVerse: the robot, the human and the object and different actions are available for each one. But some same actions are available for many of them. Indead the robot agent inherit from the object agent and the human can be a special robot.
+Three agents are available on SIGVerse: the robot, the human and the object and different actions are available for each one. But some same actions are available for many of them. Indeed the robot agent inherits from the object agent and the human can be a special robot.
 
 \subsection{Use case}
 The main use case is for the Robocup competition. Indeed, with this interface, ROS users could participate to the competition.\\
@@ -58,6 +58,22 @@ The aim of the follow me task is to follow someone without collision, don't lose
 The EGPSR task is the interaction between the human and the robot. The man asks the robot for an object in a room and the robot has to go to the right room and get it back.\\
 First of all, the clean up task has to work with ROS, that means the methods used with the robot and some methods of objects.\\
 After that, there is a third agent, the human, so the follow up task will be a pertinent example.
+
+\subsection{To go further}
+To go further, the adaptation of some ROS functionalities to SIGVerse will be a great advantage for SIGVerse. Indeed, some actions can take a lot of time to program inside SIGVerse whereas just few information can be needed by a ROS package to obtain the same information.\\
+Two packages ROS are suggested, SLAM\footnote{Simultaneous Localization And Mapping} and ik\footnote{Inverse Kinematics}.
+
+\subsubsection{SLAM}
+The SLAM problem appears like the chicken and egg problem. Indeed, it is the fact of creating the map at the same time as localizing himself inside the map.
+
+The main reason of this package choose is because inside SIGVerse, the robot know the map because it is inside a simulator and has access to it. I think to be closer the reality, the robot has to discover the map and no taking it and making his path planning.
+
+As explained on the ros tutorial of the slam\_gmapping package, this package can be used like a black box. We only need to know what the package need as entry and what it will produce.
+
+\subsubsection{Inverse Kinematics}
+Inverse kinematics is the use of the kinematics equations in order to provide the desired position of the end effector. That means, with the defined position of the end effector, the inverse kinematics found the position of all joints of the arm.\\
+
+This choice is due to the observation of this lack of this functionnality very important inside SIGVerse. Indeed, to program the user side of the Robocup demonstration, grasping an object with an arm was not instinctive at all. The user has to find each angle (shoulder, elbow,...) by himself and animate  the arm. %(trigger the movement of the arm)
  
 
 \section{ROS and SIGVerse}

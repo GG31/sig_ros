@@ -8,7 +8,7 @@
 \hline
 	N & Title & Start & End\\\hline
 	\rowcolor{cyan} L1 & Management & & \\
-	T1	& Planification & S1 & S4\\
+	T1	& Planning & S1 & S4\\
 	T2	& Project monitoring & S5 & S24\\
 	\rowcolor{cyan}L2 & SIGServer and agents integration & &\\
 	T1	& Run SIGServer from ROS & S5 & S5\\
@@ -222,3 +222,33 @@ time slot format=isodate,
   	\_is\_grasped & \textbf{entityName} : string & \textbf{answer} : bool & True if ``entityName'' is grasped, false otherwise. If no entity name is provided, it will return the answer for the agent which is asked\\
   	\hline
 \end{supertabular}
+
+%\section{pr2 tree}\label{annex:pr2Tree}
+\includepdf[scale=0.95,pages=1,pagecommand=\section{Pr2 tree}\label{annex:pr2Tree}]{images/pr2Tree.pdf}
+%\section{Minimal structure tree}\label{annex:minStruct}
+\includepdf[scale=0.95,pages=1,pagecommand=\section{Minimal structure tree}\label{annex:minStruct}]{images/bobbyTree.pdf}
+
+
+\section{Position data of SIGVerse for an ik movement}\label{annex:dataPos}
+\noindent\begin{minipage}{\linewidth}% to keep image and caption on one page
+\begin{center}
+\begin{tabular}{| l | m{8cm} | c | c |}
+\hline
+	Position asked & Result SIGVerse & Point name & End\\\hline
+	0 0 -0.1 & 116.64 82.82 41.99 & B & \\
+	0 -0.1 0 & 116.64 93.83 43.51 & C & S4\\
+	0 0 0.05 & 116.64 99.20 41.39 & A & S24\\
+	0 0.1 0 & 116.64 93.83 43.50 & C.. &\\
+	0 0.15 0 & 116.64 93.98 44.83 & D & S5\\
+	0 -0.1 -0.1 & 116.64 82.93 43.59 & E & S7\\
+	0 -0.1 -0.15 & 116.64 77.59 43.16 & F & S8 \\
+	0 -0.15 -0.1 & 116.64 83.18 45.33 & G &\\
+	0 0.1 0.03	& 116.64 97.05 43.05 & H & S24\\
+	0 0.16 0 & 116.64 94.24 44.91 & J & S24\\
+	0 -0.17 -0.1 & 116.64 83.56 46.09 & K & S24\\
+	0 0 -0.08 & 116.64 85.05 42.13 & L & S24\\
+	0 0 -0.05 & 116.64 88.38 42.22 & M & S24\\\hline
+\end{tabular}
+\end{center}
+\captionof{table}{Jobs}\label{tab:lots}%      only if needed  
+\end{minipage}
