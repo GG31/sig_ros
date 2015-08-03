@@ -9,7 +9,7 @@ void SimObjController::init() {
    int argc = 0;
    char** argv = NULL;
    
-   ros::init(argc, argv, std::string(this->myname()) + "_sig_controller_node");//+std::string(this->myname())
+   ros::init(argc, argv, std::string(this->myname()) + "_sig_controller_node");
    ros::NodeHandle n;
    my = getObj(myname());
    
@@ -61,7 +61,7 @@ void SimObjController::init() {
    serviceSendMsgToSrv = n.advertiseService(std::string(this->myname()) + "_send_msg_to_srv", &SimObjController::sendMsgToSrv, this);
    //More Srv
    serviceGetAllJointAngles = n.advertiseService(std::string(this->myname()) + "_get_all_joint_angles", &SimObjController::getAllJointAngles, this);
-   serviceGetJointPosition = n.advertiseService(std::string(this->myname()) + "_get_joint_position", &SimObjController::getPartsPosition, this);
+   //serviceGetJointPosition = n.advertiseService(std::string(this->myname()) + "_get_joint_position", &SimObjController::getJointPosition, this);
    serviceGetMass = n.advertiseService(std::string(this->myname()) + "_get_mass", &SimObjController::getMass, this);
    serviceGetAngularVelocity = n.advertiseService(std::string(this->myname()) + "_get_angular_velocity", &SimObjController::getAngularVelocity, this);
    

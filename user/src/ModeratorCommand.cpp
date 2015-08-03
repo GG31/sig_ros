@@ -18,7 +18,6 @@ void ModeratorCommand::init() {
    int i, cnt;
 
    retValue = 0.5;
-   //retValue = 0.2;
    colState = false;
    pcolState = false;
    roboName = "robot_000";
@@ -31,7 +30,7 @@ void ModeratorCommand::init() {
    prv1Pos[1] = 0;
    prv1Pos[2] = 0; 
    m_ref = false; 
-   //getAllEntities(m_entities);
+
    ros::ServiceClient service = n.serviceClient<sig_ros::getEntities>("robot_000_get_entities");
    sig_ros::getEntities srv;
 	if (service.call(srv)) {
@@ -85,7 +84,6 @@ double ModeratorCommand::loop() {
 	
    if(!available && m_ref != false) m_ref = false;
    else if(available && m_ref == false){
-      //m_ref = false;//connectToService("CleanUpReferee");
       ros::ServiceClient service = n.serviceClient<sig_ros::connectToService>("robot_000_connect_to_service");
       sig_ros::connectToService srv;
       srv.request.serviceName = "CleanUpReferee";
@@ -100,48 +98,32 @@ double ModeratorCommand::loop() {
    //----------------------------------
    getObjPosition(crrPos, roboName.c_str());
    getRotation(crrRot, roboName.c_str());
-   /*SimObj *r_my = getObj(roboName.c_str());
-   // for body configuration
-   
-   r_my->getPosition(crrPos);
-   r_my->getRotation(crrRot);
-
-   Vector3d rsLenVec(prv1Pos.x()-crrPos.x(), prv1Pos.y()-crrPos.y(), prv1Pos.z()-crrPos.z());
-   rsLen = rsLenVec.length();
-*/
    double temp[3] = {prv1Pos[0] - crrPos[0], prv1Pos[1] - crrPos[1], prv1Pos[2] - crrPos[2]};
    double rsLen = sqrt(temp[0]*temp[0] + temp[1]*temp[1] + temp[2]*temp[2]);
 
    // 
    for (int k = 0; k < entNum; k++){
- //     SimObj* locObj = getObj(m_entNames[k].c_str());
-  //    CParts *parts = locObj->getMainParts();
       bool state = getCollisionState("main", m_entNames[k].c_str());;
 
       if (state){
          colState=true;       // collided with main body of robot
          if (rsLen == 0.0) {
-            //r_my->setRotation(prv1Rot);
             setRotation(prv1Rot[0], prv1Rot[1], prv1Rot[2], prv1Rot[3], "");
          } else {
-            //r_my->setPosition(prv1Pos);
             setPosition(prv1Pos[0], prv1Pos[1], prv1Pos[2], "");
          }
 
          std::string msg = "CleanUpReferee/Collision with [" + m_entNames[k] + "]" "/-100";
          if (m_ref) {
-            //m_ref->sendMsgToSrv(msg.c_str());
             sendMsgToSrv(msg.c_str(), "CleanUpReferee");
          }
          else {
             ROS_INFO("%s", msg.c_str());
-            //LOG_MSG((msg.c_str()));
          }
          break;
       }
    }
 
-   //  if(!colState && !pcolState){
    if (!colState) {
       prv1Pos[0] = crrPos[0];
       prv1Pos[1] = crrPos[1];
@@ -150,15 +132,12 @@ double ModeratorCommand::loop() {
       prv1Rot[1] = crrRot[1];
       prv1Rot[2] = crrRot[2];
       prv1Rot[3] = crrRot[3];
-      //colState=false;     // reset collision condition
    } else if (pcolState) {
       for (int i = 0; i < jtnum; i++) {
          prv1JAng_r[i] = crrJAng_r[i];
       }
       pcolState = false;
    } else {
-      //Do nothing on "collided" condition
-      //    LOG_MSG((colPtName.c_str()));
       colState = false;
    }
 
@@ -244,14 +223,13 @@ int main(int argc, char **argv)
 	ModeratorCommand* moderatorCommand = new ModeratorCommand();
 	double result = 0;
 	
-   while (ros::ok())//
+   while (ros::ok())
    {
       result = moderatorCommand->loop();
       if (result == -1) {
          return 1;
       } else {
          ros::spinOnce();
-         //loop_rate.sleep();
          ros::Duration(result).sleep();
       }
    }

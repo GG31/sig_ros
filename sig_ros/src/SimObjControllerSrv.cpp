@@ -7,8 +7,7 @@ bool SimObjController::getTime(sig_ros::getTime::Request &req, sig_ros::getTime:
    return true;
 }
 
-bool SimObjController::getObjPosition(sig_ros::getObjPosition::Request &req, sig_ros::getObjPosition::Response &res) //OK
-{
+bool SimObjController::getObjPosition(sig_ros::getObjPosition::Request &req, sig_ros::getObjPosition::Response &res) {
    Vector3d pos;
    if (req.name == "") {
       my->getPosition(pos);
@@ -25,8 +24,7 @@ bool SimObjController::getObjPosition(sig_ros::getObjPosition::Request &req, sig
    return true;
 }
 
-bool SimObjController::getPartsPosition(sig_ros::getPartsPosition::Request &req, sig_ros::getPartsPosition::Response &res) //OK
-{
+bool SimObjController::getPartsPosition(sig_ros::getPartsPosition::Request &req, sig_ros::getPartsPosition::Response &res) {
    Vector3d pos;
    //my->getParts(req.part.c_str());
    if (req.name == "") {
@@ -44,8 +42,7 @@ bool SimObjController::getPartsPosition(sig_ros::getPartsPosition::Request &req,
    return true;
 }
 
-bool SimObjController::getRotation(sig_ros::getRotation::Request &req, sig_ros::getRotation::Response &res) //OK
-{
+bool SimObjController::getRotation(sig_ros::getRotation::Request &req, sig_ros::getRotation::Response &res) {
    Rotation ownRotation;
    if (req.name == "") {
 	   my->getRotation(ownRotation);
@@ -63,8 +60,7 @@ bool SimObjController::getRotation(sig_ros::getRotation::Request &req, sig_ros::
    return true;
 }
 
-bool SimObjController::getAngleRotation(sig_ros::getAngleRotation::Request &req, sig_ros::getAngleRotation::Response &res) //OK
-{
+bool SimObjController::getAngleRotation(sig_ros::getAngleRotation::Request &req, sig_ros::getAngleRotation::Response &res) {
 	Vector3d vector3d = Vector3d(req.x, req.y, req.z);
 	if (req.axis == "z") { 
 	   res.angle = vector3d.angle(Vector3d(0.0, 0.0, 1.0));
@@ -78,8 +74,7 @@ bool SimObjController::getAngleRotation(sig_ros::getAngleRotation::Request &req,
    return true;
 }
 
-bool SimObjController::getJointAngle(sig_ros::getJointAngle::Request &req, sig_ros::getJointAngle::Response &res) //OK but always return 0...
-{
+bool SimObjController::getJointAngle(sig_ros::getJointAngle::Request &req, sig_ros::getJointAngle::Response &res) {
    if (req.name == "") {
       res.angle = my->getJointAngle(req.nameArm.c_str());
    } else {
@@ -92,15 +87,13 @@ bool SimObjController::getJointAngle(sig_ros::getJointAngle::Request &req, sig_r
    return true;
 }
 
-bool SimObjController::graspObj(sig_ros::graspObj::Request &req, sig_ros::graspObj::Response &res)
-{
+bool SimObjController::graspObj(sig_ros::graspObj::Request &req, sig_ros::graspObj::Response &res) {
    CParts *parts = my->getParts(req.part.c_str());
    res.ok = parts->graspObj(req.obj.c_str());
    return true;
 }
 
-bool SimObjController::getCollisionState(sig_ros::getCollisionState::Request &req, sig_ros::getCollisionState::Response &res) //OK
-{
+bool SimObjController::getCollisionState(sig_ros::getCollisionState::Request &req, sig_ros::getCollisionState::Response &res) {
    CParts *parts;
    if (req.name == "" && req.part == "main") {
       parts = my->getMainParts();
@@ -125,15 +118,14 @@ bool SimObjController::getCollisionState(sig_ros::getCollisionState::Request &re
       return false;
 }
 
-bool SimObjController::srvCheckService(sig_ros::checkService::Request &req, sig_ros::checkService::Response &res) //TODO test
-{
+bool SimObjController::srvCheckService(sig_ros::checkService::Request &req, sig_ros::checkService::Response &res) {
    res.connected = checkService(req.serviceName.c_str()); 
    return true;
 }
 
-bool SimObjController::srvConnectToService(sig_ros::connectToService::Request &req, sig_ros::connectToService::Response &res) { //TODO test
+bool SimObjController::srvConnectToService(sig_ros::connectToService::Request &req, sig_ros::connectToService::Response &res) { 
    std::string serviceName = req.serviceName.c_str();
-   m_ref[serviceName] = connectToService(serviceName);//"RobocupReferee"
+   m_ref[serviceName] = connectToService(serviceName);
    if (m_ref[serviceName] != NULL)
       res.connected = true;
    else
@@ -141,20 +133,18 @@ bool SimObjController::srvConnectToService(sig_ros::connectToService::Request &r
    return true;
 }
 
-bool SimObjController::getEntities(sig_ros::getEntities::Request &req, sig_ros::getEntities::Response &res) { //OK
+bool SimObjController::getEntities(sig_ros::getEntities::Request &req, sig_ros::getEntities::Response &res) {
    std::vector<std::string> m_entities;
    getAllEntities(m_entities);
    res.length = m_entities.size();
-   std::cout << "getEntities size " << m_entities.size();
    for (int i = 0; i < res.length; i++)
    {
-      std::cout << "plop " << m_entities[i] << std::endl;
       res.entitiesNames.push_back(m_entities[i]);
    }
    return true;
 }
 
-bool SimObjController::isGrasped(sig_ros::isGrasped::Request &req, sig_ros::isGrasped::Response &res) { //OK
+bool SimObjController::isGrasped(sig_ros::isGrasped::Request &req, sig_ros::isGrasped::Response &res) { 
    if (req.name == "") {
       res.answer = my->getIsGrasped();
    } else {
@@ -172,7 +162,7 @@ bool SimObjController::sendMsgToSrv(sig_ros::sendMsgToSrv::Request &req, sig_ros
    return true;
 }
 
-bool SimObjController::getAllJointAngles(sig_ros::getAllJointAngles::Request &req, sig_ros::getAllJointAngles::Response &res) { //TODO ask for getAllJointAngles when my is not robot_000
+bool SimObjController::getAllJointAngles(sig_ros::getAllJointAngles::Request &req, sig_ros::getAllJointAngles::Response &res) {
    std::map<std::string, double> list;
    if (req.name == "") {
       list = my->getAllJointAngles();
@@ -191,7 +181,7 @@ bool SimObjController::getAllJointAngles(sig_ros::getAllJointAngles::Request &re
    return true;
 }
 
-bool SimObjController::getJointPosition(sig_ros::getPartsPosition::Request &req, sig_ros::getPartsPosition::Response &res) {//OK
+/*bool SimObjController::getJointPosition(sig_ros::getPartsPosition::Request &req, sig_ros::getPartsPosition::Response &res) {
    Vector3d vec;
    if (req.name == "") {
       my->getJointPosition(vec, req.part.c_str());
@@ -205,11 +195,8 @@ bool SimObjController::getJointPosition(sig_ros::getPartsPosition::Request &req,
    res.posX = vec.x();
    res.posY = vec.y();
    res.posZ = vec.z();
-   /*res.posX = 0.0;
-   res.posY = 0.0;
-   res.posZ = 0.0;*/
    return true;
-}
+}*/
 
 bool SimObjController::getMass(sig_ros::getMass::Request &req, sig_ros::getMass::Response &res) {
    if (req.name == "") {

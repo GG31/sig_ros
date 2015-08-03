@@ -4,7 +4,16 @@ project(sig_ros)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs message_generation )
+find_package(catkin REQUIRED COMPONENTS 
+   roscpp 
+   rospy 
+   std_msgs 
+   message_generation 
+   tf
+   moveit_core 
+   pr2_moveit_tutorials
+   rosbag
+)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -61,6 +70,7 @@ add_service_files(
   getAllJointAngles.srv
   getMass.srv
   getVelocity.srv
+  ik.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -170,7 +180,7 @@ add_executable(ros_controller src/ros_controller.cpp)
 target_link_libraries(ros_controller ${catkin_LIBRARIES})
 add_dependencies(ros_controller sig_ros_gencpp)
 
-ADD_LIBRARY(sig_ros/RobotController src/RobotController.cpp src/SimObjController.cpp src/SimObjControllerSrv.cpp src/SimObjControllerTopic.cpp)
+ADD_LIBRARY(sig_ros/RobotController src/RobotController.cpp src/SimObjController.cpp src/SimObjControllerSrv.cpp src/SimObjControllerTopic.cpp src/matrix.cpp)
 target_link_libraries(sig_ros/RobotController ${catkin_LIBRARIES})
 add_dependencies(sig_ros/RobotController sig_ros_gencpp)
 

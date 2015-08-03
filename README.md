@@ -17,7 +17,11 @@ source devel/setup.bash
 ```
 git clone https://github.com/GG31/sig_ros.git
 ```
-* Go to the tag vDemoCleanUp
+* Go to the tag vDemoCleanUpWithReferee ou vDemoCleanUp
+```
+git checkout tags/vDemoCleanUpWithReferee
+```
+ou
 ```
 git checkout tags/vDemoCleanUp
 ```
@@ -45,11 +49,20 @@ source devel/setup.bash
 * Go to ~/catkin_ws/src/user/xml directory
 * Run sig_ros : 
 ```
-rosrun sig_ros ros_controller
+rosrun sig_ros ros_controller ~/catkin_ws/src/user/xml/CleanUpDemo2014Robo.xml
 ```
-* Connect the SIGViewer and start the simulation
-* Run user package : 
+* Connect the SIGViewer and start the simulation, start also the Referee service if your run the vDemoCleanUpWithReferee
+* Run the node for moving the robot on the user package : 
 ```
 rosrun user RobotCommand
 ```
 The Robot will move to clean up the house.
+* Run the referee moderator if you run the vDemoCleanUpWithReferee : 
+```
+rosrun user ModeratorCommand
+```
+* Run the referee trashbox if you run the vDemoCleanUpWithReferee : 
+```
+rosrun user TrashBoxCommand
+```
+

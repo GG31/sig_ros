@@ -92,7 +92,7 @@ void SimObjController::setJointAngleCallback(const sig_ros::SetJointAngle::Const
 }
 void SimObjController::setJointQuaternionCallback(const sig_ros::SetJointQuaternion::ConstPtr& msg) {
    if (msg->name == "") {
-      my->setJointQuaternion(msg->jointName.c_str(), msg->qW, msg->qX, msg->qY, msg->qZ, msg->offset); //TODO ajouter offset default
+      my->setJointQuaternion(msg->jointName.c_str(), msg->qW, msg->qX, msg->qY, msg->qZ, msg->offset);
    } else {
       SimObj *obj = getObj(msg->name.c_str());
       obj->setJointQuaternion(msg->jointName.c_str(), msg->qW, msg->qX, msg->qY, msg->qZ, msg->offset);
@@ -105,10 +105,6 @@ void SimObjController::setMassCallback(const sig_ros::SetMass::ConstPtr& msg) {
       SimObj *obj = getObj(msg->name.c_str());
       obj->setMass(msg->mass);
    }
-   
-   /*
-   my->setDynamicsMode(true);
-   my->setForce(1.0,1.0,1.0);*/
 }
 
 void SimObjController::addForceCallback(const sig_ros::Double3D::ConstPtr& msg) {
