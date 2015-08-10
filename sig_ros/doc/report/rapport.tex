@@ -23,6 +23,9 @@
 \usepackage{pdflscape} % Automatic rotation of the landscape page
 \usepackage{colortbl} %Couleur de fond tableau
 \usepackage{lipsum,etoolbox} %Pour que l'abstract se mette dans la ToC
+\usepackage{subcaption} %image side by side
+\usepackage{amsmath} % Maths matrix 
+\usepackage{amssymb} % Maths matrix
 
 \newgantttimeslotformat{stardate}{%
 	\def\decomposestardate##1.##2\relax{%
@@ -62,7 +65,7 @@
 \sloppy % Justification moins stricte : des mots ne dépasseront pas des paragraphes
 
 \include{title}
-%\include{remerciements}
+\include{remerciements}
 
 %\setcounter{page}{2} 
 \tableofcontents % Table des matières
@@ -98,7 +101,7 @@
 I did this internship in the National Institute of Informatics, an inter university research institute which aim to develop the research in multiple domains. But more specifically, in the Inamura lab.\\
 My subject was making an interface between ROS and SIGVerse for growing the SIGVerse community. ROS is a framework for writing robot software and SIGVerse a simulator.\\
 The interface is made in C++ and I tried to make it very easy for the ROS users. Their knowledge about SIGVerse can be very limited or totally inexistant. The ROS users will be able to use SIGVerse as easy as possible. They only have to publish or subscribe topics or to call services that I defined like any ROS package.\\
-This project make me very responsible and independant in the area of sofware design, need analysis...\\
+This project make me very responsible and independant in the area of software design, need analysis...\\
 
 J'ai réalisé ce stage dans le laboratoire d'Inamura, au National Institute of Informatics, un institut de recherche dans divers domaines.\\
 Le but de ce projet est de créer une interface entre ROS et SIGVerse afin d'agrandir la communauté de SIGVerse.\\

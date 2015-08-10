@@ -10,5 +10,6 @@ rosdoc_lite
 *.gz
 *.toc
 *.bak
+*.dvi
 *.swp
 *.bag
