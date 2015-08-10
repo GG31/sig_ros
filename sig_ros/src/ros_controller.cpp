@@ -8,7 +8,6 @@
 
 int main(int argc, char** argv)
 {
-   system ("roslaunch /home/gg/catkin_ws/src/sig_ros/launch/start.launch");
    ros::init(argc, argv, "ros_command_node");
    ros::NodeHandle n;
    /*ros::param::set("robot_description", "/home/gg/catkin_ws/src/user/xml/out.urdf");

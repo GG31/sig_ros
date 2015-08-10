@@ -1,4 +1,4 @@
-<robot name="bobby">
+<robot name="hiro">
   <link name="base_link">
       <origin rpy="0 0 0" xyz="0 0 0"/>
   </link>
@@ -209,7 +209,7 @@
     <safety_controller k_position="100" k_velocity="2000000" soft_lower_limit="0.0115" soft_upper_limit="0.325"/>
     <calibration falling="0.00475"/>
     <dynamics damping="20000.0"/>
-    <origin rpy="0 0 0" xyz="0 0 0.836"/>
+    <origin rpy="0 0 0" xyz="0 0 0.832"/>
     <parent link="base_link"/>
     <child link="torso_lift_link"/>
   </joint>
@@ -319,7 +319,7 @@
   <!--right shoulder-->
   <joint name="r_shoulder_pan_joint" type="revolute">
     <axis xyz="0 0 1"/>
-    <origin rpy="0 0 0" xyz="0 0.168 0"/>
+    <origin rpy="0 0 0" xyz="0 -0.1664 0"/>
     <!-- transform from parent link to this joint frame -->
     <parent link="torso_lift_link"/>
     <child link="r_shoulder_pan_link"/>
@@ -487,7 +487,7 @@
     <safety_controller k_position="100" k_velocity="3" soft_lower_limit="-2.1213" soft_upper_limit="-0.15"/>
     <calibration falling="-1.1606"/>
     <dynamics damping="1.0"/>
-    <origin rpy="0 0 0" xyz="0.18 0 0"/>
+    <origin rpy="0 0 0" xyz="0.1952 0 0"/>
     <parent link="r_upper_arm_link"/>
     <child link="r_elbow_flex_link"/>
   </joint>
@@ -546,7 +546,7 @@
     <safety_controller k_position="20" k_velocity="4" soft_lower_limit="-2.0" soft_upper_limit="-0.1"/>
     <dynamics damping="0.1"/>
     <calibration falling="-0.5410521"/>
-    <origin rpy="0 0 0" xyz="0.1312 0.0 0.0"/>
+    <origin rpy="0 0 0" xyz="0.112 0 0"/>
     <parent link="r_forearm_link"/>
     <child link="r_wrist_flex_link"/>
   </joint>
@@ -798,7 +798,7 @@
 <!--left shoulder-->
   <joint name="l_shoulder_pan_joint" type="revolute">
     <axis xyz="0 0 1"/>
-    <origin rpy="0 0 0" xyz="0 0.168 0"/>
+    <origin rpy="0 0 0" xyz="0 0.1664 0"/>
     <!-- transform from parent link to this joint frame -->
     <parent link="torso_lift_link"/>
     <child link="l_shoulder_pan_link"/>
@@ -969,7 +969,7 @@
     <safety_controller k_position="100" k_velocity="3" soft_lower_limit="-2.1213" soft_upper_limit="-0.15"/>
     <calibration falling="-1.1606"/>
     <dynamics damping="1.0"/>
-    <origin rpy="0 0 0" xyz="0.18 0 0"/>
+    <origin rpy="0 0 0" xyz="0.1952 0 0"/>
     <parent link="l_upper_arm_link"/>
     <child link="l_elbow_flex_link"/>
   </joint>
@@ -1028,7 +1028,7 @@
     <safety_controller k_position="20" k_velocity="4" soft_lower_limit="-2.0" soft_upper_limit="-0.1"/>
     <dynamics damping="0.1"/>
     <calibration falling="-0.5410521"/>
-    <origin rpy="0 0 0" xyz="0.1312 0.0 0.0"/>
+    <origin rpy="0 0 0" xyz="0.112 0 0"/>
     <parent link="l_forearm_link"/>
     <child link="l_wrist_flex_link"/>
   </joint>

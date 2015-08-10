@@ -1,0 +1,57 @@
+actions: []
+authors: ''
+brief: ''
+bugtracker: ''
+depends:
+- nav_msgs
+- catkin
+- roscpp
+- message_runtime
+- std_msgs
+- tf
+- rospy
+- message_generation
+description: The sig_ros package
+license: TODO
+maintainers: ericgt <ericgt@todo.todo>
+msgs:
+- OnCollision
+- SetJointAngle
+- SetRotation
+- SetMass
+- Double3D
+- SetAxisAndAngle
+- SetMode
+- SetWheel
+- ReleaseObj
+- SetJointQuaternion
+- SetWheelVelocity
+- SetJointVelocity
+- SetOwner
+- Double3D3D
+- AddForceToParts
+- MsgRecv
+- AddJointTorque
+- SetCollisionEnable
+package_type: package
+repo_url: ''
+srvs:
+- getJointAngle
+- getAllJointAngles
+- sendMsgToSrv
+- ik
+- getPartsPosition
+- getVelocity
+- getCollisionState
+- getObjPosition
+- getAngleRotation
+- getRotation
+- isGrasped
+- connectToService
+- graspObj
+- getEntities
+- getTime
+- getCollisionStateOfMainPart
+- checkService
+- getMass
+url: ''

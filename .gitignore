@@ -4,6 +4,7 @@ tutorial
 learning_tf
 gmapping
 try_ik
+rosdoc_lite
 *.aux
 *.log
 *.gz
