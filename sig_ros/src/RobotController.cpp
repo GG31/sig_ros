@@ -17,19 +17,18 @@ void RobotController::onInit(InitEvent &evt)
    
    //Slam
    scan_pub = n.advertise<sensor_msgs::LaserScan>(std::string(this->myname()) + "_scan", 1000);
-   //clock_pub = n.advertise<rosgraph_msgs::Clock>("clock", 50);
    
    serviceGetJointPosition = n.advertiseService(std::string(this->myname()) + "_get_joint_position", &RobotController::getJointPosition, this);
    serviceIK = n.advertiseService(std::string(this->myname()) + "_ik", &RobotController::ik, this);
    current_time = ros::Time::now();
    last_time = ros::Time::now();
       
-   std::map<std::string, double> list = myRobot->getAllJointAngles();
+/*   std::map<std::string, double> list = myRobot->getAllJointAngles();
    Vector3d v;
    for (std::map<std::string, double>::iterator it=list.begin(); it!=list.end(); ++it) {
        myRobot->getJointPosition(v, it->first.c_str());
        std::cout << it->first << " " << it->second << " : " << v.x() << " " << v.y() << " " << v.z() << std::endl;
-   }
+   }*/
    /* Create urdf*/
    Vector3d torso_lift;
    std::string args = getJointLength("L", torso_lift) + getJointLength("R", torso_lift);
@@ -50,28 +49,6 @@ void RobotController::onInit(InitEvent &evt)
    fillPositionArms("left"); 
    fillPositionArms("right"); 
    
-   //bag.open("/home/gg/catkin_ws/src/user/xml/2015-06-19-15-29-31.bag", rosbag::bagmode::Read);
-   //std::cout << bag.getSize() << " " << bag.getFileName() << std::endl;
-   
-   //topics.push_back(std::string("/tf"));
-   //topics.push_back(std::string("/scan"));
-   //view.addQuery(bag, rosbag::TopicQuery(topics));
-   /*rosbag::View view(bag, rosbag::TopicQuery(topics));
-   std::cout << view.size() << std::endl;
-   
-   foreach(rosbag::MessageInstance const m, view)
-    {
-      std::cout << "foreach" << std::endl;
-        tf::tfMessage::ConstPtr s = m.instantiate<tf::tfMessage>();
-        if (s != NULL)
-            std::cout << "tf" << std::endl;
-
-        sensor_msgs::LaserScan::ConstPtr i = m.instantiate<sensor_msgs::LaserScan>();
-        if (i != NULL)
-         std::cout << "scan" << std::endl;
-    }
-
-    bag.close();*/
 }
 
 std::string RobotController::toString(double x) {
@@ -109,31 +86,7 @@ double RobotController::onAction(ActionEvent &evt) {
    clock_pub.publish(msg);
    std::cout << "time " << time << std::endl;
 */
-   /*rosbag::View view(bag, rosbag::TopicQuery(topics));
-   int i = 0;
-   std::cout << view.size() << std::endl;
-   foreach(rosbag::MessageInstance const m, view)
-   {
-      if (i == switchVal) {
-         tf::tfMessage::ConstPtr s = m.instantiate<tf::tfMessage>();
-         if (s != NULL) {
-            tf::TransformBroadcaster br;
-            std::cout << "send tf" << std::endl;
-            br.sendTransform(s->transforms);
-            switchVal++;
-            break;
-         }
-
-         sensor_msgs::LaserScan::ConstPtr i = m.instantiate<sensor_msgs::LaserScan>();
-         if (i != NULL) {
-            std::cout << "send scan" << std::endl;
-            scan_pub.publish(i);
-            switchVal++;
-            break;
-         }
-      }
-      i++;
-   }*/
+   
    //calculateTransform(ros::Time(m_simulatorTime));
    scan(ros::Time(m_simulatorTime));
    
@@ -148,8 +101,6 @@ void RobotController::calculateTransform(ros::Time time) {
    myRobot->getRotation(rotationNow);
    const dReal* quat = rotation.q();
    const dReal* quatNow = rotationNow.q();
-   //std::cout << "pos : " << position.x() << " " << position.y() << " " << position.z() << " : " << positionNow.x() << " " << positionNow.y() << " " << positionNow.z() << std::endl;
-   //std::cout << "rot : " << quatNow[1] - quat[1] << " " << quatNow[2] - quat[2] << " " << quatNow[3] - quat[3] << " " << quatNow[0] - quat[0] << std::endl;
    
    geometry_msgs::TransformStamped transforms;
    
@@ -167,23 +118,6 @@ void RobotController::calculateTransform(ros::Time time) {
    transforms.transform.rotation.z = quatNow[3] - quat[3];
    transforms.transform.rotation.w = quatNow[0] - quat[0];
    br.sendTransform(transforms);
-   
-   
-   /*transforms.header.stamp = ros::Time::now();//m_simulatorTime;
-   transforms.header.frame_id = "base_footprint";
-   transforms.child_frame_id = "base_link";
-   transforms.transform.translation.x = 0;
-   transforms.transform.translation.y = 0;
-   transforms.transform.translation.z = 1;
- 
-   transforms.transform.rotation.x = 0;
-   transforms.transform.rotation.y = 0;
-   transforms.transform.rotation.z = 0;
-   transforms.transform.rotation.w = 0;
-   
-   
-   
-   br.sendTransform(transforms);//tf::StampedTransform(transform, ros::Time(m_simulatorTime), "odom", "base_link"));*/
    
    position = positionNow;
    rotation = rotationNow;
@@ -261,10 +195,10 @@ void RobotController::fillPositionArms(std::string arm) {
    {
       moveit_msgs::DisplayRobotState msg;
       robot_state::robotStateToRobotStateMsg(*kinematic_state, msg.state);
-      std::cout << "angles : " << msg.state.joint_state.position[16] << " " << msg.state.joint_state.position[18] << std::endl;
+      //std::cout << "angles : " << msg.state.joint_state.position[16] << " " << msg.state.joint_state.position[18] << std::endl;
       Vector3d posWrist = pointAfterRotation(wrist90, elbow90, msg.state.joint_state.position[18] - 0.2103);
       positionArms.insert(std::pair<std::string, Vector3d>(arm, posWrist));
-      std::cout << "position originale " << posWrist.x()<< " " << posWrist.y() << " " << posWrist.z() << std::endl;
+      //std::cout << "position originale " << posWrist.x()<< " " << posWrist.y() << " " << posWrist.z() << std::endl;
    } 
 }
 
@@ -338,16 +272,16 @@ bool RobotController::ik(sig_ros::ik::Request &req, sig_ros::ik::Response &res) 
       pos += posArmNow;
    }
    if (req.position == "absolute" || req.position == "relative") {
-      std::cout << "pos asked " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
-      std::cout << "pos origin " << positionArms.find(req.arm)->second.x() << " " << positionArms.find(req.arm)->second.y() << " " << positionArms.find(req.arm)->second.z() << std::endl;
+      //std::cout << "pos asked " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
+      //std::cout << "pos origin " << positionArms.find(req.arm)->second.x() << " " << positionArms.find(req.arm)->second.y() << " " << positionArms.find(req.arm)->second.z() << std::endl;
       pos -= positionArms.find(req.arm)->second;
-      std::cout << "pos diff " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
+      //std::cout << "pos diff " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
       pos.z(0.1 * pos.z() / 1);//0.1 -> 1.77
       pos.y(0.01 * pos.y() / 1); //0.05 -> 5.4564
       pos.x(0);
-      std::cout << "pos calculé " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
+      //std::cout << "pos calculé " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
    }
-   std::cout << req.position.c_str() << " " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
+   //std::cout << req.position.c_str() << " " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
    // calculate a position for the end effector 
    Eigen::Affine3d end_effector_pose =
 
@@ -361,9 +295,9 @@ bool RobotController::ik(sig_ros::ik::Request &req, sig_ros::ik::Response &res) 
       moveit_msgs::DisplayRobotState msg;
       robot_state::robotStateToRobotStateMsg(*kinematic_state, msg.state);
       for (int i=0; i<44; i++) {
-         std::cout << msg.state.joint_state.position[i] << " ";
+         //std::cout << msg.state.joint_state.position[i] << " ";
       }
-      std::cout << std::endl;
+      //std::cout << std::endl;
       myRobot->setJointAngle((letter + "ARM_JOINT1").c_str(), msg.state.joint_state.position[16] - PI/2);
       myRobot->setJointAngle((letter + "ARM_JOINT4").c_str(), msg.state.joint_state.position[18]);
       res.done = true;

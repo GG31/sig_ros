@@ -13,3 +13,4 @@ rosdoc_lite
 *.dvi
 *.swp
 *.bag
+help.txt
