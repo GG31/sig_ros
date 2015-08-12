@@ -72,10 +72,10 @@ for elem in jointsValues:
     #if len(a) == 1:
     #    a[0].find("origin").attrib['xyz'] = ' '.join(map(str, jointsValues['base_link']))
     a = tree.findall(".//joint[@name='" + elem + "']")
-    print str(len(a)) + " elem " + elem + " found"
+    #print str(len(a)) + " elem " + elem + " found"
     if len(a) == 1:
-        if 'xyz' not in a[0].find("origin").attrib:
-            print "pas de xyz pour " + elem
+        #if 'xyz' not in a[0].find("origin").attrib:
+            #print "pas de xyz pour " + elem
         a[0].find("origin").attrib['xyz'] = ' '.join(map(str, jointsValues[elem]))
 
 with open("/home/gg/catkin_ws/src/sig_ros/robot_desc/out.urdf", 'w') as file_handle:

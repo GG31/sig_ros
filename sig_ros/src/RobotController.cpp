@@ -187,7 +187,7 @@ void RobotController::fillPositionArms(std::string arm) {
    kinematic_state->setToDefaultValues();
    const Eigen::Affine3d end_effector_default_pose = kinematic_state->getGlobalLinkTransform(a + b);
    Eigen::Affine3d end_effector_pose = Eigen::Translation3d(0.0, 0.0, 0.0) * end_effector_default_pose;
-   ROS_INFO_STREAM("End effector position:\n" << end_effector_pose.translation());
+   //ROS_INFO_STREAM("End effector position:\n" << end_effector_pose.translation());
 
    // use IK to get joint angles satisfyuing the calculated position 
    bool found_ik = kinematic_state->setFromIK(joint_model_group.find(arm)->second, end_effector_pose, 10, 0.1);
@@ -286,7 +286,7 @@ bool RobotController::ik(sig_ros::ik::Request &req, sig_ros::ik::Response &res) 
    Eigen::Affine3d end_effector_pose =
 
       Eigen::Translation3d(pos.z(), pos.x(), pos.y()) * end_effector_default_pose;
-   ROS_INFO_STREAM("End effector position:\n" << end_effector_pose.translation());
+   //ROS_INFO_STREAM("End effector position:\n" << end_effector_pose.translation());
 
    // use IK to get joint angles satisfyuing the calculated position 
    bool found_ik = kinematic_state->setFromIK(joint_model_group.find(req.arm)->second, end_effector_pose, 10, 0.1);
