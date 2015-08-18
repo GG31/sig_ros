@@ -12,3 +12,6 @@ try_ik
 *.dvi
 *.swp
 *.bag
+*.nav
+*.out
+*.snm
