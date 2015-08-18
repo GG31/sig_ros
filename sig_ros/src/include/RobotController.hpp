@@ -54,6 +54,8 @@ class RobotController : public SimObjController
       float norm(Vector3d v1, Vector3d v2);
       Vector3d pointAfterRotation(Vector3d point, Vector3d center, float angle);
       std::string getLetter(std::string arm);
+      std::string toString(double x);
+      std::string getJointLength(std::string letter, Vector3d& torso_lift);
       //Robot
       void setWheelCallback(const sig_ros::SetWheel::ConstPtr& wheel);
       void setWheelVelocityCallback(const sig_ros::SetWheelVelocity::ConstPtr& wheel);
@@ -75,18 +77,11 @@ class RobotController : public SimObjController
       ros::ServiceServer serviceIK;      
       //const Eigen::Affine3d end_effector_default_pose;
       robot_model::RobotModelPtr kinematic_model;
-      const robot_model::JointModelGroup* joint_model_group;
+//      const robot_model::JointModelGroup* joint_model_group;
+      std::map<std::string, const robot_model::JointModelGroup*> joint_model_group;
       //Robot
       double m_radius;           // radius of the wheel
       double m_distance;
-
-      double x;
-      double y;
-      double th;
-
-      double vx;
-      double vy;
-      double vth;
 
       ros::Time current_time, last_time;
 
@@ -94,7 +89,6 @@ class RobotController : public SimObjController
 
       std::vector<std::string> topics;
       rosbag::Bag bag;
-      int switchVal;
 };  
 
 #endif

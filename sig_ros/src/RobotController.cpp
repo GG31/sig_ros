@@ -17,83 +17,66 @@ void RobotController::onInit(InitEvent &evt)
    
    //Slam
    scan_pub = n.advertise<sensor_msgs::LaserScan>(std::string(this->myname()) + "_scan", 1000);
-   //clock_pub = n.advertise<rosgraph_msgs::Clock>("clock", 50);
    
    serviceGetJointPosition = n.advertiseService(std::string(this->myname()) + "_get_joint_position", &RobotController::getJointPosition, this);
    serviceIK = n.advertiseService(std::string(this->myname()) + "_ik", &RobotController::ik, this);
    current_time = ros::Time::now();
    last_time = ros::Time::now();
       
-   x = 0.0;
-   y = 0.0;
-   th = 0.0;
+/*   std::map<std::string, double> list = myRobot->getAllJointAngles();
+   Vector3d v;
+   for (std::map<std::string, double>::iterator it=list.begin(); it!=list.end(); ++it) {
+       myRobot->getJointPosition(v, it->first.c_str());
+       std::cout << it->first << " " << it->second << " : " << v.x() << " " << v.y() << " " << v.z() << std::endl;
+   }*/
+   /* Create urdf*/
+   Vector3d torso_lift;
+   std::string args = getJointLength("L", torso_lift) + getJointLength("R", torso_lift);
+   std::string arg = " " + toString(torso_lift.x()) + " " + toString(torso_lift.y()) + " " + toString(torso_lift.z()) + args;
+   std::string command = "python /home/gg/catkin_ws/src/sig_ros/robot_desc/modifyXml.py" + arg;
+   system (command.c_str());
 
-   vx = 0.1;
-   vy = -0.1;
-   vth = 0.1;
-   
-   switchVal = 0;
+   system ("roslaunch /home/gg/catkin_ws/src/sig_ros/launch/start.launch");
    /* Load the robot model */
    robot_model_loader::RobotModelLoader robot_model_loader("robot_description");
    /* Get a shared pointer to the model */
    kinematic_model = robot_model_loader.getModel();
 
    /* Get the configuration for the joints in the right arm of the PR2*/
-   joint_model_group = kinematic_model->getJointModelGroup("left_arm"); 
+   joint_model_group.insert(std::pair<std::string, robot_model::JointModelGroup*>("left", kinematic_model->getJointModelGroup("left_arm"))); 
+   joint_model_group.insert(std::pair<std::string, robot_model::JointModelGroup*>("right", kinematic_model->getJointModelGroup("right_arm"))); 
 
-    /* Create a kinematic state - this represents the configuration for the robot represented by kinematic_model */
-   robot_state::RobotStatePtr kinematic_state(new robot_state::RobotState(kinematic_model));
-   const Eigen::Affine3d end_effector_default_pose = kinematic_state->getGlobalLinkTransform("l_wrist_roll_link");
-
-
-
-   std::map<std::string, double> list = myRobot->getAllJointAngles();
-   Vector3d v;
-   for (std::map<std::string, double>::iterator it=list.begin(); it!=list.end(); ++it) {
-       myRobot->getJointPosition(v, it->first.c_str());
-       std::cout << it->first << " " << it->second << " : " << v.x() << " " << v.y() << " " << v.z() << std::endl;
-   }
-   /*std::cout << "matrix" << std::endl;
-   matrix* m = new matrix(4,4);
-   std::cout << "rot" << std::endl;
-   m->setRotation(PI/2);
-   std::cout << m->display() << std::endl;
-   matrix* m2 = new matrix(4,4);
-   m2->setTranslation(3,2,4);
-   std::cout << m2->display() << std::endl;
-   matrix* m3 = m->mul(m2);
-
-   std::cout << m3->display() << std::endl;
-   Vector3d v1(2,1,1);
-   Vector3d m1(m->mul(v1));
-   
-   std::cout << m1.x() << " " << m1.y() << " " << m1.z()  << std::endl;*/
    fillPositionArms("left"); 
    fillPositionArms("right"); 
-//      Vector3d a(116.64, 93.87, 42.05);
-//      positionArms.insert(std::pair<std::string, Vector3d>("left", a));
-   //bag.open("/home/gg/catkin_ws/src/user/xml/2015-06-19-15-29-31.bag", rosbag::bagmode::Read);
-   //std::cout << bag.getSize() << " " << bag.getFileName() << std::endl;
    
-   //topics.push_back(std::string("/tf"));
-   //topics.push_back(std::string("/scan"));
-   //view.addQuery(bag, rosbag::TopicQuery(topics));
-   /*rosbag::View view(bag, rosbag::TopicQuery(topics));
-   std::cout << view.size() << std::endl;
-   
-   foreach(rosbag::MessageInstance const m, view)
-    {
-      std::cout << "foreach" << std::endl;
-        tf::tfMessage::ConstPtr s = m.instantiate<tf::tfMessage>();
-        if (s != NULL)
-            std::cout << "tf" << std::endl;
+}
 
-        sensor_msgs::LaserScan::ConstPtr i = m.instantiate<sensor_msgs::LaserScan>();
-        if (i != NULL)
-         std::cout << "scan" << std::endl;
-    }
+std::string RobotController::toString(double x) {
+   std::ostringstream ss;
+   ss << x;
+   return ss.str();
+}
 
-    bag.close();*/
+std::string RobotController::getJointLength(std::string letter, Vector3d& torso_lift) {
+   Vector3d waist_joint1;
+   myRobot->getJointPosition(waist_joint1, "WAIST_JOINT1");
+   waist_joint1 /= 100;
+   Vector3d larm_joint1;
+   myRobot->getJointPosition(larm_joint1, (letter + "ARM_JOINT1").c_str());
+   larm_joint1 /= 100;
+   Vector3d larm_joint4;
+   myRobot->getJointPosition(larm_joint4, (letter + "ARM_JOINT4").c_str());
+   larm_joint4 /= 100;
+   Vector3d larm_joint5;
+   myRobot->getJointPosition(larm_joint5, (letter + "ARM_JOINT5").c_str());
+   larm_joint5 /= 100;
+   torso_lift = Vector3d(0,0,larm_joint1.y());
+   Vector3d l_shoulder(0, larm_joint1.x()-waist_joint1.x(), 0);
+   Vector3d l_elbow(larm_joint1.y()-larm_joint4.y(), 0, 0);
+   Vector3d l_wrist(larm_joint4.y()-larm_joint5.y(), 0, 0);
+
+   std::string arg = " " + toString(l_shoulder.x()) + " " + toString(l_shoulder.y()) + " " + toString(l_shoulder.z()) + " " + toString(l_elbow.x()) + " " + toString(l_elbow.y()) + " " + toString(l_elbow.z()) + " " + toString(l_wrist.x()) + " " +toString(l_wrist.y()) + " " + toString(l_wrist.z());
+   return arg;
 }
 
 double RobotController::onAction(ActionEvent &evt) {
@@ -103,33 +86,9 @@ double RobotController::onAction(ActionEvent &evt) {
    clock_pub.publish(msg);
    std::cout << "time " << time << std::endl;
 */
-   /*rosbag::View view(bag, rosbag::TopicQuery(topics));
-   int i = 0;
-   std::cout << view.size() << std::endl;
-   foreach(rosbag::MessageInstance const m, view)
-   {
-      if (i == switchVal) {
-         tf::tfMessage::ConstPtr s = m.instantiate<tf::tfMessage>();
-         if (s != NULL) {
-            tf::TransformBroadcaster br;
-            std::cout << "send tf" << std::endl;
-            br.sendTransform(s->transforms);
-            switchVal++;
-            break;
-         }
-
-         sensor_msgs::LaserScan::ConstPtr i = m.instantiate<sensor_msgs::LaserScan>();
-         if (i != NULL) {
-            std::cout << "send scan" << std::endl;
-            scan_pub.publish(i);
-            switchVal++;
-            break;
-         }
-      }
-      i++;
-   }*/
+   
    //calculateTransform(ros::Time(m_simulatorTime));
-   //scan(ros::Time(m_simulatorTime));
+   scan(ros::Time(m_simulatorTime));
    
    return SimObjController::onAction(evt);
 }
@@ -142,8 +101,6 @@ void RobotController::calculateTransform(ros::Time time) {
    myRobot->getRotation(rotationNow);
    const dReal* quat = rotation.q();
    const dReal* quatNow = rotationNow.q();
-   //std::cout << "pos : " << position.x() << " " << position.y() << " " << position.z() << " : " << positionNow.x() << " " << positionNow.y() << " " << positionNow.z() << std::endl;
-   //std::cout << "rot : " << quatNow[1] - quat[1] << " " << quatNow[2] - quat[2] << " " << quatNow[3] - quat[3] << " " << quatNow[0] - quat[0] << std::endl;
    
    geometry_msgs::TransformStamped transforms;
    
@@ -161,23 +118,6 @@ void RobotController::calculateTransform(ros::Time time) {
    transforms.transform.rotation.z = quatNow[3] - quat[3];
    transforms.transform.rotation.w = quatNow[0] - quat[0];
    br.sendTransform(transforms);
-   
-   
-   /*transforms.header.stamp = ros::Time::now();//m_simulatorTime;
-   transforms.header.frame_id = "base_footprint";
-   transforms.child_frame_id = "base_link";
-   transforms.transform.translation.x = 0;
-   transforms.transform.translation.y = 0;
-   transforms.transform.translation.z = 1;
- 
-   transforms.transform.rotation.x = 0;
-   transforms.transform.rotation.y = 0;
-   transforms.transform.rotation.z = 0;
-   transforms.transform.rotation.w = 0;
-   
-   
-   
-   br.sendTransform(transforms);//tf::StampedTransform(transform, ros::Time(m_simulatorTime), "odom", "base_link"));*/
    
    position = positionNow;
    rotation = rotationNow;
@@ -228,18 +168,16 @@ void RobotController::scan(ros::Time time) {
 }
 
 void RobotController::fillPositionArms(std::string arm) {
-   std::string letter = getLetter("left");
+   std::string letter = getLetter(arm.c_str());
    Vector3d posShoulderInit;
    myRobot->getJointPosition(posShoulderInit, (letter + "ARM_JOINT1").c_str());
    Vector3d posWristInit;
    myRobot->getJointPosition(posWristInit, (letter + "ARM_JOINT5").c_str());
    Vector3d posElbowInit;
    myRobot->getJointPosition(posElbowInit, (letter + "ARM_JOINT4").c_str());
-   float lArm1 = norm(posShoulderInit, posElbowInit);
-   Vector3d posElbow(posShoulderInit.x(), posShoulderInit.y(), posShoulderInit.z() + lArm1);
    
-   float lArm2 = norm(posWristInit, posElbowInit); 
-   Vector3d posWrist1(posElbow.x(), posElbow.y(), posElbow.z() + lArm2);
+   Vector3d elbow90 = pointAfterRotation(posElbowInit, posShoulderInit, -PI/2 + 0.06964);
+   Vector3d wrist90 = pointAfterRotation(posWristInit, posShoulderInit, -PI/2 + 0.06964); 
    
    /* Create a kinematic state - this represents the configuration for the robot represented by kinematic_model */
    robot_state::RobotStatePtr kinematic_state(new robot_state::RobotState(kinematic_model));
@@ -249,18 +187,18 @@ void RobotController::fillPositionArms(std::string arm) {
    kinematic_state->setToDefaultValues();
    const Eigen::Affine3d end_effector_default_pose = kinematic_state->getGlobalLinkTransform(a + b);
    Eigen::Affine3d end_effector_pose = Eigen::Translation3d(0.0, 0.0, 0.0) * end_effector_default_pose;
-   ROS_INFO_STREAM("End effector position:\n" << end_effector_pose.translation());
+   //ROS_INFO_STREAM("End effector position:\n" << end_effector_pose.translation());
 
    // use IK to get joint angles satisfyuing the calculated position 
-   bool found_ik = kinematic_state->setFromIK(joint_model_group, end_effector_pose, 10, 0.1);
+   bool found_ik = kinematic_state->setFromIK(joint_model_group.find(arm)->second, end_effector_pose, 10, 0.1);
    if (found_ik)
    {
       moveit_msgs::DisplayRobotState msg;
       robot_state::robotStateToRobotStateMsg(*kinematic_state, msg.state);
-      std::cout << "angles : " << msg.state.joint_state.position[16] << " " << msg.state.joint_state.position[18] << std::endl;
-      Vector3d posWrist = pointAfterRotation(posWrist1, posElbow, msg.state.joint_state.position[18]);
+      //std::cout << "angles : " << msg.state.joint_state.position[16] << " " << msg.state.joint_state.position[18] << std::endl;
+      Vector3d posWrist = pointAfterRotation(wrist90, elbow90, msg.state.joint_state.position[18] - 0.2103);
       positionArms.insert(std::pair<std::string, Vector3d>(arm, posWrist));
-      std::cout << "position originale " << posWrist.x()<< " " << posWrist.y() << " " << posWrist.z() << std::endl;
+      //std::cout << "position originale " << posWrist.x()<< " " << posWrist.y() << " " << posWrist.z() << std::endl;
    } 
 }
 
@@ -317,12 +255,9 @@ bool RobotController::ik(sig_ros::ik::Request &req, sig_ros::ik::Response &res) 
    /* Create a kinematic state - this represents the configuration for the robot represented by kinematic_model */
    robot_state::RobotStatePtr kinematic_state(new robot_state::RobotState(kinematic_model));
 
-   /* Get the configuration for the joints in the right arm of the PR2*/
-   //joint_model_group = kinematic_model->getJointModelGroup("left_arm"); 
    /* Find the default pose for the end effector */
    kinematic_state->setToDefaultValues();
 
-//   std::string letter = req.arm == "left" ? "L" : req.arm == "right" ? "R" : return false;
    std::string letter = getLetter(req.arm);
    if (letter == "") return false;
 
@@ -337,32 +272,32 @@ bool RobotController::ik(sig_ros::ik::Request &req, sig_ros::ik::Response &res) 
       pos += posArmNow;
    }
    if (req.position == "absolute" || req.position == "relative") {
-      std::cout << "pos asked " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
-      std::cout << "pos origin " << positionArms.find(req.arm)->second.x() << " " << positionArms.find(req.arm)->second.y() << " " << positionArms.find(req.arm)->second.z() << std::endl;
+      //std::cout << "pos asked " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
+      //std::cout << "pos origin " << positionArms.find(req.arm)->second.x() << " " << positionArms.find(req.arm)->second.y() << " " << positionArms.find(req.arm)->second.z() << std::endl;
       pos -= positionArms.find(req.arm)->second;
-      std::cout << "pos diff " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
-      pos.z(0.1 * pos.z() / 1.77);//0.1 -> 1.77
-      pos.y(0.01 * pos.y() / 1.1); //0.05 -> 5.4564
+      //std::cout << "pos diff " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
+      pos.z(0.1 * pos.z() / 1);//0.1 -> 1.77
+      pos.y(0.01 * pos.y() / 1); //0.05 -> 5.4564
       pos.x(0);
-      std::cout << "pos calculé " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
+      //std::cout << "pos calculé " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
    }
-   std::cout << req.position.c_str() << " " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
+   //std::cout << req.position.c_str() << " " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
    // calculate a position for the end effector 
    Eigen::Affine3d end_effector_pose =
 
       Eigen::Translation3d(pos.z(), pos.x(), pos.y()) * end_effector_default_pose;
-   ROS_INFO_STREAM("End effector position:\n" << end_effector_pose.translation());
+   //ROS_INFO_STREAM("End effector position:\n" << end_effector_pose.translation());
 
    // use IK to get joint angles satisfyuing the calculated position 
-   bool found_ik = kinematic_state->setFromIK(joint_model_group, end_effector_pose, 10, 0.1);
+   bool found_ik = kinematic_state->setFromIK(joint_model_group.find(req.arm)->second, end_effector_pose, 10, 0.1);
    if (found_ik)
    {
       moveit_msgs::DisplayRobotState msg;
       robot_state::robotStateToRobotStateMsg(*kinematic_state, msg.state);
       for (int i=0; i<44; i++) {
-         std::cout << msg.state.joint_state.position[i] << " ";
+         //std::cout << msg.state.joint_state.position[i] << " ";
       }
-      std::cout << std::endl;
+      //std::cout << std::endl;
       myRobot->setJointAngle((letter + "ARM_JOINT1").c_str(), msg.state.joint_state.position[16] - PI/2);
       myRobot->setJointAngle((letter + "ARM_JOINT4").c_str(), msg.state.joint_state.position[18]);
       res.done = true;
