@@ -1,0 +1,566 @@
+\documentclass[notitlepage]{report}
+\usepackage[utf8]{inputenc} % Prendre en compte les caractères accentués
+%\usepackage[francais]{babel} % Prendre en compte les particularités de la typographie française.
+\usepackage{geometry}         % marges
+\usepackage{graphicx}         % images
+\usepackage{setspace}
+%\usepackage[french]{varioref}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage{url}
+\usepackage{verbatim}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{ragged2e}
+\usepackage{xcolor}
+\usepackage{textcomp}
+\usepackage{listings}
+\usepackage{pgfgantt}
+\usepackage{lscape}
+\usepackage{pdfpages}
+\usepackage{supertabular} % tableaux qui tiennent sur plusieurs pages
+\usepackage{multirow} % plusieur ligne dans une ligne de tableau
+\usepackage{pdflscape} % Automatic rotation of the landscape page
+\usepackage{colortbl} %Couleur de fond tableau
+\usepackage{lipsum,etoolbox} %Pour que l'abstract se mette dans la ToC
+
+\titlespacing{\chapter}{0pt}{*-5}{*5}
+\titlespacing{\section}{0pt}{*2}{*2}
+\titleformat{\chapter}[hang]{\bf\huge}{\thechapter}{2pc}{}
+%\titleformat{\chapter}[hang]{\bf\huge}{\thechapter}{14pt}{\LARGE}
+\renewcommand{\baselinestretch}{1.2}
+\setlength{\parskip}{1.5ex plus .4ex minus .4ex}
+\setlength{\parindent}{15pt} 
+\setlength{\topmargin}{-35pt}
+\setlength{\textheight}{600pt}
+
+\makeatletter
+% subsubsubsection
+\newcounter{subsubsubsection}[subsubsection] 
+\renewcommand\thesubsubsubsection{\@roman\c@subsubsubsection}
+\newcommand\subsubsubsection{\@startsection{subsubsubsection}{4}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\normalfont\small\bfseries}}
+\newcommand*\l@subsubsubsection{\@dottedtocline{3}{5.2em}{1em}}
+\newcommand*{\subsubsubsectionmark}[1]{}
+\setcounter{secnumdepth}{2}
+\makeatother
+
+\title{\textbf{User manual}\\sig\_ros package}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+%\sloppy % Justification moins stricte : des mots ne dépasseront pas des paragraphes
+
+
+%\include{remerciements}
+
+ 
+\tableofcontents % Table des matières
+\setcounter{page}{2}
+\chapter{Generalities}
+\section{Goal}
+This package aim to provide a tool for using SIGVerse\cite{SIGVerseWiki} though ROS without knowledge of SIGVerse or limited knowledge.\\
+Using sig\_ros package will allow you to send topics and call services directly to SIGVerse.
+
+\section{For who?}
+This package is intended for ROS users or SIGVerse users who want to use SIGVerse in a different way.\\
+For using this package you previously need basic knowledge of ROS, that means at least the beginner level of the ROS tutorials page\cite{ROSWiki}, running a node, publishing and subscribing to a topic, calling a service...is the minimum requiered.
+
+\section{Install}
+First of all, you have to install SIGServer\cite{SIGServerWiki} and SIGViewer\cite{SIGViewerWiki} like explained in the SIGVerse wiki page\cite{SIGVerseWiki}.
+
+\noindent\textbf{Create a catkin workspace:} 
+\begin{lstlisting}[language=bash]
+mkdir -p ~/catkin_ws/src
+\end{lstlisting}
+\textbf{Initialize the workspace:} 
+\begin{lstlisting}[language=bash]
+cd ~/catkin_ws/src
+catkin_init_workspace
+cd ..
+catkin_make
+source devel/setup.bash
+\end{lstlisting}
+\textbf{Clone the git repository:}
+\begin{lstlisting}[language=bash]
+git clone https://github.com/GG31/sig_ros.git
+\end{lstlisting}
+\textbf{Change the name of sig\_ros folder you've just cloned by src, so you have the tree:}
+\begin{lstlisting}[language=bash]
+|-- catkin_ws
+    |-- src
+        |-- sig_ros
+        |-- user
+    |-- devel
+    |-- build
+\end{lstlisting}
+\textbf{Change the absolute links on \url{catkin_ws/src/user/xml/CleanUpDemo2014.xml} there is 5, on \url{catkin_ws/src/sig_ros/src/ros_controller.cpp} there is one and on \url{catkin_ws/src/sig_ros/CMakeLists.txt}}\\
+\textbf{Create libsig\_ros:} 
+\begin{lstlisting}[language=bash]
+mkdir ~/catkin_ws/devel/lib/libsig_ros
+\end{lstlisting}
+
+\chapter{Usage}
+The repository \url{https://github.com/GG31/sig_ros.git} contains two package sig\_ros and user. sig\_ros is the package who make the interface between SIGVerse and ROS and user is an example of package who contains severals nodes. These nodes send messages and call services who reproduce the clean up task demo.\\
+On the directory \url{~/catkin_ws/src/user/xml} there are the all xml file needed by the clean up task.\\
+
+Go to the directory \url{~/catkin_ws/src/user/xml} and run the ros\_controller node of the sig\_ros package with:
+\begin{lstlisting}[language=bash]
+cd ~/catkin_ws/src/user/xml
+rosrun sig_ros ros_controller CleanUpDemo2014Robot.xml
+\end{lstlisting}
+The SIGServer is launched automatically and you and see the number of the port.\\
+Find the IP address with ifconfig.\\
+Then open the SIGViewer and write the IP adress and the port. Click on ``Connect''. It is the step 1 in the figure~\ref{fig:usage}.\\
+After that, you can see the world defined by the xml files, if the camera is not well positionned, do not hesitate to move it with the mouse and the keys Ctrl, Alt and Maj.\\
+
+Start the simulation, the all topics and services are created at the same time. This is the step 2 in figure~\ref{fig:usage}. After that, you will be able to publish, subscribe and call a service.\\
+You can see figure~\ref{fig:usage} a sum up of the three steps. During the third step you can create all the node you want and communicate with SIGVerse.\\
+For example, in the package user, there are severals node which can be started, ``RobotCommand'', ``ModeratorCommand'',...\\
+Start the ``RobotCommand'' node.
+\begin{lstlisting}[language=bash]
+rosrun user RobotCommand
+\end{lstlisting}
+The robot will begin to move.\\
+If you start the service ``Referee'' and the ``ModeratorCommand'' node, the score will be counted.
+
+\noindent\begin{minipage}{\linewidth}% to keep image and caption on one page
+\makebox[\linewidth]{%        to center the image
+  \includegraphics [width=140mm]{images/usage.png}}
+\captionof{figure}{Usage of the package}\label{fig:usage}  
+\end{minipage}
+
+\chapter{Topics}
+For all the topics, if there is a parameters called ``name'', that means it refers to an entity. For example, if we have the topic robot\_000\_setPosition if the parameter ``name'' is filled by ``trashbox\_0'', the topic will set the position to the trashbox, but if the parameter ``name'' is an empty string, then it will be the ``robot\_000''. For the services, the parameter ``name'' works as well.
+
+\begin{supertabular}{|p{3cm}|p{4.5cm}|p{7cm}|}
+	\hline
+    Topic name & Type & Description \\
+  	\hline
+  	\_addForce & 
+  		Double3D
+  		& Add force to a body using absolute coordinates (only in Dynamics ON).\\
+  	\hline
+  	\_addForceAtPos & 
+  		Double3D3D
+  		& Add force to a entity using absolute coordinates at specified absolute position (only Dynamics ON).\\
+  	\hline
+  	\_addForceAtRelPos & 
+  		Double3D3D
+  		& Add force to a entity using absolute coordinates at specified relative position (only Dynamics ON).\\
+  	\hline
+  	% TODO addForcetopart
+  	% TODO JointTorque
+  	\_addRelForce & 
+  		Double3D
+  		& Add force to a entity using relative coordinates (only Dynamics ON).\\
+  	\hline
+  	\_addRelForceAtPos & 
+  		Double3D3D
+  		& Add force to a entity using entity-relative coordinates at specified absolute position (only Dynamics ON).\\
+  	\hline
+  	\_addRelForceAtRelPos & 
+  		Double3D3D
+  		& Add force to a entity using entity-relative coordinates at specified relative position (only Dynamics ON).\\
+  	\hline
+  	\_onCollisionMsg &
+  		\medskip
+  		OnCollision & The name of the agent which one is in collision with are sent to this topic. If there is severals collision at the same time, severals messages are sent.\\
+  	\hline  	
+  	\_onRecvMsg &
+  		MsgRecv
+  		\medskip & The ``Controller'' send the message received by the SIGViewer.\\
+  	\hline
+  	\_releaseObj & ReleaseObj & Publish the part which you want to release an object and it will be done.\\
+  	\hline
+  	
+  	\_setAccel & 
+  		Double3D
+  		& Set the acceleration to the entity\\
+  	\hline
+  	\_setAngularVelocity & 
+  		Double3D
+  		& Set angular velocity to the entity name (only in Dynamics ON)\\
+  	\hline
+  	\_setAxisAndAngle & 
+  		SetAxisAndAngle
+  		& Set the axis defined by ``axisX'', ``axisY'' and ``axisZ'' and set the angle ``angle'' to the entity called ``name'', if no name is provided, the main entity of the topic will be set.\\
+  	\hline
+  	\_setCollisionEnable & 
+  		SetCollisionEnable
+  		& Set if the collision is enable, true, false otherwise.\\
+  	\hline
+  	\_setDynamicsMode & 
+  		SetMode
+  		& Enable (true) or disable (false) gravity mode.\\
+  	\hline
+  	\_setForce & 
+  		Double3D
+  		& Set the force applied to the entity (only in Dynamics ON).\\
+  	\hline
+  	\_setGravityMode & 
+  		SetMode
+  		& Set the gravity mode, true if enable, false otherwise.\\
+  	\hline
+  	\_setJointAngle & 
+  		SetJointAngle
+  		& Set the angle of the joint (only in Dynamics OFF).\\
+  	\hline
+  	\_setJointQuaternion & 
+  		SetJointQuaternion
+  		& Set the quaternion of joint (only in Dynamics OFF).\\
+  	\hline
+  	\_setJointVelocity & 
+  		SetJointVelocity
+  		& jointName, angular velocity, max ???\\
+  	\hline
+  	\_setMass & 
+  		SetMass
+  		& Set the mass of the entity .\\
+  	\hline
+  	\_setOwner & 
+  		SetOwner
+  		& Set the mass of the entity .\\
+  	\hline
+  	\_setPosition & 
+  		Double3D
+  		& Set the position ``posX'', ``posY'' and ``posZ'' to the entity called ``name'', if no name is provided, the main entity of the topic will be set.\\
+  	\hline
+  	\_setRotation & 
+  		SetRotation
+  		& Set the entity orientation.\\
+  	\hline
+  	\_setTorque & 
+  		SetTorque
+  		& Set the torque.\\
+  	\hline
+  	\_setVelocity & 
+  		Double3D
+  		& Set Velocity to the entity.\\
+  	\hline
+  	\_setWheel & 
+  		SetWheel & Publish the radius and the distance in a message and they will be applied to the robot.\\
+  	\hline
+  	\_setWheelVelocity & 
+  		SetWheelVelocity
+  		& Publish the velocity for the left and the right wheel and it will be applied.\\
+  	\hline
+\end{supertabular}
+
+\chapter{Message type}
+\begin{supertabular}{|p{4cm}|p{5cm}|}
+	\hline
+    Type name & Parameters \\
+    \hline
+  	AddForceToParts & 
+  		\textbf{name} : string\newline 
+  		\textbf{part} : string\newline
+  		\textbf{x} : double\newline
+  		\textbf{y} : double\newline
+  		\textbf{z} : double\\
+  	\hline
+  	AddJointTorque & 
+  		\textbf{name} : string\newline 
+  		\textbf{parts} : string\newline
+  		\textbf{torque} : double\\
+  	\hline
+  	Double3D & 
+  		\textbf{name} : string\newline 
+  		\textbf{x} : double\newline
+  		\textbf{y} : double\newline
+  		\textbf{z} : double\\
+  	\hline
+  	Double3D3D & 
+  		\textbf{name} : string\newline 
+  		\textbf{x} : double\newline
+  		\textbf{y} : double\newline
+  		\textbf{z} : double\newline
+  		\textbf{posX} : double\newline
+  		\textbf{posY} : double\newline
+  		\textbf{posZ} : double\\
+  	\hline
+  	MsgRecv & 
+  		\textbf{sender} : string\newline 
+  		\textbf{content} : string\\
+  	\hline
+  	OnCollision & 
+  		\textbf{name} : string\newline 
+  		\textbf{part} : string\\
+  	\hline
+  	ReleaseObj & 
+  		\textbf{arm} : string\\
+  	\hline
+  	SetAxisAndAngle & 
+  		\textbf{name} : string\newline 
+  		\textbf{axisX} : double\newline
+  		\textbf{axisY} : double\newline
+  		\textbf{axisZ} : double\newline
+  		\textbf{angle} : double\\
+  	\hline
+  	SetCollisionEnable & 
+  		\textbf{name} : string\newline 
+  		\textbf{flag} : boolean\\
+  	\hline
+  	SetJointAngle & 
+  		\textbf{name} : string\newline 
+  		\textbf{jointName} : string\newline
+  		\textbf{angle} : double\\
+  	\hline
+  	SetJointQuaternion & 
+  		\textbf{name} : string\newline 
+  		\textbf{jointName} : string\newline
+  		\textbf{qX} : double\newline
+  		\textbf{qY} : double\newline
+  		\textbf{qZ} : double\newline
+  		\textbf{offset} : boolean\\
+  	\hline
+  	SetJointVelocity & 
+  		\textbf{jointName} : string\newline 
+  		\textbf{angularVelocity} : double\newline
+  		\textbf{max} : double\\
+  	\hline
+  	SetMass & 
+  		\textbf{name} : string\newline 
+  		\textbf{mass} : double\\
+  	\hline
+  	SetMode & 
+  		\textbf{name} : string\newline 
+  		\textbf{boolean} : boolean\\
+  	\hline
+  	SetOwner & 
+  		\textbf{name} : string\newline 
+  		\textbf{part} : string\newline
+  		\textbf{owner} : string\\
+  	\hline
+  	SetRotation & 
+  		\textbf{name} : string\newline
+  		\textbf{qW} : double\newline 
+  		\textbf{qX} : double\newline
+  		\textbf{qY} : double\newline
+  		\textbf{qZ} : double\\
+  	\hline
+  	SetWheel & 
+  		\textbf{wheelRadius} : double\newline 
+  		\textbf{wheelDistance} : double\\
+  	\hline
+  	SetWheelVelocity & 
+  		\textbf{leftWheel} : double\newline 
+  		\textbf{rightWheel} : double\\
+  	\hline
+\end{supertabular}
+
+\chapter{Services}
+\begin{supertabular}{|p{3cm}|p{3cm}|p{7cm}|}
+	\hline
+    Service name & Type & Description \\
+  	\hline
+  	\_check\_service & checkService & Check if the service ``serviceName'' is connected.\\
+  	\hline
+  	\_connect\_to\_service & 
+  		connectToService & Connect the service ``serviceName'', return false if it fails, true otherwise.\\
+  	\hline
+  	\_get\_all\_joint\_angles & 
+  		getAllJointAngles
+  		& Get the angles for each joints.\\
+  	\hline
+  	\_get\_angle\_rotation & 
+  		getAngleRotation & Get the angle of ...\\
+  	\hline
+  	\_get\_angular\_velocity & 
+  		getVelocity & Get the angular velocity\\
+  	\hline
+  	%getAngularVelocity
+  	\_get\_collision\_state & 
+  		getCollisionState & If part="main" return getCollisionOfMainPart.\\
+  	\hline
+  	\_get\_entities & getEntities
+    & Get the names of the entities in the simulator.\\
+  	\hline
+  	\_get\_joint\_angle & 
+  		getJointAngle & Get the angle between the joint.\\
+  	\hline
+  	\_get\_mass & 
+  		getMass
+  		& Get the mass of the entity called ``name''.\\
+  	\hline
+  	\_get\_obj\_position & getObjPosition
+  		 & Get the position of the object named name, if name is empty, return the position of the agent which the service's name start with.\\
+  	\hline
+  	\_get\_parts\_position & 
+  		getPartsPosition & Get the position of the part in parameter.\\
+  	\hline
+  	\_get\_rotation & 
+  		getRotation & Get the rotation of ...\\
+  	\hline
+  	\_get\_time &  getTime & Get the simulation time.\\
+  	\hline
+  	\_grasp\_obj & 
+  		graspObj & Grasp the object ``obj'' with the part ``part''\\
+  	\hline
+  	\_is\_grasped & isGrasped & True if ``entityName'' is grasped, false otherwise. If no entity name is provided, it will return the answer for the agent which is asked\\
+  	\hline
+  	\_send\_msg\_to\_service & 
+  		sendMsgToSrv & Send the message ``msg'' to the service called ``name'', return true if it is done, false otherwise.\\
+  	\hline
+\end{supertabular}
+
+\chapter{Service type}
+\begin{supertabular}{|p{3cm}|p{4cm}|p{4cm}|}
+	\hline
+    Service type & Request & Response \\
+  	\hline
+  	checkService & 
+  		\textbf{serviceName} : string 
+  		&
+  		\textbf{connected} : boolean\\
+  	\hline
+  	connectToService & 
+  		\textbf{serviceName} : string 
+  		&
+  		\textbf{connected} : boolean\\
+  	\hline
+  	getAllJointAngles & 
+  		\textbf{name} : string 
+  		&
+  		\textbf{jointName} : string[]\newline
+  		\textbf{angle} : double[]\newline
+  		\textbf{length} : double\\
+  	\hline
+  	getAngleRotation & 
+  		\textbf{axis} : string \newline
+  		\textbf{x} : double\newline
+  		\textbf{y} : double\newline
+  		\textbf{z} : double
+  		&
+  		\textbf{angle} : double\\
+  	\hline
+  	getCollisionState & 
+  		\textbf{part} : string \newline
+  		\textbf{name} : string
+  		&
+  		\textbf{collisionState} : boolean\\
+  	\hline
+  	getEntities & 
+  		
+  		&
+  		\textbf{entitiesNames} : string[]\newline
+  		\textbf{length} : int\\
+  	\hline
+  	getJointAngle & 
+  		\textbf{nameArm} : string \newline
+  		\textbf{name} : string
+  		&
+  		\textbf{angle} : double\\
+  	\hline
+  	getMass & 
+  		\textbf{name} : string
+  		&
+  		\textbf{mass} : double\\
+  	\hline
+  	getObjPosition & 
+  		\textbf{name} : string
+  		&
+  		\textbf{posX} : double\newline
+  		\textbf{posY} : double\newline
+  		\textbf{posZ} : double\\
+  	\hline
+  	getPartsPosition & 
+  		\textbf{part} : string\newline
+  		\textbf{name} : string
+  		&
+  		\textbf{posX} : double\newline
+  		\textbf{posY} : double\newline
+  		\textbf{posZ} : double\\
+  	\hline
+  	getRotation & 
+  		\textbf{name} : string
+  		&
+  		\textbf{qW} : double\newline
+  		\textbf{qX} : double\newline
+  		\textbf{qY} : double\newline
+  		\textbf{qZ} : double\\
+  	\hline
+  	getTime & 
+  		
+  		&
+  		\textbf{time} : double\\
+  	\hline
+  	getVelocity & 
+  		\textbf{name} : string
+  		&
+  		\textbf{vX} : double\newline
+  		\textbf{vY} : double\newline
+  		\textbf{vZ} : double\\
+  	\hline
+  	graspObj & 
+  		\textbf{part} : string\newline
+  		\textbf{obj} : string
+  		&
+  		\textbf{ok} : boolean\\
+  	\hline
+  	ik & 
+  		\textbf{x} : double\newline
+  		\textbf{y} : double\newline
+  		\textbf{z} : double\newline
+  		\textbf{arm} : string\newline
+  		\textbf{position} : string
+  		&
+  		\textbf{done} : boolean\\
+  	\hline
+  	isGrasped & 
+  		\textbf{name} : string
+  		&
+  		\textbf{answer} : boolean\\
+  	\hline
+  	sendMsgToSrv & 
+  		\textbf{name} : string\newline
+  		\textbf{msg} : string
+  		&
+  		\textbf{ok} : boolean\\
+  	\hline
+\end{supertabular}
+
+\chapter{FAQ}
+\section*{You don't see the robot on the world}
+Try changing the position of the camera with the keys Ctrl, Maj and/or Alt and the mouse.
+\section*{SIGViewer has crashed}
+Don't worry, restart the viewer, it will work.
+
+\section*{I can't publish to a topic}
+Have you started the roscore? If not tape on a terminal:
+\begin{lstlisting}[language=bash]
+roscore
+\end{lstlisting} 
+If you have started it, have you made a source? If not, tape:
+\begin{lstlisting}[language=bash]
+source ~/catkin_ws/devel/setup.bash
+\end{lstlisting} 
+
+\section*{fatal error: Controller.h: No such file or directory
+}
+If this error occurs, verify it the link to sigserver on the CMakeLists is correct. It should be \url{/home/<user>/sigverse-<version>/include/sigverse /home/<user>/catkin_ws/src/sig_ros/src/}
+
+\begin{thebibliography}{9}
+\addcontentsline{toc}{chapter}{Bibliography}
+	\bibitem{SIGVerseWiki}
+          SIGVerse wiki page : \\
+          \url{http://www.sigverse.org/wiki/en/index.php?Tutorial}.
+    \bibitem{SIGServerWiki}
+          SIGServer wiki page : \\
+          \url{http://www.sigverse.org/wiki/en/index.php?Tutorial%2FInstallation%20of%20SIGVerse%20server}.
+    \bibitem{SIGViewerWiki}
+          SIGViewer wiki page : \\
+          \url{http://www.sigverse.org/wiki/en/index.php?Tutorial%2FInstallation%20of%20SIGViewer}.
+	\bibitem{ROSWiki}
+          ROS wiki page :\\
+          \url{http://wiki.ros.org/ROS/Tutorials}.
+     \bibitem{SIGVerseWikiROS}
+          SIGVerse wiki page ROS integration tutorial :\\
+          \url{http://www.sigverse.org/wiki/en/index.php?ROS%20integration}.
+     
+\end{thebibliography}
+\end{document}
