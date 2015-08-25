@@ -35,6 +35,7 @@
 #include <string>
 #include <ctype.h>
 #include <stdio.h>
+#include <fstream>
 #include "matrix.hpp"
 #include <boost/foreach.hpp>
 #define foreach BOOST_FOREACH

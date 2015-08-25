@@ -757,6 +757,7 @@ double RobotCommand::goGraspingObject(double pos[])
 void RobotCommand::setWheelVelocity(double leftWheel, double rightWheel) {
    msgSetWheelVelocity.leftWheel = leftWheel;
    msgSetWheelVelocity.rightWheel = rightWheel;
+   std::cout << "Ask for setWheelVelocity " << time(NULL) << std::endl;
    robot_000_setWheelVelocity_pub.publish(msgSetWheelVelocity);
 }
 
