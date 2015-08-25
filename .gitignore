@@ -13,4 +13,7 @@ rosdoc_lite
 *.dvi
 *.swp
 *.bag
+*.nav
+*.out
+*.snm
 help.txt

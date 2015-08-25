@@ -46,10 +46,12 @@ ROS is an open source framework who works with packages, every extension is a pa
 That is why I choose to develop a package, and only running the node called ``ros\_controller'' will be necessary to launch the SIGServer, create the ``Controllers'', the topics and services.\\
 We can see figure~\ref{fig:sig_ros_package} the composition of the package.
 \begin{description}
-	\item[src] : The generic ``Controller'' for each kind of agent.
+	\item[src] : The generic ``Controller'' for each kind of agent more the principal node ``ros\_controller'' for launchin the package.
 	\item[srv] : The definition of each services needed.
 	\item[msg] : The definition of each messages needed.
 	\item[tests] : Tests files to check the validity of the implementation.
+	\item[doc] : Documentation useful for the use of the package, this report and a user manual.
+	\item[robot\_desc] : Contains files for the description of Hiro robot and the scripts necessary to his modification in order to use the ik package.
 \end{description}
 
 \noindent\begin{minipage}{\linewidth}% to keep image and caption on one page
@@ -59,7 +61,7 @@ We can see figure~\ref{fig:sig_ros_package} the composition of the package.
 \end{minipage}
 
 \section{Usage}
-From the user point of view, three steps are important, see figure~\ref{fig:usage}.\\
+From the user's point of view, three steps are important, see figure~\ref{fig:usage}.\\
 First, the user launches the sig\_ros package. So, the SIGServer is automatically launched and the SIGViewer can be connected.\\
 Second, the user starts the simulation from the SIGViewer. So, all topics and services are created and linked to the ``Controller'' thanks to the package sig\_ros.\\
 Finally, the user can create all the ROS node he wants and publish and subscribe to the topics and call services created by the step 2.
@@ -127,7 +129,7 @@ The count of the score is made by the referee service but a message is sent by a
 The clean up task was the principal use case of the suggested work. We can see at \url{https://www.youtube.com/watch?v=Fc38tqwr0F0&feature=youtu.be} the result achieved.\\
 We can notice that both videos are similar, that means the principal objective is accomplished.\\
 
-In this second video, the action of the robot are decided by a script, but this one is one or severals ros nodes who send messages to SIGVerse and get the robot moving as we can see figure~\ref{fig:cleanUpNodes}.\\
+In this second video, the actions of the robot are decided by a script, but this one is one or severals ros nodes who send messages to SIGVerse and get the robot moving as we can see figure~\ref{fig:cleanUpNodes}.\\
 
 \noindent\begin{minipage}{\linewidth}% to keep image and caption on one page
 \makebox[\linewidth]{%        to center the image
@@ -169,11 +171,13 @@ However, many problems occured due to a lack of documentation of the package. In
 
 There is two way to publish a message, publishing directly to a topic or send it by broadcast. /tf has to be sent by broadcast, but nothing informs the user.\\
 
-Before the integration of this package to SIGVerse, I tried to use it with the turtlebot simulator, it worked, I could move the turtlebot robot and the map was built. The same has to be done with SIGVerse simulator but no documentation exists about how turtlebot simulator publish information to make the slam package worked.
+Before the integration of this package to SIGVerse, I tried to use it with the turtlebot\footnote{Turtlebot is a low-cost, personal robot kit with open-source software used by ROS} simulator, it worked, I could move the turtlebot robot and the map was built. The same has to be done with SIGVerse simulator but no documentation exists about how turtlebot simulator publish information to make the slam package worked.
+
+After many try, I decided to publish the information necessary to the SLAM package to two topics, then if the user wants to use SLAM, he can have access to the data and use it.
 
 \subsection{Inverse kinematics}
 \subsubsection{Concept}
-ROS provide a package for solving the inverse kinematics and an example is provided on the documentation with a robot called pr2. We can show pr2 with rviz\footnote{rviz is an 3D visualization tool for ROS} and launch a node from the tutorial to make move the robot in rviz using the inverse kinematics.\\
+ROS provide a package for solving the inverse kinematics and an example is provided on the documentation with a robot called pr2\footnote{The PR2 is a mobile manipulation platform built by Willow Garage. The PR2 software system is written entirely in ROS. As such, all pr2 capabilities are available via ROS interfaces.}. We can show pr2 with rviz\footnote{rviz is an 3D visualization tool for ROS} and launch a node from the tutorial to make move the robot in rviz using the inverse kinematics.\\
 With this example, I was able to distinguish three parts of the work to realize, how the inverse kinematics package knows the description of pr2, how the information are sent to the ik package and how the result of the ik package is performed by rviz to make the robot moving. 
 
 \subsubsection{Robot definition}
@@ -190,7 +194,7 @@ Thanks to this script, the urdf file can be generated with the SIGVerse data. Th
 
 Once the description file of the SIGVerse robot is built, it just need to fill the variable ``robot\_description'' of the ros launch file with the urdf file and the srdf file to make sure the ik package can access to the robot description.\\
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
@@ -252,7 +256,12 @@ That is why, it was necessary to know the coordinate of the default position for
 In blue, we can see the axis of SIGVerse. The straight line Shoulder-Elbow-Wrist represents the initial position of the arm inside SIGVerse and the straight lines Shoulder-Elbow'-Wrist' the initial (default) position inside RViz.\\
 
 The length of each part can be found thanks to SIGVerse and the angle ``a'' thanks to the ik package. Indeed, if we ask for the position (0,0,0) the angle ``a'' will be answered.\\
-The computation of the points Elbow' and Wrist'' are easy, it is just the translation of the point Shoulder. For the point Wrist', I used matrix of transformation as follow:\\
+The computation of the points Elbow' and Wrist'' are easy, it is just the rotation of the original arm by 90 degrees around the point ``Shoulder'' and a rotation around the point ``Elbow''' of ``Wrist'''' with the angle ``a''.\\
+For the point Wrist'', I used matrix of transformation as follow:\\
+Wrist'' = T$_{-Shoulder}$ R$_{-90}$ T$_{Shoulder}$ Wrist\\
+For the point Elbow':\\
+Elbow' = T$_{-Shoulder}$ R$_{-90}$ T$_{Shoulder}$ Elbow\\
+For the point Wrist':\\
 Wrist' = T$_{-Elbow'}$ R$_{-a}$ T$_{Elbow'}$ Wrist'' with:\\
 
 T$_{P}$ =
@@ -288,9 +297,7 @@ Because of the reinstallation of the virtual machine, a behaviour was not expect
 I am using Windows 8.1 for the compatibility with the kinect which I could need during the project.\\
 
 I used Geogebra software to verify my theories about the angles answered by the inverse kinematics package.\\
-
 I used Cacoo on line to make every schema of this report.\\
-
 I make unit tests with ROS to be sure of the good functioning.
 
 \subsection{Organisation}
@@ -298,14 +305,15 @@ The choice of my subject was very open, my supervisor showed me the simulator SI
 After the three first months, the main part was done, that means the Clean up task demo and the development of topics and services necessary to have a full access to SIGVerse functionnalities from ROS.\\
 After that, I started to add functionnalities to my package. This new functionnalities are an adaptation of the use of a ROS package to SIGVerse. I included the SLAM and inverse kinematics package.\\
 
-Once a week, all laboratory's members attends a meeting where each members exposes what he planned to do last week, what he actually did and what he will do the next week. I make my own objectives every week for achieving the main goal.\\
+Once a week, all laboratory's members attends a meeting where each members exposes what he planned to do the week before, what he actually did and what he will do the next week. I make my own objectives every week for achieving the main goal.\\
 My supervisor answers to my questions and gives me indications during the meeting.
 
 \subsection{Troubles}
 \subsubsection{Development}
 First of all, due to my lack of knowledge about ROS, it was very difficult to gain a full view of the project at the beginning. That is why, I had to spend some days to learn from the ROS tutorials and to practice with this framework.\\
 When I started implementing the ``Controller'', I had a problem of inheritance. Indeed, I had to inherit the robot ``Controller'' from the object ``Controller'' and keep this two ``Controller'' usable for an agent. This inheritance was not easy because of ROS.\\
-I found SIGVerse bug using a function ``getSimulationTime()'' and others functions. I spent a lot of time diagnosing this bug because I though it came from my code but finally it was a SIGVerse error. So, I made a bug report, sometimes it is just the function who does not answer the good thing, sometimes if we put a wrong arguments, the all simulator can stop.
+I found SIGVerse bug using a function ``getSimulationTime()'' and others functions. I spent a lot of time diagnosing this bug because I though it came from my code but finally it was a SIGVerse error. So, I made a bug report.\\
+Sometimes it is just the function who does not answer the good thing, sometimes if we put a wrong arguments, the all simulator can stop.
 
 \subsubsection{Documentation}
 The documentation of SIGVerse is in japanese, so it is quiet difficult to understand what every method does, so I did a lot of tests to figure it out. Fortunately, Google translate can be a good help.\\
@@ -313,7 +321,9 @@ The documentation of SIGVerse is in japanese, so it is quiet difficult to unders
 For the adaptation of the package SLAM and inverse kinematics, we can find a lot of tutorials to use this packages but none of them explains how they works.\\
 For example, we can find turtlebot and a simulator of its. Using the simulator Rviz, we can make the SLAM package works, the data send by turtlebot make possible the computation of the map. If I register the messages sent by turtlebot and then I send it from SIGVerse, it works, but if I make my own messages, it is not working. But no information can be found about this messages, just the structure but not the containt. So, I asked for the help of the community, posting a message on the forum.\\
 
-For the inverse kinematics package, it is the same problem, there was no information neither the interpretation of the result nor how to set the description of the robot. I figured it out thanks to the examples, trying to understand how it was working.
+For the inverse kinematics package, it is the same problem, there was no information neither the interpretation of the result nor how to set the description of the robot. I figured it out thanks to the examples, trying to understand how it was working.\\
+
+Thanks to the rosdoc\_lite I could generate a technical documentation for my package.
 
 \subsubsection{Conception}
 The objective of this interface is increasing the number of SIGVerse users by adding ROS users. So, the use of my package has to be instinctive, so the choice of the topics and services has to be relevant.\\
@@ -343,6 +353,10 @@ The first changement has been made because it was easier than I though, but then
 Indeed, SLAM and inverse kinematics are two useful tools for every user, not only for those who use the kinect.
 
 \subsubsection{To continue}
+First of all, we can notice that the user need to modify every link inside the sig\_ros package in order to link ROS to SIGServer and to link the controller to the objects and robots. Once the relatives links will be allowed by SIGVerse, these modifications by the user will not be useful and the package will be able to use easier.\\
+The inverse kinematics is very useful, but in this case, the functionnality only works with the robot hiro and the variation of the size of this robot. The best would be adapting the initialisation of the ik package to any kind of robot only with SIGVerse information available.\\
+For the SLAM package, of course integrating it completely, not only sending the information necessary would be better.
+
 
 \begin{landscape}
 %\subsection{Schedule}\label{sec:schedule}
@@ -375,7 +389,8 @@ time slot format=isodate,
 \ganttmilestone{DoW}{2015-04-12}
 \ganttbar{L2:T2}{2015-04-20}{2015-05-03}
 \ganttbar{L2:T3}{2015-05-04}{2015-05-10}
-\ganttbar{L3:T1}{2015-05-18}{2015-06-07}\\
+\ganttbar{Topics \& Services}{2015-05-18}{2015-05-31}
+\ganttbar{Referee Service}{2015-06-01}{2015-06-07}\\
 
 \ganttbar{Technical documentation}{2015-04-13}{2015-05-10}
 \ganttbar{Technical documentation}{2015-05-18}{2015-06-07}\\
@@ -394,13 +409,13 @@ time slot format=isodate,
 ]{2015-06-08}{2015-08-30}
 \gantttitlecalendar{month=name, week = 13} \\
 \ganttbar{Project monitoring}{2015-06-08}{2015-08-30}\\
-\ganttbar{L3:T2}{2015-06-08}{2015-06-28}
-\ganttbar{L4:T1}{2015-06-29}{2015-07-12}
-\ganttbar{L4:T2}{2015-07-13}{2015-08-02}
+\ganttbar{SLAM adaptation}{2015-06-08}{2015-06-28}
+\ganttbar{Inverse Kinematics}{2015-06-29}{2015-07-27}
+\ganttbar{Tests}{2015-07-28}{2015-08-02}
 \ganttbar{Final Report}{2015-08-10}{2015-08-30}\ganttmilestone{Final Report}{2015-08-30}\\
 \ganttbar{Technical documentation}{2015-06-08}{2015-08-02}
 \ganttbar{User documentation}{2015-08-03}{2015-08-16}
 \end{ganttchart}
-\captionof{figure}{Schedule of the internship}\label{GanttChart:final}
+\captionof{figure}{Real schedule of the internship}\label{GanttChart:final}
 \end{landscape}
 
