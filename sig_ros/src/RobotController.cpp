@@ -29,26 +29,28 @@ void RobotController::onInit(InitEvent &evt)
        myRobot->getJointPosition(v, it->first.c_str());
        std::cout << it->first << " " << it->second << " : " << v.x() << " " << v.y() << " " << v.z() << std::endl;
    }*/
-   /* Create urdf*/
-   Vector3d torso_lift;
-   std::string args = getJointLength("L", torso_lift) + getJointLength("R", torso_lift);
-   std::string arg = " " + toString(torso_lift.x()) + " " + toString(torso_lift.y()) + " " + toString(torso_lift.z()) + args;
-   std::string command = "python /home/gg/catkin_ws/src/sig_ros/robot_desc/modifyXml.py" + arg;
-   system (command.c_str());
+   std::string ikName = "/home/gg/catkin_ws/src/sig_ros/robot_desc/no_ik.urdf";
+   if (!std::ifstream(ikName.c_str())) {
+      /* Create urdf*/
+      Vector3d torso_lift;
+      std::string args = getJointLength("L", torso_lift) + getJointLength("R", torso_lift);
+      std::string arg = " " + toString(torso_lift.x()) + " " + toString(torso_lift.y()) + " " + toString(torso_lift.z()) + args;
+      std::string command = "python /home/gg/catkin_ws/src/sig_ros/robot_desc/modifyXml.py" + arg;
+      system (command.c_str());
 
-   system ("roslaunch /home/gg/catkin_ws/src/sig_ros/launch/start.launch");
-   /* Load the robot model */
-   robot_model_loader::RobotModelLoader robot_model_loader("robot_description");
-   /* Get a shared pointer to the model */
-   kinematic_model = robot_model_loader.getModel();
+      system ("roslaunch /home/gg/catkin_ws/src/sig_ros/launch/start.launch");
+      /* Load the robot model */
+      robot_model_loader::RobotModelLoader robot_model_loader("robot_description");
+      /* Get a shared pointer to the model */
+      kinematic_model = robot_model_loader.getModel();
 
-   /* Get the configuration for the joints in the right arm of the PR2*/
-   joint_model_group.insert(std::pair<std::string, robot_model::JointModelGroup*>("left", kinematic_model->getJointModelGroup("left_arm"))); 
-   joint_model_group.insert(std::pair<std::string, robot_model::JointModelGroup*>("right", kinematic_model->getJointModelGroup("right_arm"))); 
+      /* Get the configuration for the joints in the right arm of the PR2*/
+      joint_model_group.insert(std::pair<std::string, robot_model::JointModelGroup*>("left", kinematic_model->getJointModelGroup("left_arm"))); 
+      joint_model_group.insert(std::pair<std::string, robot_model::JointModelGroup*>("right", kinematic_model->getJointModelGroup("right_arm"))); 
 
-   fillPositionArms("left"); 
-   fillPositionArms("right"); 
-   
+      fillPositionArms("left"); 
+      fillPositionArms("right"); 
+   } 
 }
 
 std::string RobotController::toString(double x) {
@@ -65,7 +67,7 @@ std::string RobotController::getJointLength(std::string letter, Vector3d& torso_
    myRobot->getJointPosition(larm_joint1, (letter + "ARM_JOINT1").c_str());
    larm_joint1 /= 100;
    Vector3d larm_joint4;
-   myRobot->getJointPosition(larm_joint4, (letter + "ARM_JOINT4").c_str());
+   myRobot->getJointPosition(larm_joint4, (letter + "ARM_JOINT3").c_str());
    larm_joint4 /= 100;
    Vector3d larm_joint5;
    myRobot->getJointPosition(larm_joint5, (letter + "ARM_JOINT5").c_str());
@@ -245,6 +247,7 @@ void RobotController::setWheelCallback(const sig_ros::SetWheel::ConstPtr& wheel)
 
 void RobotController::setWheelVelocityCallback(const sig_ros::SetWheelVelocity::ConstPtr& wheel)
 {
+   std::cout << "Received message setWheelVelocity " << time(NULL) << std::endl;
    myRobot->setWheelVelocity(wheel->leftWheel, wheel->rightWheel);
 }
 
@@ -276,8 +279,8 @@ bool RobotController::ik(sig_ros::ik::Request &req, sig_ros::ik::Response &res) 
       //std::cout << "pos origin " << positionArms.find(req.arm)->second.x() << " " << positionArms.find(req.arm)->second.y() << " " << positionArms.find(req.arm)->second.z() << std::endl;
       pos -= positionArms.find(req.arm)->second;
       //std::cout << "pos diff " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
-      pos.z(0.1 * pos.z() / 1);//0.1 -> 1.77
-      pos.y(0.01 * pos.y() / 1); //0.05 -> 5.4564
+      pos.z(0.1 * pos.z() / 1.77);//0.1 -> 1.77
+      pos.y(0.01 * pos.y() / 1.09); //0.01 -> 1.09
       pos.x(0);
       //std::cout << "pos calculé " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
    }
