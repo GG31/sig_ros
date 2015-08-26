@@ -3,8 +3,13 @@
 \usepackage[frenchb]{babel}
 \usepackage{graphicx}
 \usepackage{textpos}
+%\usepackage{movie15}
+\usepackage{multimedia}
+\usepackage{media9}
+\usepackage{hyperref}
+\usepackage{url}
 
-\usetheme{Boadilla}
+\usetheme{Berlin}%Boadilla
 \usecolortheme{beaver}
 
 \makeatletter
@@ -37,25 +42,71 @@
 % ------------------------------
 
 % ----- Presentacion ------
-\section{}
+\section{Introduction}
 
-\subsection*{SubPart 1}
+\subsection*{}
 %\subsection{En bref}
+\begin{frame}{Goal}
+\begin{center}%
+\movie{}{videos/CleanUpReferee.mp4}
+%\url{videos/CleanUpReferee.mp4}
+\end{center}
+\end{frame}
+
+\begin{frame}{RoboCup}		
+	RoboCup competition, how to participate
+	\begin{columns}[t]
+		\begin{column}[T]{.5\textwidth}
+			\includegraphics[width=1\textwidth]{images/robocupFoot.jpg}
+		\end{column}
+		\begin{column}[T]{.5\textwidth}
+			\includegraphics[width=0.7\textwidth]{images/robocupHome.jpg}	
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}
+\includemedia[
+    activate=onclick,
+    width=0.75\textwidth
+]{\includegraphics{images/SingleCleanUpDemo2014.png}}{videos/CleanUpReferee.mp4}
+\end{frame}
+
+\begin{frame}{SIGVerse}		
+\begin{columns}[t]
+	\begin{column}[T]{.6\textwidth}
+		\includegraphics[width=1\textwidth]{images/manViewer.png}
+	\end{column}
+	\begin{column}[T]{.4\textwidth}
+		\includegraphics[width=0.6\textwidth]{images/robot_000_sigverse.png}
+	\end{column}
+\end{columns}
+\end{frame}
 
 \begin{frame}{Goal}
-%\begin{columns}[t]
-		%\begin{column}[T]{.5\textwidth}
-		\begin{center}
-		
-		
-			\includegraphics[width=0.65\textwidth]{images/SIGVerseSimple.png}\\
-			\vspace{0.3cm}
-	  	%\end{column}
-	  	%\begin{column}[T]{.5\textwidth}
-			\includegraphics[width=0.7\textwidth]{images/SIGVerseROS.png}	
-			\end{center}
-		%\end{column}
-%\end{columns}
+	\begin{itemize}
+		\item C++
+		\item Dynamique SIGVerse
+		\item Japanese documentation
+		\item Problem of SIGVerse (no restart without relaunch simulation)
+		\item Robotic world : Robot Operating System
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Goal}
+	\begin{center}
+		\includegraphics[width=0.65\textwidth]{images/SIGVerseSimple.png}\\
+		\vspace{0.3cm}
+		\includegraphics[width=0.7\textwidth]{images/SIGVerseROS.png}	
+	\end{center}
+\end{frame}
+
+\section{?}
+\subsection*{}
+\begin{frame}{Robot Operating System}
+	\begin{center}
+		\includegraphics[width=0.8\textwidth]{images/Concepts-de-base-ROS.jpg}
+	\end{center}
 \end{frame}
 
 \begin{frame}{Generalities}
@@ -64,10 +115,36 @@
 	\end{center}
 \end{frame}
 
+\begin{frame}{Package}
+	\begin{center}
+		\includegraphics[width=0.7\textwidth]{images/package_sig_ros.png}
+	\end{center}
+\end{frame}
+
 \begin{frame}{Use}
 	\begin{center}
 		\includegraphics[width=0.8\textwidth]{images/usage.png}
 	\end{center}
+\end{frame}
+
+\section{More functionnalities}
+\subsection*{}
+\begin{frame}{Inverse kinematics}
+	\begin{center}
+		%\includegraphics[width=0.8\textwidth]{images/usage.png}
+	\end{center}
+\end{frame}
+
+\section{Conclusion}
+\subsection*{}
+\begin{frame}{Result}
+%Vidéo
+\end{frame}
+
+\begin{frame}{To go further}
+\end{frame}
+
+\begin{frame}{Skills}
 \end{frame}
 
 \end{document}

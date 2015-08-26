@@ -72,6 +72,8 @@ Finally, the user can create all the ROS node he wants and publish and subscribe
 \captionof{figure}{Steps to follow to start a simulation with ROS}\label{fig:usage}%      only if needed  
 \end{minipage}
 
+An example of the usage is here \url{https://www.youtube.com/watch?v=yskcDONc2CE&feature=youtu.be}. The video starts after the node ``ros\_controller'' has been launched. We can see the simulation starting, the topics and services are created, and the robot description of Hiro is loaded. After that, messages are launched from a terminal to different topics. The service of the inverse kinematics (see section \ref{subsec:ik}) is also called.
+
 \section{Topics \& Services}
 \subsection{Generalities}
 Topics and services have to be defined. A node which subscribe to a topic receive the message as soon as it is published to the topic but no answer is given.\\
@@ -81,7 +83,8 @@ It is possible to create new types, so the tranfert of SIGVerse object could be 
 
 The first step is to make the example of the clean up task working, so many topics and services have been created. Each of them starts by the name of the agent and follow by the name of the topic/service.
 
-Now, we are going to see the topics and services I implemented for the robot agent, but a more exhaustive list with more details is given in annex~\ref{annex:topics} and annex~\ref{annex:services}. In those annexes, there are the topics for the robot agent but also for the object agent of the clean up task which I have started implementing.
+Now, we are going to see the topics and services I implemented for the robot agent, but a more exhaustive list with more details is given in annex~\ref{annex:topics} and annex~\ref{annex:services}. In those annexes, there are the topics for the robot agent but also for the object agent of the clean up task which I have started implementing.\\
+The complete list of the topics, services, messages and services types is given in the user manual.
 
 \subsection{Topics}
 The list of the topics needed for the robot agent of the clean up task is:
@@ -175,7 +178,7 @@ Before the integration of this package to SIGVerse, I tried to use it with the t
 
 After many try, I decided to publish the information necessary to the SLAM package to two topics, then if the user wants to use SLAM, he can have access to the data and use it.
 
-\subsection{Inverse kinematics}
+\subsection{Inverse kinematics}\label{subsec:ik}
 \subsubsection{Concept}
 ROS provide a package for solving the inverse kinematics and an example is provided on the documentation with a robot called pr2\footnote{The PR2 is a mobile manipulation platform built by Willow Garage. The PR2 software system is written entirely in ROS. As such, all pr2 capabilities are available via ROS interfaces.}. We can show pr2 with rviz\footnote{rviz is an 3D visualization tool for ROS} and launch a node from the tutorial to make move the robot in rviz using the inverse kinematics.\\
 With this example, I was able to distinguish three parts of the work to realize, how the inverse kinematics package knows the description of pr2, how the information are sent to the ik package and how the result of the ik package is performed by rviz to make the robot moving. 
@@ -245,7 +248,10 @@ The absolute position corresponds to the coordinates of SIGVerse where the user 
 The relative position corresponds to the vector from the current position to the new position.\\
 
 The empty position does not need any treatment of the position given but the absolute and relative need to be modifyied. Indeed, the ik package need the data as the ``empty'' position, example figure~\ref{fig:ikAngles} the position (0,0,0) is the default position.\\
-That is why, it was necessary to know the coordinate of the default position for calculate the vector from the default position to the wanted position. For that, I decided to apply matrix transformation to the arm hands position called ``Wrist''. See figure~\ref{fig:armCalculPoint} a visual of the problem.
+That is why, it was necessary to know the coordinate of the default position for calculate the vector from the default position to the wanted position. For that, I decided to apply matrix transformation to the arm hands position called ``Wrist''. See figure~\ref{fig:armCalculPoint} a visual of the problem.\\
+
+The unit of the robot inside the urdf file is meter whereas inside SIGVerse it is the centimeter. Also, a little difference of scale can be found, so I took the position of few points see annex~\ref{annex:dataPos} and I calculated the average scale.\\
+So, between the RobotController and the ``ik'' package in the figure~\ref{fig:ikServ} there is a little ``translator'' from SIGVerse position to urdf position.
 
 \noindent\begin{minipage}{\linewidth}% to keep image and caption on one page
 \makebox[\linewidth]{%        to center the image
