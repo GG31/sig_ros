@@ -23,12 +23,6 @@ void RobotController::onInit(InitEvent &evt)
    current_time = ros::Time::now();
    last_time = ros::Time::now();
       
-/*   std::map<std::string, double> list = myRobot->getAllJointAngles();
-   Vector3d v;
-   for (std::map<std::string, double>::iterator it=list.begin(); it!=list.end(); ++it) {
-       myRobot->getJointPosition(v, it->first.c_str());
-       std::cout << it->first << " " << it->second << " : " << v.x() << " " << v.y() << " " << v.z() << std::endl;
-   }*/
    std::string ikName = "/home/gg/catkin_ws/src/sig_ros/robot_desc/no_ik.urdf";
    if (!std::ifstream(ikName.c_str())) {
       /* Create urdf*/
@@ -82,13 +76,6 @@ std::string RobotController::getJointLength(std::string letter, Vector3d& torso_
 }
 
 double RobotController::onAction(ActionEvent &evt) {
-   //ros::Time time = ros::Time::now() + ros::Duration(0.01);
-   /*rosgraph_msgs::Clock msg;
-   msg.clock = time;
-   clock_pub.publish(msg);
-   std::cout << "time " << time << std::endl;
-*/
-   
    //calculateTransform(ros::Time(m_simulatorTime));
    scan(ros::Time(m_simulatorTime));
    
@@ -197,10 +184,9 @@ void RobotController::fillPositionArms(std::string arm) {
    {
       moveit_msgs::DisplayRobotState msg;
       robot_state::robotStateToRobotStateMsg(*kinematic_state, msg.state);
-      //std::cout << "angles : " << msg.state.joint_state.position[16] << " " << msg.state.joint_state.position[18] << std::endl;
+
       Vector3d posWrist = pointAfterRotation(wrist90, elbow90, msg.state.joint_state.position[18] - 0.2103);
       positionArms.insert(std::pair<std::string, Vector3d>(arm, posWrist));
-      //std::cout << "position originale " << posWrist.x()<< " " << posWrist.y() << " " << posWrist.z() << std::endl;
    } 
 }
 
@@ -275,16 +261,12 @@ bool RobotController::ik(sig_ros::ik::Request &req, sig_ros::ik::Response &res) 
       pos += posArmNow;
    }
    if (req.position == "absolute" || req.position == "relative") {
-      //std::cout << "pos asked " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
-      //std::cout << "pos origin " << positionArms.find(req.arm)->second.x() << " " << positionArms.find(req.arm)->second.y() << " " << positionArms.find(req.arm)->second.z() << std::endl;
       pos -= positionArms.find(req.arm)->second;
       //std::cout << "pos diff " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
       pos.z(0.1 * pos.z() / 1.77);//0.1 -> 1.77
       pos.y(0.01 * pos.y() / 1.09); //0.01 -> 1.09
       pos.x(0);
-      //std::cout << "pos calculé " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
    }
-   //std::cout << req.position.c_str() << " " << pos.x() << " " << pos.y() << " " << pos.z() << std::endl;
    // calculate a position for the end effector 
    Eigen::Affine3d end_effector_pose =
 
@@ -297,10 +279,7 @@ bool RobotController::ik(sig_ros::ik::Request &req, sig_ros::ik::Response &res) 
    {
       moveit_msgs::DisplayRobotState msg;
       robot_state::robotStateToRobotStateMsg(*kinematic_state, msg.state);
-      for (int i=0; i<44; i++) {
-         //std::cout << msg.state.joint_state.position[i] << " ";
-      }
-      //std::cout << std::endl;
+      
       myRobot->setJointAngle((letter + "ARM_JOINT1").c_str(), msg.state.joint_state.position[16] - PI/2);
       myRobot->setJointAngle((letter + "ARM_JOINT4").c_str(), msg.state.joint_state.position[18]);
       res.done = true;

@@ -8,15 +8,6 @@ def switchValues(attr):
     arg = attr.split()
     return arg[1] + " " + arg[2] + " " + arg[0]
 
-#Switch axis
-#for e in tree.findall('.//origin'):
-#    e.attrib['xyz'] = switchValues(e.attrib['xyz'])
-    #if 'rpy' in e.attrib:
-    #    e.attrib['rpy'] = switchValues(e.attrib['rpy'])
-
-#for e in tree.findall('.//axis'):
-#    e.attrib['xyz'] = switchValues(e.attrib['xyz'])
-
 #Add positions
 jointsValues = {
             'base_footprint_joint': [0,0,0],
@@ -68,14 +59,8 @@ jointsValues = {
         }
 
 for elem in jointsValues:
-    #a = tree.findall(".//link[@name='base_link']")
-    #if len(a) == 1:
-    #    a[0].find("origin").attrib['xyz'] = ' '.join(map(str, jointsValues['base_link']))
     a = tree.findall(".//joint[@name='" + elem + "']")
-    #print str(len(a)) + " elem " + elem + " found"
     if len(a) == 1:
-        #if 'xyz' not in a[0].find("origin").attrib:
-            #print "pas de xyz pour " + elem
         a[0].find("origin").attrib['xyz'] = ' '.join(map(str, jointsValues[elem]))
 
 with open("/home/gg/catkin_ws/src/sig_ros/robot_desc/out.urdf", 'w') as file_handle:
